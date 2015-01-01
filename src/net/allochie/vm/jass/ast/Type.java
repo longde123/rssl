@@ -16,13 +16,14 @@ public class Type {
 
 	public static HashMap<String, Type> map = new HashMap<String, Type>();
 
+	/** Type name image */
 	public final String typename;
 
 	private Type(String typename) {
 		this.typename = typename;
 	}
 
-	public static Type fromToken(Token typetoken) {
+	public static Type fromIdentifier(Identifier typetoken) {
 		if (!map.containsKey(typetoken.image))
 			map.put(typetoken.image, new Type(typetoken.image));
 		return map.get(typetoken.image);
@@ -32,5 +33,6 @@ public class Type {
 	public String toString() {
 		return typename;
 	}
+
 
 }
