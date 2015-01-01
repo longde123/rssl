@@ -1,5 +1,9 @@
 package net.allochie.vm.jass.ast;
 
+import java.util.HashMap;
+
+import net.allochie.vm.jass.parser.Token;
+
 public class Type {
 
 	public static Type codeType = new Type("code");
@@ -10,17 +14,20 @@ public class Type {
 	public static Type stringType = new Type("string");
 	public static Type nullType = new Type("null");
 
+	public static HashMap<String, Type> map = new HashMap<String, Type>();
+
 	public final String typename;
 
 	private Type(String typename) {
 		this.typename = typename;
 	}
 
-	public static Type fromIdentifier(Identifier tmp0) {
-		System.out.println("findType: " + tmp0);
-		return null;
+	public static Type fromToken(Token typetoken) {
+		if (!map.containsKey(typetoken.image))
+			map.put(typetoken.image, new Type(typetoken.image));
+		return map.get(typetoken.image);
 	}
-	
+
 	@Override
 	public String toString() {
 		return typename;
