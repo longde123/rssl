@@ -11,924 +11,724 @@ import net.allochie.vm.jass.ast.statement.*;
 
 public class JASSParser implements JASSParserConstants {
 
-  final public JASSFile file() throws ParseException {
-    trace_call("file");
-    try {JASSFile file = new JASSFile();
+  final public JASSFile file() throws ParseException {JASSFile file = new JASSFile();
         Dec tmp0; Function tmp1;
-      label_1:
-      while (true) {
-        if (jj_2_1(4)) {
-          ;
-        } else {
-          break label_1;
-        }
-        if (jj_2_2(4)) {
-          tmp0 = typedef();
-file.put(tmp0);
-        } else if (jj_2_3(4)) {
-          tmp0 = globals();
-file.put(tmp0);
-        } else if (jj_2_4(4)) {
-          tmp0 = native_func();
-file.put(tmp0);
-        } else if (jj_2_5(4)) {
-          tmp1 = func();
-file.put(tmp1);
-        } else {
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
+    label_1:
+    while (true) {
+      if (jj_2_1(4)) {
+        ;
+      } else {
+        break label_1;
       }
-{if ("" != null) return file;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("file");
-    }
-  }
-
-  final public TypeDec typedef() throws ParseException {
-    trace_call("typedef");
-    try {TypeDec dec = new TypeDec();
-        Identifier tmp0, tmp1;
-      jj_consume_token(TYPE);
-      tmp0 = id();
-dec.id = tmp0;
-      jj_consume_token(EXTENDS);
-      if (jj_2_6(4)) {
-        tmp1 = id();
-dec.typename = tmp1;
-      } else if (jj_2_7(4)) {
-        jj_consume_token(HANDLE);
-dec.type = DecType.HANDLE;
+      if (jj_2_2(4)) {
+        tmp0 = typedef();
+file.put(tmp0);
+      } else if (jj_2_3(4)) {
+        tmp0 = globals();
+file.put(tmp0);
+      } else if (jj_2_4(4)) {
+        tmp0 = native_func();
+file.put(tmp0);
+      } else if (jj_2_5(4)) {
+        tmp1 = func();
+file.put(tmp1);
       } else {
         jj_consume_token(-1);
         throw new ParseException();
       }
-{if ("" != null) return dec;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("typedef");
     }
+{if ("" != null) return file;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public GlobalsDec globals() throws ParseException {
-    trace_call("globals");
-    try {GlobalsDec dec = new GlobalsDec();
-      jj_consume_token(GLOBALS);
-      global_var_list(dec);
-      jj_consume_token(ENDGLOBALS);
+  final public TypeDec typedef() throws ParseException {TypeDec dec = new TypeDec();
+        Identifier tmp0, tmp1;
+    jj_consume_token(TYPE);
+    tmp0 = id();
+dec.id = tmp0;
+    jj_consume_token(EXTENDS);
+    if (jj_2_6(4)) {
+      tmp1 = id();
+dec.typename = tmp1;
+    } else if (jj_2_7(4)) {
+      jj_consume_token(HANDLE);
+dec.type = DecType.HANDLE;
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
 {if ("" != null) return dec;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("globals");
-    }
   }
 
-  final public void global_var_list(GlobalsDec dec) throws ParseException {
-    trace_call("global_var_list");
-    try {Type tmp0;
+  final public GlobalsDec globals() throws ParseException {GlobalsDec dec = new GlobalsDec();
+    jj_consume_token(GLOBALS);
+    global_var_list(dec);
+    jj_consume_token(ENDGLOBALS);
+{if ("" != null) return dec;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public void global_var_list(GlobalsDec dec) throws ParseException {Type tmp0;
         Identifier tmp1;
         Expression tmp2;
         VarDec tmp3;
-      label_2:
-      while (true) {
-        if (jj_2_8(4)) {
-          ;
-        } else {
-          break label_2;
-        }
-        if (jj_2_9(4)) {
-          jj_consume_token(CONSTANT);
-tmp3 = new VarDec();
-          tmp0 = type();
-tmp3.type = tmp0;
-          tmp1 = id();
-tmp3.name = tmp1;
-          jj_consume_token(37);
-          tmp2 = expr();
-tmp3.init = tmp2; dec.put(tmp3);
-        } else if (jj_2_10(4)) {
-          tmp3 = var_declr();
-dec.put(tmp3);
-        } else {
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
+    label_2:
+    while (true) {
+      if (jj_2_8(4)) {
+        ;
+      } else {
+        break label_2;
       }
-    } finally {
-      trace_return("global_var_list");
+      if (jj_2_9(4)) {
+        jj_consume_token(CONSTANT);
+tmp3 = new VarDec();
+        tmp0 = type();
+tmp3.type = tmp0;
+        tmp1 = id();
+tmp3.name = tmp1;
+        jj_consume_token(37);
+        tmp2 = expr();
+tmp3.init = tmp2; dec.put(tmp3);
+      } else if (jj_2_10(4)) {
+        tmp3 = var_declr();
+dec.put(tmp3);
+      } else {
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     }
   }
 
-  final public NativeFuncDef native_func() throws ParseException {
-    trace_call("native_func");
-    try {NativeFuncDef def;
+  final public NativeFuncDef native_func() throws ParseException {NativeFuncDef def;
         FuncDef def0;
         boolean flag0 = false;
-      if (jj_2_11(4)) {
-        jj_consume_token(CONSTANT);
+    if (jj_2_11(4)) {
+      jj_consume_token(CONSTANT);
 flag0 = true;
-      } else {
-        ;
-      }
-      jj_consume_token(NATIVE);
-      def0 = func_declr();
+    } else {
+      ;
+    }
+    jj_consume_token(NATIVE);
+    def0 = func_declr();
 def = new NativeFuncDef(def0, flag0); {if ("" != null) return def;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("native_func");
-    }
   }
 
-  final public FuncDef func_declr() throws ParseException {
-    trace_call("func_declr");
-    try {FuncDef def = new FuncDef();
+  final public FuncDef func_declr() throws ParseException {FuncDef def = new FuncDef();
         Identifier tmp0; ParamList tmp1; Type tmp2;
-      tmp0 = id();
+    tmp0 = id();
 def.id = tmp0;
-      jj_consume_token(TAKES);
-      if (jj_2_12(4)) {
-        jj_consume_token(NOTHING);
+    jj_consume_token(TAKES);
+    if (jj_2_12(4)) {
+      jj_consume_token(NOTHING);
 def.params = new ParamList();
-      } else if (jj_2_13(4)) {
-        tmp1 = param_list();
+    } else if (jj_2_13(4)) {
+      tmp1 = param_list();
 def.params = tmp1;
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-      jj_consume_token(RETURNS);
-      if (jj_2_14(4)) {
-        jj_consume_token(NOTHING);
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    jj_consume_token(RETURNS);
+    if (jj_2_14(4)) {
+      jj_consume_token(NOTHING);
 def.returns = Type.nullType;
-      } else if (jj_2_15(4)) {
-        tmp2 = type();
+    } else if (jj_2_15(4)) {
+      tmp2 = type();
 def.returns = tmp2;
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
 {if ("" != null) return def;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("func_declr");
-    }
   }
 
-  final public ParamList param_list() throws ParseException {
-    trace_call("param_list");
-    try {ParamList list = new ParamList();
+  final public ParamList param_list() throws ParseException {ParamList list = new ParamList();
         Param param0;
         Type tmp0; Identifier tmp1;
+    tmp0 = type();
+param0 = new Param(); param0.type = tmp0;
+    tmp1 = id();
+param0.name = tmp1; list.add(param0);
+    label_3:
+    while (true) {
+      if (jj_2_16(4)) {
+        ;
+      } else {
+        break label_3;
+      }
+      jj_consume_token(38);
       tmp0 = type();
 param0 = new Param(); param0.type = tmp0;
       tmp1 = id();
 param0.name = tmp1; list.add(param0);
-      label_3:
-      while (true) {
-        if (jj_2_16(4)) {
-          ;
-        } else {
-          break label_3;
-        }
-        jj_consume_token(38);
-        tmp0 = type();
-param0 = new Param(); param0.type = tmp0;
-        tmp1 = id();
-param0.name = tmp1; list.add(param0);
-      }
+    }
 {if ("" != null) return list;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("param_list");
-    }
   }
 
-  final public Function func() throws ParseException {
-    trace_call("func");
-    try {Function func = new Function();
+  final public Function func() throws ParseException {Function func = new Function();
         FuncDef tmp0; VarList tmp1; StatementList tmp2;
-      if (jj_2_17(4)) {
-        jj_consume_token(CONSTANT);
+    if (jj_2_17(4)) {
+      jj_consume_token(CONSTANT);
 func.constant = true;
-      } else {
-        ;
-      }
-      jj_consume_token(FUNCTION);
-      tmp0 = func_declr();
+    } else {
+      ;
+    }
+    jj_consume_token(FUNCTION);
+    tmp0 = func_declr();
 func.sig = tmp0;
-      tmp1 = local_var_list();
+    tmp1 = local_var_list();
 func.lvars = tmp1;
-      tmp2 = statement_list();
+    tmp2 = statement_list();
 func.statements = tmp2;
-      jj_consume_token(ENDFUNCTION);
+    jj_consume_token(ENDFUNCTION);
 {if ("" != null) return func;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("func");
-    }
   }
 
-  final public VarList local_var_list() throws ParseException {
-    trace_call("local_var_list");
-    try {VarList list = new VarList();
+  final public VarList local_var_list() throws ParseException {VarList list = new VarList();
         VarDec tmp0;
-      label_4:
-      while (true) {
-        if (jj_2_18(4)) {
-          ;
-        } else {
-          break label_4;
-        }
-        jj_consume_token(LOCAL);
-        tmp0 = var_declr();
-list.add(tmp0);
+    label_4:
+    while (true) {
+      if (jj_2_18(4)) {
+        ;
+      } else {
+        break label_4;
       }
+      jj_consume_token(LOCAL);
+      tmp0 = var_declr();
+list.add(tmp0);
+    }
 {if ("" != null) return list;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("local_var_list");
-    }
   }
 
-  final public VarDec var_declr() throws ParseException {
-    trace_call("var_declr");
-    try {VarDec dec = new VarDec();
+  final public VarDec var_declr() throws ParseException {VarDec dec = new VarDec();
         Type tmp0; Identifier tmp1; Expression tmp2;
-      if (jj_2_20(4)) {
-        tmp0 = type();
+    if (jj_2_20(4)) {
+      tmp0 = type();
 dec.type = tmp0;
-        tmp1 = id();
+      tmp1 = id();
 dec.name = tmp1;
-        if (jj_2_19(4)) {
-          jj_consume_token(37);
-          tmp2 = expr();
-dec.init = tmp2;
-        } else {
-          ;
-        }
-{if ("" != null) return dec;}
-      } else if (jj_2_21(4)) {
-        tmp0 = type();
-dec.type = tmp0;
-        jj_consume_token(ARRAY);
-dec.array = true;
-        tmp1 = id();
-dec.name = tmp1; {if ("" != null) return dec;}
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("var_declr");
-    }
-  }
-
-  final public StatementList statement_list() throws ParseException {
-    trace_call("statement_list");
-    try {StatementList list = new StatementList();
-        Statement tmp0;
-      label_5:
-      while (true) {
-        if (jj_2_22(4)) {
-          ;
-        } else {
-          break label_5;
-        }
-        tmp0 = statement();
-list.add(tmp0);
-      }
-{if ("" != null) return list;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("statement_list");
-    }
-  }
-
-  final public Statement statement() throws ParseException {
-    trace_call("statement");
-    try {Statement stmt;
-      if (jj_2_23(4)) {
-        stmt = set();
-{if ("" != null) return stmt;}
-      } else if (jj_2_24(4)) {
-        stmt = call();
-{if ("" != null) return stmt;}
-      } else if (jj_2_25(4)) {
-        stmt = ifthenelse();
-{if ("" != null) return stmt;}
-      } else if (jj_2_26(4)) {
-        stmt = loop();
-{if ("" != null) return stmt;}
-      } else if (jj_2_27(4)) {
-        stmt = exitwhen();
-{if ("" != null) return stmt;}
-      } else if (jj_2_28(4)) {
-        stmt = retn();
-{if ("" != null) return stmt;}
-      } else if (jj_2_29(4)) {
-        stmt = debug();
-{if ("" != null) return stmt;}
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("statement");
-    }
-  }
-
-  final public Statement set() throws ParseException {
-    trace_call("set");
-    try {SetStatement setStmt; SetArrayStatement setArrStmt;
-        Identifier tmp0; Expression tmp1, tmp2;
-      if (jj_2_30(4)) {
-        jj_consume_token(SET);
-setStmt = new SetStatement();
-        tmp0 = id();
-setStmt.id = tmp0;
-        jj_consume_token(37);
-        tmp1 = expr();
-setStmt.val = tmp1; {if ("" != null) return setStmt;}
-      } else if (jj_2_31(4)) {
-        jj_consume_token(SET);
-setArrStmt = new SetArrayStatement();
-        tmp0 = id();
-setArrStmt.id = tmp0;
-        jj_consume_token(39);
-        tmp1 = expr();
-setArrStmt.idx = tmp1;
-        jj_consume_token(40);
+      if (jj_2_19(4)) {
         jj_consume_token(37);
         tmp2 = expr();
-setArrStmt.val = tmp2; {if ("" != null) return setArrStmt;}
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("set");
-    }
-  }
-
-  final public Statement call() throws ParseException {
-    trace_call("call");
-    try {CallStatement stmt;
-        Identifier tmp0; ParamInvokeList tmp1;
-      jj_consume_token(CALL);
-stmt = new CallStatement();
-      tmp0 = id();
-stmt.id = tmp0;
-      jj_consume_token(41);
-      if (jj_2_32(4)) {
-        tmp1 = args();
-stmt.params = tmp1;
+dec.init = tmp2;
       } else {
         ;
       }
-      jj_consume_token(42);
-{if ("" != null) return stmt;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("call");
+{if ("" != null) return dec;}
+    } else if (jj_2_21(4)) {
+      tmp0 = type();
+dec.type = tmp0;
+      jj_consume_token(ARRAY);
+dec.array = true;
+      tmp1 = id();
+dec.name = tmp1; {if ("" != null) return dec;}
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public ParamInvokeList args() throws ParseException {
-    trace_call("args");
-    try {ParamInvokeList list = new ParamInvokeList();
-        Expression tmp0;
-      tmp0 = expr();
-list.add(tmp0);
-      label_6:
-      while (true) {
-        if (jj_2_33(4)) {
-          ;
-        } else {
-          break label_6;
-        }
-        jj_consume_token(38);
-        tmp0 = expr();
-list.add(tmp0);
+  final public StatementList statement_list() throws ParseException {StatementList list = new StatementList();
+        Statement tmp0;
+    label_5:
+    while (true) {
+      if (jj_2_22(4)) {
+        ;
+      } else {
+        break label_5;
       }
+      tmp0 = statement();
+list.add(tmp0);
+    }
 {if ("" != null) return list;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("args");
-    }
   }
 
-  final public Statement ifthenelse() throws ParseException {
-    trace_call("ifthenelse");
-    try {ConditionalStatement stmt;
-        Expression tmp0; StatementList tmp1; ConditionalStatement tmp2;
-      jj_consume_token(IF);
-stmt = new ConditionalStatement(StatementType.IF);
-      tmp0 = expr();
-stmt.conditional = tmp0;
-      jj_consume_token(THEN);
-      tmp1 = statement_list();
-stmt.statements = tmp1;
-      if (jj_2_34(4)) {
-        tmp2 = else_clause();
-stmt.child = tmp2;
-      } else {
-        ;
-      }
-      jj_consume_token(ENDIF);
+  final public Statement statement() throws ParseException {Statement stmt;
+    if (jj_2_23(4)) {
+      stmt = set();
 {if ("" != null) return stmt;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("ifthenelse");
-    }
-  }
-
-  final public ConditionalStatement else_clause() throws ParseException {
-    trace_call("else_clause");
-    try {ConditionalStatement nest = new ConditionalStatement();
-        Expression tmp0; StatementList tmp1; ConditionalStatement tmp2;
-      if (jj_2_36(4)) {
-        jj_consume_token(ELSE);
-nest.type = StatementType.ELSE;
-        tmp1 = statement_list();
-nest.statements = tmp1; {if ("" != null) return nest;}
-      } else if (jj_2_37(4)) {
-        jj_consume_token(ELSEIF);
-nest.type = StatementType.ELSEIF;
-        tmp0 = expr();
-nest.conditional = tmp0;
-        jj_consume_token(THEN);
-        tmp1 = statement_list();
-nest.statements = tmp1;
-        if (jj_2_35(4)) {
-          tmp2 = else_clause();
-nest.child = tmp2;
-        } else {
-          ;
-        }
-{if ("" != null) return nest;}
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("else_clause");
-    }
-  }
-
-  final public Statement loop() throws ParseException {
-    trace_call("loop");
-    try {LoopStatement stmt;
-        StatementList tmp0;
-      jj_consume_token(LOOP);
-stmt = new LoopStatement();
-      tmp0 = statement_list();
-stmt.statements = tmp0;
-      jj_consume_token(ENDLOOP);
+    } else if (jj_2_24(4)) {
+      stmt = call();
 {if ("" != null) return stmt;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("loop");
-    }
-  }
-
-  final public Statement exitwhen() throws ParseException {
-    trace_call("exitwhen");
-    try {LoopExitStatement stmt;
-        Expression tmp0;
-      jj_consume_token(EXITWHEN);
-stmt = new LoopExitStatement();
-      tmp0 = expr();
-stmt.conditional = tmp0; {if ("" != null) return stmt;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("exitwhen");
-    }
-  }
-
-  final public Statement retn() throws ParseException {
-    trace_call("retn");
-    try {ReturnStatement stmt;
-        Expression tmp0;
-      jj_consume_token(RETURN);
-stmt = new ReturnStatement();
-      if (jj_2_38(4)) {
-        tmp0 = expr();
-stmt.expression = tmp0;
-      } else {
-        ;
-      }
+    } else if (jj_2_25(4)) {
+      stmt = ifthenelse();
 {if ("" != null) return stmt;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("retn");
+    } else if (jj_2_26(4)) {
+      stmt = loop();
+{if ("" != null) return stmt;}
+    } else if (jj_2_27(4)) {
+      stmt = exitwhen();
+{if ("" != null) return stmt;}
+    } else if (jj_2_28(4)) {
+      stmt = retn();
+{if ("" != null) return stmt;}
+    } else if (jj_2_29(4)) {
+      stmt = debug();
+{if ("" != null) return stmt;}
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public Statement debug() throws ParseException {
-    trace_call("debug");
-    try {Statement rt;
-      jj_consume_token(DEBUG);
-      if (jj_2_39(4)) {
-        rt = set();
-      } else if (jj_2_40(4)) {
-        rt = call();
-      } else if (jj_2_41(4)) {
-        rt = ifthenelse();
-      } else if (jj_2_42(4)) {
-        rt = loop();
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-rt.debug = true; {if ("" != null) return rt;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("debug");
-    }
-  }
-
-  final public Expression expr() throws ParseException {
-    trace_call("expr");
-    try {Expression e0;
-      e0 = simple_expr();
-      if (jj_2_43(4)) {
-        e0 = binary_op(e0);
-      } else {
-        ;
-      }
-{if ("" != null) return e0;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("expr");
-    }
-  }
-
-  final public Expression simple_expr() throws ParseException {
-    trace_call("simple_expr");
-    try {Expression exp;
-        Identifier tmp0;
-      if (jj_2_44(4)) {
-        exp = parens();
-{if ("" != null) return exp;}
-      } else if (jj_2_45(4)) {
-        exp = func_call();
-{if ("" != null) return exp;}
-      } else if (jj_2_46(4)) {
-        exp = unary_op();
-{if ("" != null) return exp;}
-      } else if (jj_2_47(4)) {
-        exp = array_ref();
-{if ("" != null) return exp;}
-      } else if (jj_2_48(4)) {
-        exp = func_ref();
-{if ("" != null) return exp;}
-      } else if (jj_2_49(4)) {
-        tmp0 = id();
-{if ("" != null) return new IdentifierReference(tmp0);}
-      } else if (jj_2_50(4)) {
-        exp = constval();
-{if ("" != null) return exp;}
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("simple_expr");
-    }
-  }
-
-  final public Expression binary_op(Expression lhs) throws ParseException {
-    trace_call("binary_op");
-    try {BinaryOpExpression expr = new BinaryOpExpression();
-        Expression tmp1;
-expr.lhs = lhs;
-      if (jj_2_51(4)) {
-        jj_consume_token(43);
-expr.mode = BinaryOp.ADD;
-      } else if (jj_2_52(4)) {
-        jj_consume_token(44);
-expr.mode = BinaryOp.SUB;
-      } else if (jj_2_53(4)) {
-        jj_consume_token(45);
-expr.mode = BinaryOp.MUL;
-      } else if (jj_2_54(4)) {
-        jj_consume_token(46);
-expr.mode = BinaryOp.DIV;
-      } else if (jj_2_55(4)) {
-        jj_consume_token(47);
-expr.mode = BinaryOp.EQUALS;
-      } else if (jj_2_56(4)) {
-        jj_consume_token(48);
-expr.mode = BinaryOp.NOTEQUALS;
-      } else if (jj_2_57(4)) {
-        jj_consume_token(49);
-expr.mode = BinaryOp.LT;
-      } else if (jj_2_58(4)) {
-        jj_consume_token(50);
-expr.mode = BinaryOp.GT;
-      } else if (jj_2_59(4)) {
-        jj_consume_token(51);
-expr.mode = BinaryOp.LTEQ;
-      } else if (jj_2_60(4)) {
-        jj_consume_token(52);
-expr.mode = BinaryOp.GTEQ;
-      } else if (jj_2_61(4)) {
-        jj_consume_token(53);
-expr.mode = BinaryOp.BOOLAND;
-      } else if (jj_2_62(4)) {
-        jj_consume_token(54);
-expr.mode = BinaryOp.BOOLOR;
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
+  final public Statement set() throws ParseException {SetStatement setStmt; SetArrayStatement setArrStmt;
+        Identifier tmp0; Expression tmp1, tmp2;
+    if (jj_2_30(4)) {
+      jj_consume_token(SET);
+setStmt = new SetStatement();
+      tmp0 = id();
+setStmt.id = tmp0;
+      jj_consume_token(37);
       tmp1 = expr();
-expr.rhs = tmp1; {if ("" != null) return expr;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("binary_op");
-    }
-  }
-
-  final public Expression unary_op() throws ParseException {
-    trace_call("unary_op");
-    try {UnaryOpExpression expr = new UnaryOpExpression();
-        Expression tmp0;
-      if (jj_2_63(4)) {
-        jj_consume_token(43);
-expr.mode = UnaryOp.POS;
-      } else if (jj_2_64(4)) {
-        jj_consume_token(44);
-expr.mode = UnaryOp.NEG;
-      } else if (jj_2_65(4)) {
-        jj_consume_token(55);
-expr.mode = UnaryOp.NOT;
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-      tmp0 = expr();
-expr.rhs = tmp0; {if ("" != null) return expr;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("unary_op");
-    }
-  }
-
-  final public Expression func_call() throws ParseException {
-    trace_call("func_call");
-    try {FunctionCallExpression expr = new FunctionCallExpression();
-        Identifier tmp0; ParamInvokeList tmp1;
+setStmt.val = tmp1; {if ("" != null) return setStmt;}
+    } else if (jj_2_31(4)) {
+      jj_consume_token(SET);
+setArrStmt = new SetArrayStatement();
       tmp0 = id();
-expr.name = tmp0;
-      jj_consume_token(41);
-      if (jj_2_66(4)) {
-        tmp1 = args();
-expr.params = tmp1;
-      } else {
-        ;
-      }
-      jj_consume_token(42);
-{if ("" != null) return expr;}
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("func_call");
-    }
-  }
-
-  final public Expression array_ref() throws ParseException {
-    trace_call("array_ref");
-    try {ArrayReferenceExpression expr = new ArrayReferenceExpression();
-        Identifier tmp0; Expression tmp1;
-      tmp0 = id();
-expr.name = tmp0;
+setArrStmt.id = tmp0;
       jj_consume_token(39);
       tmp1 = expr();
-expr.idx = tmp1;
+setArrStmt.idx = tmp1;
       jj_consume_token(40);
+      jj_consume_token(37);
+      tmp2 = expr();
+setArrStmt.val = tmp2; {if ("" != null) return setArrStmt;}
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Statement call() throws ParseException {CallStatement stmt;
+        Identifier tmp0; ParamInvokeList tmp1;
+    jj_consume_token(CALL);
+stmt = new CallStatement();
+    tmp0 = id();
+stmt.id = tmp0;
+    jj_consume_token(41);
+    if (jj_2_32(4)) {
+      tmp1 = args();
+stmt.params = tmp1;
+    } else {
+      ;
+    }
+    jj_consume_token(42);
+{if ("" != null) return stmt;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public ParamInvokeList args() throws ParseException {ParamInvokeList list = new ParamInvokeList();
+        Expression tmp0;
+    tmp0 = expr();
+list.add(tmp0);
+    label_6:
+    while (true) {
+      if (jj_2_33(4)) {
+        ;
+      } else {
+        break label_6;
+      }
+      jj_consume_token(38);
+      tmp0 = expr();
+list.add(tmp0);
+    }
+{if ("" != null) return list;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Statement ifthenelse() throws ParseException {ConditionalStatement stmt;
+        Expression tmp0; StatementList tmp1; ConditionalStatement tmp2;
+    jj_consume_token(IF);
+stmt = new ConditionalStatement(StatementType.IF);
+    tmp0 = expr();
+stmt.conditional = tmp0;
+    jj_consume_token(THEN);
+    tmp1 = statement_list();
+stmt.statements = tmp1;
+    if (jj_2_34(4)) {
+      tmp2 = else_clause();
+stmt.child = tmp2;
+    } else {
+      ;
+    }
+    jj_consume_token(ENDIF);
+{if ("" != null) return stmt;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public ConditionalStatement else_clause() throws ParseException {ConditionalStatement nest = new ConditionalStatement();
+        Expression tmp0; StatementList tmp1; ConditionalStatement tmp2;
+    if (jj_2_36(4)) {
+      jj_consume_token(ELSE);
+nest.type = StatementType.ELSE;
+      tmp1 = statement_list();
+nest.statements = tmp1; {if ("" != null) return nest;}
+    } else if (jj_2_37(4)) {
+      jj_consume_token(ELSEIF);
+nest.type = StatementType.ELSEIF;
+      tmp0 = expr();
+nest.conditional = tmp0;
+      jj_consume_token(THEN);
+      tmp1 = statement_list();
+nest.statements = tmp1;
+      if (jj_2_35(4)) {
+        tmp2 = else_clause();
+nest.child = tmp2;
+      } else {
+        ;
+      }
+{if ("" != null) return nest;}
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Statement loop() throws ParseException {LoopStatement stmt;
+        StatementList tmp0;
+    jj_consume_token(LOOP);
+stmt = new LoopStatement();
+    tmp0 = statement_list();
+stmt.statements = tmp0;
+    jj_consume_token(ENDLOOP);
+{if ("" != null) return stmt;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Statement exitwhen() throws ParseException {LoopExitStatement stmt;
+        Expression tmp0;
+    jj_consume_token(EXITWHEN);
+stmt = new LoopExitStatement();
+    tmp0 = expr();
+stmt.conditional = tmp0; {if ("" != null) return stmt;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Statement retn() throws ParseException {ReturnStatement stmt;
+        Expression tmp0;
+    jj_consume_token(RETURN);
+stmt = new ReturnStatement();
+    if (jj_2_38(4)) {
+      tmp0 = expr();
+stmt.expression = tmp0;
+    } else {
+      ;
+    }
+{if ("" != null) return stmt;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Statement debug() throws ParseException {Statement rt;
+    jj_consume_token(DEBUG);
+    if (jj_2_39(4)) {
+      rt = set();
+    } else if (jj_2_40(4)) {
+      rt = call();
+    } else if (jj_2_41(4)) {
+      rt = ifthenelse();
+    } else if (jj_2_42(4)) {
+      rt = loop();
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+rt.debug = true; {if ("" != null) return rt;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression expr() throws ParseException {Expression e0;
+    e0 = simple_expr();
+    if (jj_2_43(4)) {
+      e0 = binary_op(e0);
+    } else {
+      ;
+    }
+{if ("" != null) return e0;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression simple_expr() throws ParseException {Expression exp;
+        Identifier tmp0;
+    if (jj_2_44(4)) {
+      exp = parens();
+{if ("" != null) return exp;}
+    } else if (jj_2_45(4)) {
+      exp = func_call();
+{if ("" != null) return exp;}
+    } else if (jj_2_46(4)) {
+      exp = unary_op();
+{if ("" != null) return exp;}
+    } else if (jj_2_47(4)) {
+      exp = array_ref();
+{if ("" != null) return exp;}
+    } else if (jj_2_48(4)) {
+      exp = func_ref();
+{if ("" != null) return exp;}
+    } else if (jj_2_49(4)) {
+      tmp0 = id();
+{if ("" != null) return new IdentifierReference(tmp0);}
+    } else if (jj_2_50(4)) {
+      exp = constval();
+{if ("" != null) return exp;}
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression binary_op(Expression lhs) throws ParseException {BinaryOpExpression expr = new BinaryOpExpression();
+        Expression tmp1;
+expr.lhs = lhs;
+    if (jj_2_51(4)) {
+      jj_consume_token(43);
+expr.mode = BinaryOp.ADD;
+    } else if (jj_2_52(4)) {
+      jj_consume_token(44);
+expr.mode = BinaryOp.SUB;
+    } else if (jj_2_53(4)) {
+      jj_consume_token(45);
+expr.mode = BinaryOp.MUL;
+    } else if (jj_2_54(4)) {
+      jj_consume_token(46);
+expr.mode = BinaryOp.DIV;
+    } else if (jj_2_55(4)) {
+      jj_consume_token(47);
+expr.mode = BinaryOp.EQUALS;
+    } else if (jj_2_56(4)) {
+      jj_consume_token(48);
+expr.mode = BinaryOp.NOTEQUALS;
+    } else if (jj_2_57(4)) {
+      jj_consume_token(49);
+expr.mode = BinaryOp.LT;
+    } else if (jj_2_58(4)) {
+      jj_consume_token(50);
+expr.mode = BinaryOp.GT;
+    } else if (jj_2_59(4)) {
+      jj_consume_token(51);
+expr.mode = BinaryOp.LTEQ;
+    } else if (jj_2_60(4)) {
+      jj_consume_token(52);
+expr.mode = BinaryOp.GTEQ;
+    } else if (jj_2_61(4)) {
+      jj_consume_token(53);
+expr.mode = BinaryOp.BOOLAND;
+    } else if (jj_2_62(4)) {
+      jj_consume_token(54);
+expr.mode = BinaryOp.BOOLOR;
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    tmp1 = expr();
+expr.rhs = tmp1; {if ("" != null) return expr;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression unary_op() throws ParseException {UnaryOpExpression expr = new UnaryOpExpression();
+        Expression tmp0;
+    if (jj_2_63(4)) {
+      jj_consume_token(43);
+expr.mode = UnaryOp.POS;
+    } else if (jj_2_64(4)) {
+      jj_consume_token(44);
+expr.mode = UnaryOp.NEG;
+    } else if (jj_2_65(4)) {
+      jj_consume_token(55);
+expr.mode = UnaryOp.NOT;
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    tmp0 = expr();
+expr.rhs = tmp0; {if ("" != null) return expr;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression func_call() throws ParseException {FunctionCallExpression expr = new FunctionCallExpression();
+        Identifier tmp0; ParamInvokeList tmp1;
+    tmp0 = id();
+expr.name = tmp0;
+    jj_consume_token(41);
+    if (jj_2_66(4)) {
+      tmp1 = args();
+expr.params = tmp1;
+    } else {
+      ;
+    }
+    jj_consume_token(42);
 {if ("" != null) return expr;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("array_ref");
-    }
   }
 
-  final public Expression func_ref() throws ParseException {
-    trace_call("func_ref");
-    try {FunctionReferenceExpression expr = new FunctionReferenceExpression();
+  final public Expression array_ref() throws ParseException {ArrayReferenceExpression expr = new ArrayReferenceExpression();
+        Identifier tmp0; Expression tmp1;
+    tmp0 = id();
+expr.name = tmp0;
+    jj_consume_token(39);
+    tmp1 = expr();
+expr.idx = tmp1;
+    jj_consume_token(40);
+{if ("" != null) return expr;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Expression func_ref() throws ParseException {FunctionReferenceExpression expr = new FunctionReferenceExpression();
         Identifier tmp0;
-      jj_consume_token(FUNCTION);
-      tmp0 = id();
+    jj_consume_token(FUNCTION);
+    tmp0 = id();
 expr.name = tmp0; {if ("" != null) return expr;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("func_ref");
-    }
   }
 
-  final public Expression constval() throws ParseException {
-    trace_call("constval");
-    try {Constant cval;
-      if (jj_2_67(4)) {
-        cval = int_const();
+  final public Expression constval() throws ParseException {Constant cval;
+    if (jj_2_67(4)) {
+      cval = int_const();
 {if ("" != null) return cval;}
-      } else if (jj_2_68(4)) {
-        cval = real_const();
+    } else if (jj_2_68(4)) {
+      cval = real_const();
 {if ("" != null) return cval;}
-      } else if (jj_2_69(4)) {
-        cval = bool_const();
+    } else if (jj_2_69(4)) {
+      cval = bool_const();
 {if ("" != null) return cval;}
-      } else if (jj_2_70(4)) {
-        cval = string_const();
+    } else if (jj_2_70(4)) {
+      cval = string_const();
 {if ("" != null) return cval;}
-      } else if (jj_2_71(4)) {
-        jj_consume_token(56);
+    } else if (jj_2_71(4)) {
+      jj_consume_token(56);
 {if ("" != null) return Constant.nullConst;}
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("constval");
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public IntConstant int_const() throws ParseException {
-    trace_call("int_const");
-    try {IntConstant cval;
-      if (jj_2_72(4)) {
-        cval = decimal();
+  final public IntConstant int_const() throws ParseException {IntConstant cval;
+    if (jj_2_72(4)) {
+      cval = decimal();
 {if ("" != null) return cval;}
-      } else if (jj_2_73(4)) {
-        cval = octal();
+    } else if (jj_2_73(4)) {
+      cval = octal();
 {if ("" != null) return cval;}
-      } else if (jj_2_74(4)) {
-        cval = hex();
+    } else if (jj_2_74(4)) {
+      cval = hex();
 {if ("" != null) return cval;}
-      } else if (jj_2_75(4)) {
-        cval = fourcc();
+    } else if (jj_2_75(4)) {
+      cval = fourcc();
 {if ("" != null) return cval;}
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("int_const");
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public IntConstant decimal() throws ParseException {
-    trace_call("decimal");
-    try {Token inttoken;
-      inttoken = jj_consume_token(DECIMALINT);
+  final public IntConstant decimal() throws ParseException {Token inttoken;
+    inttoken = jj_consume_token(DECIMALINT);
 {if ("" != null) return IntConstant.fromToken(inttoken, IntConstType.DECIMAL);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("decimal");
-    }
   }
 
-  final public IntConstant octal() throws ParseException {
-    trace_call("octal");
-    try {Token inttoken;
-      inttoken = jj_consume_token(OCTALINT);
+  final public IntConstant octal() throws ParseException {Token inttoken;
+    inttoken = jj_consume_token(OCTALINT);
 {if ("" != null) return IntConstant.fromToken(inttoken, IntConstType.OCTAL);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("octal");
-    }
   }
 
-  final public IntConstant hex() throws ParseException {
-    trace_call("hex");
-    try {Token inttoken;
-      inttoken = jj_consume_token(HEXINT);
+  final public IntConstant hex() throws ParseException {Token inttoken;
+    inttoken = jj_consume_token(HEXINT);
 {if ("" != null) return IntConstant.fromToken(inttoken, IntConstType.HEXADECIMAL);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("hex");
-    }
   }
 
-  final public IntConstant fourcc() throws ParseException {
-    trace_call("fourcc");
-    try {Token inttoken;
-      inttoken = jj_consume_token(FOURCCINT);
+  final public IntConstant fourcc() throws ParseException {Token inttoken;
+    inttoken = jj_consume_token(FOURCCINT);
 {if ("" != null) return IntConstant.fromToken(inttoken, IntConstType.FOURCC);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("fourcc");
-    }
   }
 
-  final public RealConst real_const() throws ParseException {
-    trace_call("real_const");
-    try {Token realtoken;
-      realtoken = jj_consume_token(REALCONST);
+  final public RealConst real_const() throws ParseException {Token realtoken;
+    realtoken = jj_consume_token(REALCONST);
 {if ("" != null) return RealConst.fromToken(realtoken);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("real_const");
-    }
   }
 
   final public BoolConst bool_const() throws ParseException {
-    trace_call("bool_const");
-    try {
-      if (jj_2_76(4)) {
-        jj_consume_token(62);
+    if (jj_2_76(4)) {
+      jj_consume_token(62);
 {if ("" != null) return BoolConst.constTrue;}
-      } else if (jj_2_77(4)) {
-        jj_consume_token(63);
+    } else if (jj_2_77(4)) {
+      jj_consume_token(63);
 {if ("" != null) return BoolConst.constFalse;}
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("bool_const");
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public StringConst string_const() throws ParseException {
-    trace_call("string_const");
-    try {Token stringtoken;
-      stringtoken = jj_consume_token(STRING_LITERAL);
+  final public StringConst string_const() throws ParseException {Token stringtoken;
+    stringtoken = jj_consume_token(STRING_LITERAL);
 {if ("" != null) return StringConst.fromToken(stringtoken);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("string_const");
-    }
   }
 
-  final public Expression parens() throws ParseException {
-    trace_call("parens");
-    try {ParenExpression expr = new ParenExpression();
+  final public Expression parens() throws ParseException {ParenExpression expr = new ParenExpression();
         Expression tmp0;
-      jj_consume_token(41);
-      tmp0 = expr();
+    jj_consume_token(41);
+    tmp0 = expr();
 expr.child = tmp0;
-      jj_consume_token(42);
+    jj_consume_token(42);
 {if ("" != null) return expr;}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("parens");
-    }
   }
 
-  final public Type type() throws ParseException {
-    trace_call("type");
-    try {Type type;
+  final public Type type() throws ParseException {Type type;
         Identifier tmp0;
-      if (jj_2_78(4)) {
-        tmp0 = id();
+    if (jj_2_78(4)) {
+      tmp0 = id();
 {if ("" != null) return Type.fromIdentifier(tmp0);}
-      } else if (jj_2_79(4)) {
-        jj_consume_token(65);
+    } else if (jj_2_79(4)) {
+      jj_consume_token(65);
 {if ("" != null) return Type.codeType;}
-      } else if (jj_2_80(4)) {
-        jj_consume_token(HANDLE);
+    } else if (jj_2_80(4)) {
+      jj_consume_token(HANDLE);
 {if ("" != null) return Type.handleType;}
-      } else if (jj_2_81(4)) {
-        jj_consume_token(66);
+    } else if (jj_2_81(4)) {
+      jj_consume_token(66);
 {if ("" != null) return Type.integerType;}
-      } else if (jj_2_82(4)) {
-        jj_consume_token(67);
+    } else if (jj_2_82(4)) {
+      jj_consume_token(67);
 {if ("" != null) return Type.realType;}
-      } else if (jj_2_83(4)) {
-        jj_consume_token(68);
+    } else if (jj_2_83(4)) {
+      jj_consume_token(68);
 {if ("" != null) return Type.booleanType;}
-      } else if (jj_2_84(4)) {
-        jj_consume_token(69);
+    } else if (jj_2_84(4)) {
+      jj_consume_token(69);
 {if ("" != null) return Type.stringType;}
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("type");
+    } else {
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public Identifier id() throws ParseException {
-    trace_call("id");
-    try {Token identoken;
-      identoken = jj_consume_token(IDENTIFIER);
+  final public Identifier id() throws ParseException {Token identoken;
+    identoken = jj_consume_token(IDENTIFIER);
 {if ("" != null) return Identifier.fromToken(identoken);}
     throw new Error("Missing return statement in function");
-    } finally {
-      trace_return("id");
-    }
   }
 
   private boolean jj_2_1(int xla)
@@ -2734,7 +2534,6 @@ expr.child = tmp0;
           }
         }
       }
-      trace_token(token, "");
       return token;
     }
     token = oldToken;
@@ -2773,7 +2572,6 @@ expr.child = tmp0;
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     jj_gen++;
-      trace_token(token, " (in getNextToken)");
     return token;
   }
 
@@ -2865,55 +2663,12 @@ expr.child = tmp0;
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  private int trace_indent = 0;
-  private boolean trace_enabled = true;
-
-/** Enable tracing. */
+  /** Enable tracing. */
   final public void enable_tracing() {
-    trace_enabled = true;
   }
 
-/** Disable tracing. */
+  /** Disable tracing. */
   final public void disable_tracing() {
-    trace_enabled = false;
-  }
-
-  private void trace_call(String s) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.println("Call:   " + s);
-    }
-    trace_indent = trace_indent + 2;
-  }
-
-  private void trace_return(String s) {
-    trace_indent = trace_indent - 2;
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.println("Return: " + s);
-    }
-  }
-
-  private void trace_token(Token t, String where) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.print("Consumed token: <" + tokenImage[t.kind]);
-      if (t.kind != 0 && !tokenImage[t.kind].equals("\"" + t.image + "\"")) {
-        System.out.print(": \"" + t.image + "\"");
-      }
-      System.out.println(" at line " + t.beginLine + " column " + t.beginColumn + ">" + where);
-    }
-  }
-
-  private void trace_scan(Token t1, int t2) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.print("Visited token: <" + tokenImage[t1.kind]);
-      if (t1.kind != 0 && !tokenImage[t1.kind].equals("\"" + t1.image + "\"")) {
-        System.out.print(": \"" + t1.image + "\"");
-      }
-      System.out.println(" at line " + t1.beginLine + " column " + t1.beginColumn + ">; Expected token: <" + tokenImage[t2] + ">");
-    }
   }
 
   private void jj_rescan_token() {

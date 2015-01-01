@@ -3,7 +3,7 @@ options {
 	CHOICE_AMBIGUITY_CHECK = 2;		
 	OTHER_AMBIGUITY_CHECK = 1;
 	STATIC = false;						/** don't static */
-	DEBUG_PARSER = true;				/** don't debug */
+	DEBUG_PARSER = false;				/** don't debug */
 	DEBUG_LOOKAHEAD = false;			/** don't debug lookaheads */
 	DEBUG_TOKEN_MANAGER = false;		/** don't debug token history */
 	ERROR_REPORTING = true;				/** throw exceptions */
