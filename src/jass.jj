@@ -122,7 +122,7 @@ void global_var_list(GlobalsDec dec): {
 }
 {
 	(
-		<CONSTANT> { tmp3 = new VarDec(); }
+		<CONSTANT> { tmp3 = new VarDec(); tmp3.constant = true; }
 		tmp0 = type() { tmp3.type = tmp0; }
 		tmp1 = id()  { tmp3.name = tmp1; }
 		"="

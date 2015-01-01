@@ -82,7 +82,7 @@ dec.type = DecType.HANDLE;
       }
       if (jj_2_9(4)) {
         jj_consume_token(CONSTANT);
-tmp3 = new VarDec();
+tmp3 = new VarDec(); tmp3.constant = true;
         tmp0 = type();
 tmp3.type = tmp0;
         tmp1 = id();

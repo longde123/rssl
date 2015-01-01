@@ -3,6 +3,9 @@ package net.allochie.vm.jass.tests;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import net.allochie.vm.jass.JASSMachine;
+import net.allochie.vm.jass.VMClosure;
+import net.allochie.vm.jass.VMException;
 import net.allochie.vm.jass.ast.Function;
 import net.allochie.vm.jass.ast.JASSFile;
 import net.allochie.vm.jass.ast.Statement;
@@ -20,16 +23,14 @@ public class JASSTest {
 			JASSParser parse = new JASSParser(new FileInputStream("rt.jass"));
 			JASSFile file = parse.file();
 
-			for (Dec dec : file.decs)
-				System.out.println("decl: " + dec);
-			for (Function func : file.funcs) {
-				System.out.println("funcdef: " + func);
-				listStatements(func.statements, "  ");
-
-			}
+			JASSMachine machine = new JASSMachine();
+			VMClosure top = new VMClosure(machine);
+			machine.doFile(top, file);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (VMException e) {
 			e.printStackTrace();
 		}
 	}
