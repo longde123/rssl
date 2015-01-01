@@ -1,0 +1,9 @@
+/.externalToolBuilders
+/.settings
+/.classpath
+/.project
+
+/bin/
+/run/
+
+/jass.ant
