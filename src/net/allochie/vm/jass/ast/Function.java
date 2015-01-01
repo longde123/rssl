@@ -4,9 +4,13 @@ import net.allochie.vm.jass.ast.dec.FuncDef;
 
 public class Function {
 
+	/** Constant declaration flag */
 	public boolean constant;
+	/** Function signature */
 	public FuncDef sig;
+	/** Function local var heap */
 	public VarList lvars;
+	/** Function statement heap */
 	public StatementList statements;
 
 	@Override

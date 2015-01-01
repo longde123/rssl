@@ -5,6 +5,7 @@ import net.allochie.vm.jass.ast.StatementList;
 
 public class LoopStatement extends Statement {
 
+	/** The list of loop statements */
 	public StatementList statements;
 	
 	@Override

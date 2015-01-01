@@ -6,9 +6,13 @@ import net.allochie.vm.jass.ast.expression.Expression;
 
 public class VarDec extends Dec {
 
+	/** The array mode flag */
 	public boolean array;
+	/** The variable type image */
 	public Type type;
+	/** The variable name image */
 	public Identifier name;
+	/** The initializer expression */
 	public Expression init;
 
 	@Override

@@ -8,6 +8,7 @@ public class Identifier {
 
 	public static HashMap<String, Identifier> map = new HashMap<String, Identifier>();
 
+	/** Identifier image value */
 	public final String image;
 
 	private Identifier(String image) {

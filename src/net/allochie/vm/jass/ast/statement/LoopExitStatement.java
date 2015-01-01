@@ -5,6 +5,7 @@ import net.allochie.vm.jass.ast.expression.Expression;
 
 public class LoopExitStatement extends Statement {
 
+	/** The exit statement expression */
 	public Expression conditional;
 
 	@Override

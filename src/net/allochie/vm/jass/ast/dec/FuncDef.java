@@ -6,8 +6,11 @@ import net.allochie.vm.jass.ast.Type;
 
 public class FuncDef {
 
+	/** The function name */
 	public Identifier id;
+	/** The parameter heap */
 	public ParamList params;
+	/** The return type image */
 	public Type returns;
 
 	@Override

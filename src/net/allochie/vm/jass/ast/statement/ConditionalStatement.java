@@ -6,9 +6,13 @@ import net.allochie.vm.jass.ast.expression.Expression;
 
 public class ConditionalStatement extends Statement {
 
+	/** The conditional expression */
 	public Expression conditional;
+	/** The conditional's statements */
 	public StatementList statements;
+	/** The child conditional expression */
 	public ConditionalStatement child;
+	/** The type of conditional */
 	public StatementType type;
 
 	public ConditionalStatement() {

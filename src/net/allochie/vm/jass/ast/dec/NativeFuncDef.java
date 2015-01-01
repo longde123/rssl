@@ -2,7 +2,9 @@ package net.allochie.vm.jass.ast.dec;
 
 public class NativeFuncDef extends Dec {
 
+	/** The function signature */
 	public FuncDef def;
+	/** Constant declaration flag */
 	public boolean constant;
 
 	public NativeFuncDef(FuncDef def, boolean constant) {

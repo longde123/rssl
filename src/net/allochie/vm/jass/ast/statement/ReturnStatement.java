@@ -5,6 +5,7 @@ import net.allochie.vm.jass.ast.expression.Expression;
 
 public class ReturnStatement extends Statement {
 
+	/** The return expression */
 	public Expression expression;
 	
 	@Override

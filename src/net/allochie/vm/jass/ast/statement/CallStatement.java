@@ -5,9 +5,10 @@ import net.allochie.vm.jass.ast.ParamInvokeList;
 import net.allochie.vm.jass.ast.Statement;
 
 public class CallStatement extends Statement {
-
-	public ParamInvokeList params;
+	/** The function name image */
 	public Identifier id;
+	/** The list of parameters */
+	public ParamInvokeList params;
 
 	@Override
 	public String toString() {
