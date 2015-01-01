@@ -1,0 +1,604 @@
+options {
+	LOOKAHEAD = 4;						/** far ahead */
+	CHOICE_AMBIGUITY_CHECK = 2;		
+	OTHER_AMBIGUITY_CHECK = 1;
+	STATIC = false;						/** don't static */
+	DEBUG_PARSER = true;				/** don't debug */
+	DEBUG_LOOKAHEAD = false;			/** don't debug lookaheads */
+	DEBUG_TOKEN_MANAGER = false;		/** don't debug token history */
+	ERROR_REPORTING = true;				/** throw exceptions */
+	JAVA_UNICODE_ESCAPE = false;
+	UNICODE_INPUT = false;
+	IGNORE_CASE = true;					/** not case sensitive */
+	USER_TOKEN_MANAGER = false;
+	USER_CHAR_STREAM = false;
+	BUILD_PARSER = true;
+	BUILD_TOKEN_MANAGER = true;
+	SANITY_CHECK = true;				/** check for insane things */
+	FORCE_LA_CHECK = true;
+}
+
+PARSER_BEGIN(JASSParser)
+
+package net.allochie.vm.jass.parser;
+import java.util.ArrayList;
+import net.allochie.vm.jass.ast.*;
+import net.allochie.vm.jass.ast.constant.*;
+import net.allochie.vm.jass.ast.dec.*;
+import net.allochie.vm.jass.ast.expression.*;
+import net.allochie.vm.jass.ast.statement.*;
+
+
+public class JASSParser
+{
+
+}
+PARSER_END(JASSParser)
+
+SKIP : { 
+	" " | "\t" | 
+	"\r\n" | "\n" | "\r" |
+	"//" : WithinComment0
+}
+
+<WithinComment0> SKIP : { "\r\n" : DEFAULT | "\n" : DEFAULT | "\r" : DEFAULT }
+<WithinComment0> MORE : { <~[]> }
+
+TOKEN : {
+	<TYPE: "type"> | 
+	<EXTENDS: "extends"> | 
+	<GLOBALS: "globals"> | 
+	<ENDGLOBALS: "endglobals"> | 
+	<CONSTANT: "constant"> | 
+	<NATIVE: "native"> | 
+	<TAKES: "takes"> | 
+	<RETURNS: "returns"> | 
+	<NOTHING: "nothing"> | 
+	<FUNCTION: "function"> | 
+	<ENDFUNCTION: "endfunction"> | 
+	<LOCAL: "local"> | 
+	<ARRAY: "array"> | 
+	<SET: "set"> | 
+	<CALL: "call"> | 
+	
+	<IF: "if"> | 
+	<THEN: "then"> | 
+	<ELSE: "else"> | 
+	<ELSEIF: "elseif"> | 
+	<ENDIF: "endif"> | 
+	<LOOP: "loop"> | 
+	<ENDLOOP: "endloop"> | 
+	<EXITWHEN: "exitwhen"> | 
+	<RETURN: "return"> | 
+	<DEBUG: "debug"> |
+	<HANDLE: "handle">
+
+}
+
+JASSFile file(): { 
+	JASSFile file = new JASSFile();
+	Dec tmp0; Function tmp1;
+} 
+{ 
+	(
+		tmp0 = typedef() { file.put(tmp0); } |
+		tmp0 = globals() { file.put(tmp0); } |
+		tmp0 = native_func() { file.put(tmp0); } |
+		tmp1 = func() { file.put(tmp1); }
+	) *
+	{ return file; }
+}
+
+TypeDec typedef(): { 
+	TypeDec dec = new TypeDec();
+	Identifier tmp0, tmp1;
+}
+{
+	<TYPE>
+	tmp0 = id() { dec.id = tmp0; }
+	<EXTENDS> 
+	(
+		tmp1 = id() { dec.typename = tmp1; }
+		| 
+		<HANDLE> { dec.type = DecType.HANDLE; } 
+		
+	) { return dec; }
+}
+
+GlobalsDec globals(): { 
+	GlobalsDec dec = new GlobalsDec();
+}
+{
+	<GLOBALS>
+	global_var_list(dec)
+	<ENDGLOBALS> { return dec; }
+}
+
+void global_var_list(GlobalsDec dec): {
+	Type tmp0;
+	Identifier tmp1;
+	Expression tmp2;
+	VarDec tmp3;
+}
+{
+	(
+		<CONSTANT> { tmp3 = new VarDec(); }
+		tmp0 = type() { tmp3.type = tmp0; }
+		tmp1 = id()  { tmp3.name = tmp1; }
+		"="
+		tmp2 = expr() { tmp3.init = tmp2; dec.put(tmp3); }
+	| 
+		tmp3 = var_declr() { dec.put(tmp3); }
+	)*
+}
+
+NativeFuncDef native_func(): {
+	NativeFuncDef def;
+	FuncDef def0;
+	boolean flag0 = false;
+}
+{
+	( <CONSTANT> { flag0 = true; } )? 
+ 	<NATIVE> 
+ 	def0 = func_declr() { def = new NativeFuncDef(def0, flag0); return def; }
+}
+
+FuncDef func_declr(): {
+	FuncDef def = new FuncDef();
+	Identifier tmp0; ParamList tmp1; Type tmp2;
+}
+{
+	tmp0 = id() { def.id = tmp0; }
+	<TAKES> 
+	(
+		<NOTHING> { def.params = new ParamList(); }
+		|
+		tmp1 = param_list() { def.params = tmp1; }
+	) 
+	<RETURNS> 
+	(
+		<NOTHING> { def.returns = Type.nullType; }
+		| 
+		tmp2 = type() { def.returns = tmp2; }
+	)
+	{ return def; }
+}
+
+ParamList param_list(): {
+	ParamList list = new ParamList();
+	Param param0;
+	Type tmp0; Identifier tmp1;
+}
+{
+	tmp0 = type() { param0 = new Param(); param0.type = tmp0; }
+	tmp1 = id() { param0.name = tmp1; list.add(param0); }
+	(
+		","
+		tmp0 = type() { param0 = new Param(); param0.type = tmp0; }
+		tmp1 = id() { param0.name = tmp1; list.add(param0); }
+	)* { return list; }
+}
+
+Function func(): { 
+	Function func = new Function();
+	FuncDef tmp0; VarList tmp1; StatementList tmp2;
+}
+{ 
+	( <CONSTANT> { func.constant = true; } )?
+	<FUNCTION>
+	tmp0 = func_declr() { func.sig = tmp0; }
+	tmp1 = local_var_list() { func.lvars = tmp1; }
+	tmp2 = statement_list() { func.statements = tmp2; }
+	<ENDFUNCTION> { return func; }
+	
+}
+
+VarList local_var_list(): {
+	VarList list = new VarList();
+	VarDec tmp0;
+}
+{
+	(
+		<LOCAL> 
+		tmp0 = var_declr() { list.add(tmp0); }
+	)* { return list; }
+}
+
+VarDec var_declr(): {
+	VarDec dec = new VarDec();
+	Type tmp0; Identifier tmp1; Expression tmp2;
+}
+{
+		tmp0 = type() { dec.type = tmp0; }
+		tmp1 = id() { dec.name = tmp1; }
+		(	
+			"=" 
+			tmp2 = expr() { dec.init = tmp2; }
+		)? { return dec; }
+	| 
+		tmp0 = type() { dec.type = tmp0; }
+		<ARRAY> { dec.array = true; }
+		tmp1 = id() { dec.name = tmp1; return dec; }
+}
+
+StatementList statement_list(): { 
+	StatementList list = new StatementList();
+	Statement tmp0;
+} 
+{ 
+	(
+		tmp0 = statement() { list.add(tmp0); }
+	)* { return list; }
+}
+
+Statement statement(): {
+	Statement stmt;
+}
+{
+	stmt = set() { return stmt; } | 
+	stmt = call() { return stmt; } | 
+	stmt = ifthenelse() { return stmt; } | 
+	stmt = loop() { return stmt; } | 
+	stmt = exitwhen() { return stmt; } | 
+	stmt = retn() { return stmt; } | 
+	stmt = debug() { return stmt; }
+	
+}
+
+Statement set(): { 
+	SetStatement setStmt; SetArrayStatement setArrStmt;
+	Identifier tmp0; Expression tmp1, tmp2;
+}
+{
+		<SET> { setStmt = new SetStatement(); }
+		tmp0 = id() { setStmt.id = tmp0; }
+		"=" 
+		tmp1 = expr() { setStmt.val = tmp1; return setStmt; } 
+	| 
+		<SET> { setArrStmt = new SetArrayStatement(); }
+		tmp0 = id() { setArrStmt.id = tmp0; }
+		"[" 
+		tmp1 = expr() { setArrStmt.idx = tmp1; }
+		"]" 
+		"=" 
+		tmp2 = expr() { setArrStmt.val = tmp2; return setArrStmt; }
+} 
+
+
+Statement call(): { 
+	CallStatement stmt;
+	Identifier tmp0; ParamInvokeList tmp1;
+}
+{
+	<CALL> { stmt = new CallStatement(); }
+	tmp0 = id() { stmt.id = tmp0; } 
+	"(" 
+	(
+		tmp1 = args() { stmt.params = tmp1; }
+	)? 
+	")" { return stmt; }
+}
+
+ParamInvokeList args(): { 
+	ParamInvokeList list = new ParamInvokeList();
+	Expression tmp0;
+}
+{
+	tmp0 = expr() { list.add(tmp0); }
+	(
+		"," 
+		tmp0 = expr() { list.add(tmp0); }
+	)* { return list; }
+}
+
+
+Statement ifthenelse(): {
+	ConditionalStatement stmt;
+	Expression tmp0; StatementList tmp1; ConditionalStatement tmp2;
+}
+{
+	<IF> { stmt = new ConditionalStatement(StatementType.IF); }
+	tmp0 = expr() { stmt.conditional = tmp0; }
+	<THEN> 
+	tmp1 = statement_list()  { stmt.statements = tmp1; } 
+	(
+		tmp2 = else_clause() { stmt.child = tmp2; }
+	)? 
+	<ENDIF> { return stmt; }
+}
+
+ConditionalStatement else_clause(): { 
+	ConditionalStatement nest = new ConditionalStatement();
+	Expression tmp0; StatementList tmp1; ConditionalStatement tmp2;
+} 
+{
+		<ELSE> { nest.type = StatementType.ELSE; }
+		tmp1 = statement_list()  { nest.statements = tmp1; return nest; } 
+	|
+		<ELSEIF> { nest.type = StatementType.ELSEIF; }
+		tmp0 = expr() { nest.conditional = tmp0; }
+		<THEN> 
+		tmp1 = statement_list()  { nest.statements = tmp1; } 
+		(
+			tmp2 = else_clause() { nest.child = tmp2; }
+		)? { return nest; }
+}
+
+Statement loop(): { 
+	LoopStatement stmt;
+	StatementList tmp0;
+}
+{
+	<LOOP> { stmt = new LoopStatement(); }
+	tmp0 = statement_list() { stmt.statements = tmp0; }
+	<ENDLOOP> { return stmt; }
+}
+
+Statement exitwhen(): {
+	LoopExitStatement stmt; 
+	Expression tmp0;
+}
+{
+	<EXITWHEN> { stmt = new LoopExitStatement(); }
+	tmp0 = expr() { stmt.conditional = tmp0; return stmt; }
+}
+
+Statement retn(): {
+	ReturnStatement stmt;
+	Expression tmp0;
+}
+{
+	<RETURN> { stmt = new ReturnStatement(); }
+	(
+		tmp0 = expr() { stmt.expression = tmp0; }
+	)? { return stmt; }
+}
+
+Statement debug(): { 
+	Statement rt;
+}
+{
+	<DEBUG> 
+	(
+			rt = set() 
+		| 
+			rt = call() 
+		| 
+			rt = ifthenelse() 
+		| 
+			rt = loop()
+	) { rt.debug = true; return rt; }
+}
+
+Expression expr(): {
+	Expression e0;
+}
+{
+	e0 = simple_expr()
+	[
+		e0 = binary_op(e0)
+	]
+	{ return e0; }
+}
+
+Expression simple_expr(): { 
+	Expression exp;
+	Identifier tmp0;
+}
+{
+	exp = parens() { return exp; } | 
+	exp = func_call() { return exp; } | 
+	exp = unary_op() { return exp; } | 
+	exp = array_ref() { return exp; } | 
+	exp = func_ref() { return exp; } | 
+	tmp0 = id() { return new IdentifierReference(tmp0); } | 
+	exp = constval() { return exp; }
+}
+
+Expression binary_op(Expression lhs): {
+	BinaryOpExpression expr = new BinaryOpExpression();
+	Expression tmp1;
+}
+{
+	{ expr.lhs = lhs; }
+	(
+			"+"	{ expr.mode = BinaryOp.ADD; }
+		|
+			"-"	{ expr.mode = BinaryOp.SUB; }
+		|
+			"*"	{ expr.mode = BinaryOp.MUL; }
+		|
+			"/"	{ expr.mode = BinaryOp.DIV; }
+		|
+			"==" { expr.mode = BinaryOp.EQUALS; }
+		|
+			"!=" { expr.mode = BinaryOp.NOTEQUALS; }
+		|
+			">" { expr.mode = BinaryOp.LT; }
+		|
+			"<" { expr.mode = BinaryOp.GT; }
+		|
+			">=" { expr.mode = BinaryOp.LTEQ; }
+		|
+			"<=" { expr.mode = BinaryOp.GTEQ; }
+		|
+			"and" { expr.mode = BinaryOp.BOOLAND; }
+		|
+			"or" { expr.mode = BinaryOp.BOOLOR; }
+	)
+	
+	tmp1 = expr() { expr.rhs = tmp1; return expr; }
+}
+
+Expression unary_op(): {
+	UnaryOpExpression expr = new UnaryOpExpression();
+	Expression tmp0;
+}
+{
+	(
+			"+" { expr.mode = UnaryOp.POS; }
+		|
+			"-" { expr.mode = UnaryOp.NEG; }
+		|
+			"not" { expr.mode = UnaryOp.NOT; }
+	) 
+	tmp0 = expr() { expr.rhs = tmp0; return expr; }
+}
+
+Expression func_call(): {
+	FunctionCallExpression expr = new FunctionCallExpression();
+	Identifier tmp0; ParamInvokeList tmp1;
+}
+{
+	tmp0 = id() { expr.name = tmp0; }
+	"(" 
+	( 
+		tmp1 = args() { expr.params = tmp1; } 
+	)? 
+	")" { return expr; }
+}
+
+Expression array_ref(): {
+	ArrayReferenceExpression expr = new ArrayReferenceExpression();
+	Identifier tmp0; Expression tmp1;
+}
+{
+	tmp0 = id() { expr.name = tmp0; }
+	"["
+	tmp1 = expr() { expr.idx = tmp1; }
+	"]" { return expr; }
+}
+
+Expression func_ref(): {
+	FunctionReferenceExpression expr = new FunctionReferenceExpression();
+	Identifier tmp0;
+}
+{
+	<FUNCTION>
+	tmp0 = id() { expr.name = tmp0; return expr; }
+}
+
+Expression constval(): {
+	Constant cval;
+}
+{
+	cval = int_const() { return cval; } | 
+	cval = real_const() { return cval; } | 
+	cval = bool_const() { return cval; } | 
+	cval = string_const() { return cval; } | 
+	"null" { return Constant.nullConst; }
+}
+
+IntConstant int_const(): {
+	IntConstant cval;
+}
+{
+	cval = decimal() { return cval; } | 
+	cval = octal() { return cval; } | 
+	cval = hex() { return cval; } | 
+	cval = fourcc() { return cval; }
+}
+
+TOKEN : { <DECIMALINT: ["1"-"9"](["0"-"9"])*> }
+IntConstant decimal(): {
+	Token inttoken;
+}
+{
+	inttoken = <DECIMALINT> { return IntConstant.fromToken(inttoken, IntConstType.DECIMAL); }
+}
+
+TOKEN : { <OCTALINT: "0"(["0"-"7"])*> }
+IntConstant octal(): {
+	Token inttoken;
+}
+{
+	inttoken = <OCTALINT> { return IntConstant.fromToken(inttoken, IntConstType.OCTAL); }
+}
+
+
+TOKEN : { <HEXINT: "$"(["0"-"9","a"-"f","A"-"F"])+ | "0"["x","X"](["0"-"9","a"-"f","A"-"F"])+> }
+IntConstant hex(): {
+	Token inttoken;
+}
+{
+	inttoken = <HEXINT> { return IntConstant.fromToken(inttoken, IntConstType.HEXADECIMAL); }
+}
+
+TOKEN : { <FOURCCINT: "'" ["0"-"9","a"-"z"]["0"-"9","a"-"z"]["0"-"9","a"-"z"]["0"-"9","a"-"z"] "'"> }
+IntConstant fourcc(): {
+	Token inttoken;
+}
+{
+	inttoken = <FOURCCINT> { return IntConstant.fromToken(inttoken, IntConstType.FOURCC); }
+}
+
+TOKEN : { <REALCONST: (["0"-"9"])+"."(["0"-"9"])* | "."(["0"-"9"])+> }
+RealConst real_const(): {
+	Token realtoken;
+}
+{
+	realtoken = <REALCONST> { return RealConst.fromToken(realtoken); }
+}
+
+BoolConst bool_const(): {}
+{
+		"true" { return BoolConst.constTrue; } 
+	|
+		"false"	{ return BoolConst.constFalse; }
+}
+
+// A string literal may be
+TOKEN : { <STRING_LITERAL: "\"" 
+		( 
+			~["\"","\\","\n","\r"] // Anything not an excape code
+		| 
+			"\\" // An escape slash and then
+			( 
+					["n","t","b","r","f","\\","\'","\""] // any of ntbrf\'"
+				| 
+					( 
+							["\n","\r"] // a return
+						| 
+							"\r\n" // or a windows return
+					)
+			)
+		)* 
+	"\""> }
+StringConst string_const(): {
+	Token stringtoken;
+} 
+{ 
+	stringtoken = <STRING_LITERAL> { return StringConst.fromToken(stringtoken); }
+}
+
+Expression parens(): {
+	ParenExpression expr = new ParenExpression();
+	Expression tmp0;
+}
+{
+	"("
+	tmp0 = expr() { expr.child = tmp0; }
+	")" { return expr; }
+}
+
+Type type(): {
+	Type type;
+	Identifier tmp0;
+}
+{
+	tmp0 = id() { return Type.fromIdentifier(tmp0); } | 
+	"code" { return Type.codeType; } | 
+	"handle" { return Type.handleType; } | 
+	"integer" { return Type.integerType; } | 
+	"real" { return Type.realType; } | 
+	"boolean" { return Type.booleanType; } | 
+	"string" { return Type.stringType; }
+}
+
+TOKEN : { <IDENTIFIER: ["a"-"z","A"-"Z"]((["a"-"z","A"-"Z","0"-"9","_"])* ["a"-"z","A"-"Z","0"-"9"])?> }
+Identifier id(): {
+	Token identoken;
+}
+{
+	identoken = <IDENTIFIER> { return Identifier.fromToken(identoken); }
+}
