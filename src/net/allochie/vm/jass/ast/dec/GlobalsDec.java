@@ -13,4 +13,14 @@ public class GlobalsDec extends Dec {
 	public void put(VarDec d) {
 		this.decs.add(d);
 	}
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < decs.size(); i++) {
+			result.append(decs.get(i));
+			if (i != decs.size() - 1)
+				result.append(", ");
+		}
+		return result.toString();
+	}
 }
