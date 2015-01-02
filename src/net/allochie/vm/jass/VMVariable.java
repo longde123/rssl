@@ -4,6 +4,25 @@ import net.allochie.vm.jass.ast.dec.VarDec;
 
 public class VMVariable {
 
+	class VMSetInitFrame extends VMSpecialFrame {
+		VMVariable var;
+
+		public VMSetInitFrame(VMClosure closure, VMVariable v) {
+			super(closure);
+			var = v;
+		}
+
+		@Override
+		public void doSpecialStep(JASSMachine machine) throws VMException {
+			if (!hasPreviousCallResult()) {
+				machine.resolveExpression(closure, dec.init);
+				return;
+			}
+			var.value = getPreviousCallResult();
+			finished = true;
+		}
+	}
+
 	public final VarDec dec;
 	public final VMClosure closure;
 	private VMValue value;
@@ -14,8 +33,10 @@ public class VMVariable {
 	}
 
 	public void init(JASSMachine machine, VMClosure top) throws VMException {
-		if (dec.init != null)
-			safeSetValue(machine.resolveExpression(top, dec.init));
+		if (dec.init != null) {
+			VMSetInitFrame frame = new VMSetInitFrame(top, this);
+			machine.requestFrame(frame);
+		}
 	}
 
 	public VMValue safeValue() throws VMException {

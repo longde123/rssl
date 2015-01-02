@@ -16,12 +16,15 @@ public class Identifier {
 	}
 
 	public static Identifier fromToken(Token identoken) {
-		if (!map.containsKey(identoken.image))
-			map.put(identoken.image, new Identifier(identoken.image));
-		return map.get(identoken.image);
+		return fromString(identoken.image);
 	}
 
-	
+	public static Identifier fromString(String name) {
+		if (!map.containsKey(name))
+			map.put(name, new Identifier(name));
+		return map.get(name);
+	}
+
 	@Override
 	public String toString() {
 		return image;

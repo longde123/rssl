@@ -35,15 +35,19 @@ public class VMType extends Type {
 	 * @return The type
 	 */
 	public static Type findType(Object z) {
-		if (z == null || z instanceof Void)
+		if (z == null || z instanceof Void || z instanceof Void[])
 			return Type.nullType;
-		if (z instanceof Integer)
+		if (z instanceof Integer || z instanceof Integer[])
 			return Type.integerType;
-		if (z instanceof Float || z instanceof Double)
+		if (z instanceof Float || z instanceof Float[] || z instanceof Double || z instanceof Double[])
 			return Type.realType;
-		if (z instanceof String)
+		if (z instanceof String || z instanceof String[])
 			return Type.stringType;
 		return Type.handleType;
+	}
+
+	public static boolean isInstanceOf(Type t, Object z) {
+		return (findType(z) == t);
 	}
 
 	private VMType(String typename) {

@@ -1,10 +1,12 @@
 package net.allochie.vm.jass;
 
 import java.util.HashMap;
+import java.util.Stack;
 
 import net.allochie.vm.jass.ast.Function;
 import net.allochie.vm.jass.ast.Identifier;
 import net.allochie.vm.jass.ast.JASSFile;
+import net.allochie.vm.jass.ast.Param;
 import net.allochie.vm.jass.ast.Type;
 import net.allochie.vm.jass.ast.constant.BoolConst;
 import net.allochie.vm.jass.ast.constant.Constant;
@@ -24,15 +26,21 @@ import net.allochie.vm.jass.ast.expression.FunctionReferenceExpression;
 import net.allochie.vm.jass.ast.expression.IdentifierReference;
 import net.allochie.vm.jass.ast.expression.ParenExpression;
 import net.allochie.vm.jass.ast.expression.UnaryOpExpression;
+import net.allochie.vm.jass.ast.statement.ConditionalStatement;
+import net.allochie.vm.jass.ast.statement.LoopStatement;
 
 public class JASSMachine {
 
+	/** List of all known VM types */
 	public HashMap<String, TypeDec> types = new HashMap<String, TypeDec>();
-
+	/** List of all global variables */
 	public HashMap<String, VMVariable> globals = new HashMap<String, VMVariable>();
-
-	public HashMap<String, NativeFuncDef> natives = new HashMap<String, NativeFuncDef>();
+	/** List of all native functions */
+	public HashMap<String, VMNativeFunction> natives = new HashMap<String, VMNativeFunction>();
+	/** List of all real functions */
 	public HashMap<String, VMFunction> funcs = new HashMap<String, VMFunction>();
+
+	public Stack<VMCallFrame> callStack = new Stack<VMCallFrame>();
 
 	public void doFile(VMClosure closure, JASSFile file) throws VMException {
 		for (Dec what : file.decs) {
@@ -52,7 +60,7 @@ public class JASSMachine {
 				}
 			} else if (what instanceof NativeFuncDef) {
 				NativeFuncDef nativeFn = (NativeFuncDef) what;
-				natives.put(nativeFn.def.id.image, nativeFn);
+				natives.put(nativeFn.def.id.image, new VMNativeFunction(nativeFn));
 			} else
 				throw new VMException("Unknown definition type " + what.getClass().getName());
 		}
@@ -60,141 +68,101 @@ public class JASSMachine {
 		for (Function func : file.funcs)
 			funcs.put(func.sig.id.image, new VMFunction(func));
 
+		VMFunction function = findFunction(Identifier.fromString("main"));
+		if (function != null)
+			requestCall(closure, function, new VMValue[0]);
+
+		while (true) {
+			advanceVM();
+		}
+
+	}
+
+	public void advanceVM() throws VMException {
+		VMCallFrame top = callStack.peek();
+		if (top == null)
+			throw new VMException("Nothing to execute on stack");
+		top.step(this);
+		if (top.finished) {
+			callStack.pop();
+			VMCallFrame next = callStack.peek();
+			next.callResult = top.result;
+		}
 	}
 
 	public VMFunction findFunction(Identifier identifier) {
-		return funcs.get(identifier.image);
+		VMFunction function = funcs.get(identifier.image);
+		if (function != null)
+			return function;
+		function = natives.get(identifier.image);
+		if (function != null)
+			return function;
+		return null;
 	}
 
 	public VMVariable findGlobal(Identifier identifier) {
 		return globals.get(identifier.image);
 	}
 
-	public VMValue resolveExpression(VMClosure closure, Expression init) throws VMException {
-		if (init instanceof Constant) {
-			if (init instanceof BoolConst)
-				return new VMValue(((BoolConst) init).identity);
-			if (init instanceof IntConstant)
-				return new VMValue(((IntConstant) init).identity);
-			if (init instanceof RealConst)
-				return new VMValue(((RealConst) init).identity);
-			if (init instanceof StringConst)
-				return new VMValue(((StringConst) init).identity);
-			throw new VMException("Unknown constant type " + init.getClass().getName());
-		}
-
-		if (init instanceof Expression) {
-			if (init instanceof ArrayReferenceExpression) {
-				ArrayReferenceExpression expr = (ArrayReferenceExpression) init;
-				VMVariable var = closure.getVariable(expr.name);
-				if (!var.dec.array)
-					throw new VMException("Not an array");
-				Object[] what = (Object[]) var.safeValue().value;
-				VMValue index = resolveExpression(closure, expr.idx);
-				if (index.type != Type.integerType)
-					throw new VMException(Type.integerType.typename + " expected, got " + index.type.typename);
-				Integer idx = (Integer) index.value;
-				if (0 > idx || idx < what.length - 1)
-					throw new VMException("Index out of bounds");
-				return new VMValue(what[idx]);
+	public void requestCall(VMClosure closure, VMFunction function, VMValue[] args) throws VMException {
+		if (function instanceof VMNativeFunction) {
+			VMClosure child = new VMClosure(closure);
+			for (int i = 0; i < args.length; i++) {
+				Param param = function.sig.params.get(i);
+				VarDec pvar = new VarDec(param.name, param.type, param.array, false, null);
+				child.createVariable(pvar);
+				child.getVariable(param.name).safeSetValue(args[i]);
 			}
+			VMSpecialFrame frame = new VMSpecialFrame(child) {
+				public VMNativeFunction nfunc;
 
-			if (init instanceof BinaryOpExpression) {
-				BinaryOpExpression expr = (BinaryOpExpression) init;
-				VMValue v0 = resolveExpression(closure, expr.lhs);
-				VMValue v1 = resolveExpression(closure, expr.rhs);
-				Type productType = VMType.findProductType(v0.type, v1.type);
-				if (productType == null)
-					throw new VMException("Can't perform operations on " + v0.type.typename + " and "
-							+ v1.type.typename);
-				switch (expr.mode) {
-				case ADD:
-					if (productType == Type.stringType) {
-						String vv0 = v0.asStringType(), vv1 = v1.asStringType();
-						return new VMValue(vv0 + vv1);
-					}
-					if (productType == Type.integerType || productType == Type.realType) {
-						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
-						VMValue what = new VMValue(vv0 + vv1);
-						return what.applyCast(productType);
-					}
-					throw new VMException("Unknown use of operator + on types " + v0.type + " and " + v1.type);
-				case SUB:
-					if (productType == Type.integerType || productType == Type.realType) {
-						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
-						VMValue what = new VMValue(vv0 - vv1);
-						return what.applyCast(productType);
-					}
-					throw new VMException("Unknown use of operator - on types " + v0.type + " and " + v1.type);
-				case DIV:
-					if (productType == Type.integerType || productType == Type.realType) {
-						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
-						VMValue what = new VMValue(vv0 / vv1);
-						return what.applyCast(productType);
-					}
-					throw new VMException("Unknown use of operator / on types " + v0.type + " and " + v1.type);
-				case MUL:
-					if (productType == Type.integerType || productType == Type.realType) {
-						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
-						VMValue what = new VMValue(vv0 * vv1);
-						return what.applyCast(productType);
-					}
-					throw new VMException("Unknown use of operator * on types " + v0.type + " and " + v1.type);
-				case BOOLAND:
-					if (productType == Type.booleanType) {
-						boolean vv0 = v0.asBooleanType(), vv1 = v1.asBooleanType();
-						return new VMValue(vv0 && vv1);
-					}
-					throw new VMException("Unknown use of operator AND on types " + v0.type + " and " + v1.type);
-				case BOOLOR:
-					if (productType == Type.booleanType) {
-						boolean vv0 = v0.asBooleanType(), vv1 = v1.asBooleanType();
-						return new VMValue(vv0 || vv1);
-					}
-					throw new VMException("Unknown use of operator OR on types " + v0.type + " and " + v1.type);
-				case EQUALS:
-					return new VMValue(VMValue.areValuesEqual(v0, v1));
-				case GT:
-					throw new VMException("Unknown use of operator < on types " + v0.type + " and " + v1.type);
-				case GTEQ:
-					throw new VMException("Unknown use of operator <= on types " + v0.type + " and " + v1.type);
-				case LT:
-					throw new VMException("Unknown use of operator > on types " + v0.type + " and " + v1.type);
-				case LTEQ:
-					throw new VMException("Unknown use of operator >= on types " + v0.type + " and " + v1.type);
-				case NOTEQUALS:
-					return new VMValue(!VMValue.areValuesEqual(v0, v1));
-				default:
-					throw new VMException("Unsupported operator " + expr.mode);
+				public VMSpecialFrame setFunc(VMNativeFunction nfunc) {
+					this.nfunc = nfunc;
+					return this;
 				}
-			}
 
-			if (init instanceof FunctionCallExpression) {
-				FunctionCallExpression expr = (FunctionCallExpression) init;
+				@Override
+				public void doSpecialStep(JASSMachine machine) throws VMException {
+					result = nfunc.executeNative(this.closure);
+					finished = true;
+				}
+			}.setFunc((VMNativeFunction) function);
+			callStack.push(frame);
+		} else {
+			VMClosure child = new VMClosure(closure);
+			for (int i = 0; i < args.length; i++) {
+				Param param = function.sig.params.get(i);
+				VarDec pvar = new VarDec(param.name, param.type, param.array, false, null);
+				child.createVariable(pvar);
+				child.getVariable(param.name).safeSetValue(args[i]);
 			}
-
-			if (init instanceof FunctionReferenceExpression) {
-				FunctionReferenceExpression expr = (FunctionReferenceExpression) init;
-			}
-
-			if (init instanceof IdentifierReference) {
-				IdentifierReference expr = (IdentifierReference) init;
-				VMVariable var = closure.getVariable(expr.identifier);
-				return var.safeValue();
-			}
-
-			if (init instanceof ParenExpression) {
-				ParenExpression expr = (ParenExpression) init;
-				return resolveExpression(closure, expr.child);
-			}
-
-			if (init instanceof UnaryOpExpression) {
-				UnaryOpExpression expr = (UnaryOpExpression) init;
-			}
-			throw new VMException("Unknown expression type " + init.getClass().getName());
+			if (function.lvars != null)
+				for (VarDec var : function.lvars)
+					child.createVariable(var);
+			for (VMVariable var : child.getAllVariables())
+				var.init(this, child);
+			VMCallFrame callframe = new VMCallFrame(child, function.statements, args);
+			callStack.push(callframe);
 		}
+	}
 
-		throw new VMException("Unknown object expression type " + init.getClass().getName());
+	public void requestCall(VMClosure closure, ConditionalStatement conditional) {
+		VMCallFrame callframe = new VMCallFrame(closure, conditional.statements, false);
+		callStack.push(callframe);
+	}
+
+	public void requestCall(VMClosure closure, LoopStatement loop) {
+		VMCallFrame callframe = new VMCallFrame(closure, loop.statements, true);
+		callStack.push(callframe);
+	}
+
+	public void resolveExpression(VMClosure closure, Expression expression) throws VMException {
+		VMExpressionCallFrame callframe = new VMExpressionCallFrame(closure, expression);
+		callStack.push(callframe);
+	}
+
+	public void requestFrame(VMSpecialFrame frame) {
+		callStack.push(frame);
 	}
 
 }

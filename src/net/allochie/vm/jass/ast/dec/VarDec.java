@@ -18,6 +18,17 @@ public class VarDec extends Dec {
 	/** The constant declaration flag */
 	public boolean constant;
 
+	public VarDec() {
+	}
+
+	public VarDec(Identifier name, Type type, boolean array, boolean constant, Expression init) {
+		this.name = name;
+		this.type = type;
+		this.array = array;
+		this.constant = constant;
+		this.init = init;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
