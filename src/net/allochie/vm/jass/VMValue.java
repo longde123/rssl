@@ -41,7 +41,7 @@ public class VMValue {
 
 	@Override
 	public String toString() {
-		return type.toString();
+		return value.toString();
 	}
 
 	public double asNumericType() throws VMException {

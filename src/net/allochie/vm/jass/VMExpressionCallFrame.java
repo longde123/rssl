@@ -14,6 +14,7 @@ import net.allochie.vm.jass.ast.expression.FunctionReferenceExpression;
 import net.allochie.vm.jass.ast.expression.IdentifierReference;
 import net.allochie.vm.jass.ast.expression.ParenExpression;
 import net.allochie.vm.jass.ast.expression.UnaryOpExpression;
+import net.allochie.vm.jass.ast.statement.CallStatement;
 
 public class VMExpressionCallFrame extends VMCallFrame {
 
@@ -21,6 +22,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 
 	public VMExpressionCallFrame(VMClosure closure, Expression expression) {
 		super(closure, null, false);
+		this.expression = expression;
 	}
 
 	@Override
@@ -144,21 +146,28 @@ public class VMExpressionCallFrame extends VMCallFrame {
 			} else if (expression instanceof FunctionCallExpression) {
 				FunctionCallExpression expr = (FunctionCallExpression) expression;
 				VMFunction function = machine.findFunction(expr.name);
+				if (function == null)
+					throw new VMException("Cannot call undefined function " + expr.name);
 				int numParams = function.sig.params.size();
 				if (numParams != expr.params.size())
 					throw new VMException("Incorrect number of parameters for function call");
-				VMValue[] fparams = new VMValue[numParams];
+				if (store2 == null)
+					store2 = new VMValue[numParams];
 				while (j < numParams) {
 					if (!hasPreviousCallResult()) {
 						machine.resolveExpression(closure, expr.params.get(j));
 						return;
 					}
-					fparams[j] = getPreviousCallResult();
-					if (function.sig.params.get(j).type != fparams[j].type)
+					store2[j] = getPreviousCallResult();
+					if (function.sig.params.get(j).type != store2[j].type)
 						throw new VMException("Incorrect parameter type for function call");
 					j++;
 				}
-				machine.requestCall(closure, function, args);
+				if (!hasPreviousCallResult()) {
+					machine.requestCall(closure, function, store2);
+					return;
+				}
+				result = getPreviousCallResult();
 			} else if (expression instanceof FunctionReferenceExpression) {
 				FunctionReferenceExpression expr = (FunctionReferenceExpression) expression;
 			} else if (expression instanceof IdentifierReference) {

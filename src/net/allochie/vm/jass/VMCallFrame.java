@@ -32,7 +32,8 @@ public class VMCallFrame {
 	/** The last call result */
 	public VMValue callResult;
 
-	protected VMValue store0, store1, store2;
+	protected VMValue store0, store1;
+	protected VMValue store2[];
 	protected int i, j, k;
 
 	public VMCallFrame(VMClosure closure, StatementList statements, boolean loop) {
@@ -72,18 +73,20 @@ public class VMCallFrame {
 			int numParams = function.sig.params.size();
 			if (numParams != call.params.size())
 				throw new VMException("Incorrect number of parameters for function call");
-			VMValue[] fparams = new VMValue[numParams];
+			if (store2 == null)
+				store2 = new VMValue[numParams];
 			while (j < numParams) {
 				if (!hasPreviousCallResult()) {
 					machine.resolveExpression(closure, call.params.get(j));
 					return;
 				}
-				fparams[j] = getPreviousCallResult();
-				if (function.sig.params.get(j).type != fparams[j].type)
-					throw new VMException("Incorrect parameter type for function call");
+				store2[j] = getPreviousCallResult();
+				if (function.sig.params.get(j).type != store2[j].type)
+					throw new VMException("Incorrect parameter type for call " + function.sig.id + ": got "
+							+ store2[j].type + ", expected " + function.sig.params.get(j).type);
 				j++;
 			}
-			machine.requestCall(closure, function, args);
+			machine.requestCall(closure, function, store2);
 		} else if (statement instanceof ConditionalStatement) {
 			ConditionalStatement conditional = (ConditionalStatement) statement;
 			while (conditional != null) {
@@ -164,8 +167,12 @@ public class VMCallFrame {
 		} else
 			throw new VMException("Unknown statement type " + statement.getClass().getName());
 		currentOp++;
-		i = j = k = 0;
-		store0 = store1 = store2 = null;
+		i = 0;
+		j = 0;
+		k = 0;
+		store0 = null;
+		store1 = null;
+		store2 = null;
 		if (currentOp == statements.size()) {
 			if (isLoop)
 				currentOp = 0;

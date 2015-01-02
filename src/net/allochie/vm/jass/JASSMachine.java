@@ -56,7 +56,9 @@ public class JASSMachine {
 					if (globals.containsKey(var.name.image) && globals.get(var.name.image).dec.constant)
 						throw new VMException("Cannot redeclare existing variable " + var.name.image);
 					globals.put(var.name.image, new VMVariable(closure, var));
+					VMCallFrame topFrame = getCurrentFrame();
 					globals.get(var.name.image).init(this, closure);
+					advanceUntilFrame(topFrame);
 				}
 			} else if (what instanceof NativeFuncDef) {
 				NativeFuncDef nativeFn = (NativeFuncDef) what;
@@ -69,24 +71,51 @@ public class JASSMachine {
 			funcs.put(func.sig.id.image, new VMFunction(func));
 
 		VMFunction function = findFunction(Identifier.fromString("main"));
-		if (function != null)
-			requestCall(closure, function, new VMValue[0]);
-
-		while (true) {
-			advanceVM();
+		try {
+			if (function != null)
+				requestCall(closure, function, new VMValue[0]);
+			while (getCurrentFrame() != null) {
+				advanceVM();
+			}
+		} catch (VMException e) {
+			e.printStackTrace();
+			for (int i = 0; i < callStack.size(); i++) {
+				VMCallFrame frame = callStack.get(i);
+				System.out.println("frame: " + frame);
+			}
 		}
 
 	}
 
 	public void advanceVM() throws VMException {
-		VMCallFrame top = callStack.peek();
-		if (top == null)
+		if (callStack.size() == 0)
 			throw new VMException("Nothing to execute on stack");
-		top.step(this);
-		if (top.finished) {
-			callStack.pop();
-			VMCallFrame next = callStack.peek();
-			next.callResult = top.result;
+
+		if (callStack.size() != 0)
+			callStack.peek().step(this);
+
+		while (callStack.size() != 0 && callStack.peek().finished) {
+			VMCallFrame last = callStack.pop();
+			if (callStack.size() != 0)
+				callStack.peek().callResult = last.result;
+		}
+
+	}
+
+	public VMCallFrame getCurrentFrame() throws VMException {
+		if (callStack.size() == 0)
+			return null;
+		return callStack.peek();
+	}
+
+	public void advanceUntilFrame(VMCallFrame frame) throws VMException {
+		while (true) {
+			if (callStack.size() == 0)
+				break;
+			VMCallFrame current = callStack.peek();
+			if (current == frame)
+				break;
+			advanceVM();
 		}
 	}
 
@@ -136,11 +165,15 @@ public class JASSMachine {
 				child.createVariable(pvar);
 				child.getVariable(param.name).safeSetValue(args[i]);
 			}
+
+			VMCallFrame topFrame = getCurrentFrame();
 			if (function.lvars != null)
-				for (VarDec var : function.lvars)
+				for (VarDec var : function.lvars) {
 					child.createVariable(var);
-			for (VMVariable var : child.getAllVariables())
-				var.init(this, child);
+					child.getVariable(var.name).init(this, child);
+					advanceUntilFrame(topFrame);
+				}
+
 			VMCallFrame callframe = new VMCallFrame(child, function.statements, args);
 			callStack.push(callframe);
 		}

@@ -19,6 +19,7 @@ public class VMVariable {
 				return;
 			}
 			var.value = getPreviousCallResult();
+			System.out.println("Set variable " + var.dec.name + " = " + var.value);
 			finished = true;
 		}
 	}
@@ -41,11 +42,13 @@ public class VMVariable {
 
 	public VMValue safeValue() throws VMException {
 		if (value == null)
-			throw new VMException("Attempt to access undefined variable");
+			throw new VMException("Attempt to access undefined variable " + dec.name);
 		return value;
 	}
 
 	public void safeSetValue(VMValue val) throws VMException {
+		if (val == null)
+			throw new VMException("Cannot put nullpointer reference in variable");
 		if (val.type != dec.type)
 			throw new VMException("Cannot store " + val.type + " in var " + dec.name + " with type " + dec.type);
 		value = val;
