@@ -1,10 +1,5 @@
 package net.allochie.vm.jass.ast.expression;
 
-import net.allochie.vm.jass.VMClosure;
-import net.allochie.vm.jass.VMException;
-import net.allochie.vm.jass.VMValue;
-import net.allochie.vm.jass.ast.Type;
-
 public class BinaryOpExpression extends Expression {
 
 	/** The left hand side expression */

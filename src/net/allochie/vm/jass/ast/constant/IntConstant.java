@@ -15,8 +15,7 @@ public class IntConstant extends Constant {
 		this.identity = identity;
 	}
 
-	public static IntConstant fromToken(Token inttoken, IntConstType decimal)
-			throws ParseException {
+	public static IntConstant fromToken(Token inttoken, IntConstType decimal) throws ParseException {
 		try {
 			Integer val = null;
 			switch (decimal) {
@@ -31,8 +30,7 @@ public class IntConstant extends Constant {
 				break;
 			case FOURCC:
 				char[] blobs = inttoken.image.toCharArray();
-				val = (blobs[0] << 24) | (blobs[1] << 16) | (blobs[2] << 8)
-						| blobs[3];
+				val = (blobs[0] << 24) | (blobs[1] << 16) | (blobs[2] << 8) | blobs[3];
 				break;
 			}
 			if (!map.containsKey(val))
@@ -46,5 +44,12 @@ public class IntConstant extends Constant {
 	@Override
 	public String toString() {
 		return Integer.toString(identity);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof IntConstant))
+			return false;
+		return ((IntConstant) o).identity == identity;
 	}
 }

@@ -24,4 +24,12 @@ public class StringConst extends Constant {
 	public String toString() {
 		return "\"" + identity + "\"";
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof StringConst))
+			return false;
+		return ((StringConst) o).identity.equals(identity);
+	}
+
 }

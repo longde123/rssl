@@ -31,4 +31,11 @@ public class RealConst extends Constant {
 		return Double.toString(identity);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof RealConst))
+			return false;
+		return ((RealConst) o).identity == identity;
+	}
+
 }
