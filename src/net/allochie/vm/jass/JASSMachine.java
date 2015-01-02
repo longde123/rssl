@@ -32,7 +32,7 @@ public class JASSMachine {
 	public HashMap<String, VMVariable> globals = new HashMap<String, VMVariable>();
 
 	public HashMap<String, NativeFuncDef> natives = new HashMap<String, NativeFuncDef>();
-	public HashMap<String, Function> funcs = new HashMap<String, Function>();
+	public HashMap<String, VMFunction> funcs = new HashMap<String, VMFunction>();
 
 	public void doFile(VMClosure closure, JASSFile file) throws VMException {
 		for (Dec what : file.decs) {
@@ -58,11 +58,12 @@ public class JASSMachine {
 		}
 
 		for (Function func : file.funcs)
-			funcs.put(func.sig.id.image, func);
+			funcs.put(func.sig.id.image, new VMFunction(func));
 
-		for (VMVariable var : globals.values()) {
-			System.out.println(var);
-		}
+	}
+
+	public VMFunction findFunction(Identifier identifier) {
+		return funcs.get(identifier.image);
 	}
 
 	public VMVariable findGlobal(Identifier identifier) {
@@ -85,7 +86,6 @@ public class JASSMachine {
 		if (init instanceof Expression) {
 			if (init instanceof ArrayReferenceExpression) {
 				ArrayReferenceExpression expr = (ArrayReferenceExpression) init;
-
 				VMVariable var = closure.getVariable(expr.name);
 				if (!var.dec.array)
 					throw new VMException("Not an array");
