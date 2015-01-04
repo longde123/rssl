@@ -13,6 +13,7 @@ public class GlobalsDec extends Dec {
 	public void put(VarDec d) {
 		this.decs.add(d);
 	}
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();

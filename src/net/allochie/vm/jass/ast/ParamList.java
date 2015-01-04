@@ -3,7 +3,7 @@ package net.allochie.vm.jass.ast;
 import java.util.ArrayList;
 
 public class ParamList extends ArrayList<Param> {
-	
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();

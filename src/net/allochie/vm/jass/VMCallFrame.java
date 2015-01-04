@@ -182,7 +182,6 @@ public class VMCallFrame extends VMStackFrame {
 			else
 				finished = true;
 		}
-
 	}
 
 	@Override

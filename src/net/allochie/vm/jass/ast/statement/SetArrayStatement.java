@@ -12,7 +12,7 @@ public class SetArrayStatement extends Statement {
 	public Expression idx;
 	/** The value to set */
 	public Expression val;
-	
+
 	@Override
 	public String toString() {
 		return "SetArrayStatement: " + id + "[" + idx + "] = " + val;

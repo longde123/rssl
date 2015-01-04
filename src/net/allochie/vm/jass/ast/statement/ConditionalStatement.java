@@ -24,10 +24,8 @@ public class ConditionalStatement extends Statement {
 
 	@Override
 	public String toString() {
-		return "ConditionalStatement: " + conditional + ": "
-				+ statements.size() + " statements, "
-				+ ((child != null) ? "has child" : "no child") + ", type "
-				+ type;
+		return "ConditionalStatement: " + conditional + ": " + statements.size() + " statements, "
+				+ ((child != null) ? "has child" : "no child") + ", type " + type;
 	}
 
 }

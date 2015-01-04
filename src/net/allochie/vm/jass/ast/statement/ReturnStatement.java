@@ -7,7 +7,7 @@ public class ReturnStatement extends Statement {
 
 	/** The return expression */
 	public Expression expression;
-	
+
 	@Override
 	public String toString() {
 		return "ReturnStatement: " + expression;

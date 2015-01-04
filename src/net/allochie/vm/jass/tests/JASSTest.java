@@ -26,7 +26,7 @@ public class JASSTest {
 		try {
 			JASSParser parse = new JASSParser(new FileInputStream("rt.jass"));
 			JASSFile file = parse.file();
-			
+
 			NativeMethodRegistry.registerNativeMethodProvider(NativeMethodDemo.class);
 
 			JASSMachine machine = new JASSMachine("Demo machine");

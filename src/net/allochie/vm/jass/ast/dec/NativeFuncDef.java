@@ -11,7 +11,7 @@ public class NativeFuncDef extends Dec {
 		this.def = def;
 		this.constant = constant;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
