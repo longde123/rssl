@@ -16,7 +16,6 @@ import net.allochie.vm.jass.ast.expression.FunctionReferenceExpression;
 import net.allochie.vm.jass.ast.expression.IdentifierReference;
 import net.allochie.vm.jass.ast.expression.ParenExpression;
 import net.allochie.vm.jass.ast.expression.UnaryOpExpression;
-import net.allochie.vm.jass.ast.statement.CallStatement;
 
 public class VMExpressionCallFrame extends VMCallFrame {
 
@@ -28,7 +27,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 	}
 
 	@Override
-	public void step(JASSMachine machine) throws VMException {
+	public void step(JASSMachine machine, JASSThread thread) throws VMException {
 		if (expression instanceof Constant) {
 			if (expression instanceof BoolConst)
 				result = new VMValue(machine, ((BoolConst) expression).identity);
@@ -48,7 +47,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 					throw new VMException("Not an array");
 				HashMap<Integer, VMValue> what = var.safeValue().asArrayType();
 				if (!hasPreviousCallResult()) {
-					machine.resolveExpression(closure, expr.idx);
+					thread.resolveExpression(closure, expr.idx);
 					return;
 				}
 				VMValue index = getPreviousCallResult();
@@ -62,14 +61,14 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				BinaryOpExpression expr = (BinaryOpExpression) expression;
 				if (store0 == null) {
 					if (!hasPreviousCallResult()) {
-						machine.resolveExpression(closure, expr.lhs);
+						thread.resolveExpression(closure, expr.lhs);
 						return;
 					}
 					store0 = getPreviousCallResult();
 				}
 				if (store1 == null) {
 					if (!hasPreviousCallResult()) {
-						machine.resolveExpression(closure, expr.rhs);
+						thread.resolveExpression(closure, expr.rhs);
 						return;
 					}
 					store1 = getPreviousCallResult();
@@ -157,7 +156,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 					store2 = new VMValue[numParams];
 				while (j < numParams) {
 					if (!hasPreviousCallResult()) {
-						machine.resolveExpression(closure, expr.params.get(j));
+						thread.resolveExpression(closure, expr.params.get(j));
 						return;
 					}
 					store2[j] = getPreviousCallResult();
@@ -167,7 +166,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				}
 				if (i == 0) {
 					i++;
-					machine.requestCall(closure, function, store2);
+					thread.requestCall(closure, function, store2);
 					return;
 				}
 				result = getPreviousCallResult();
@@ -178,14 +177,14 @@ public class VMExpressionCallFrame extends VMCallFrame {
 			} else if (expression instanceof ParenExpression) {
 				ParenExpression expr = (ParenExpression) expression;
 				if (!hasPreviousCallResult()) {
-					machine.resolveExpression(closure, expr.child);
+					thread.resolveExpression(closure, expr.child);
 					return;
 				}
 				result = getPreviousCallResult();
 			} else if (expression instanceof UnaryOpExpression) {
 				UnaryOpExpression expr = (UnaryOpExpression) expression;
 				if (!hasPreviousCallResult()) {
-					machine.resolveExpression(closure, expr.rhs);
+					thread.resolveExpression(closure, expr.rhs);
 					return;
 				}
 				VMValue v0 = getPreviousCallResult();

@@ -6,18 +6,20 @@ import net.allochie.vm.jass.ast.dec.VarDec;
 
 public class VMVariable {
 
-	class VMSetInitFrame extends VMSpecialFrame {
-		VMVariable var;
+	class VMSetInitFrame extends VMStackFrame {
+		private VMVariable var;
+		private VMClosure closure;
+		private boolean finished = false;
 
-		public VMSetInitFrame(VMClosure closure, VMVariable v) {
-			super(closure);
-			var = v;
+		public VMSetInitFrame(VMClosure closure, VMVariable var) {
+			this.closure = closure;
+			this.var = var;
 		}
 
 		@Override
-		public void doSpecialStep(JASSMachine machine) throws VMException {
+		public void step(JASSMachine machine, JASSThread thread) throws VMException {
 			if (!hasPreviousCallResult()) {
-				machine.resolveExpression(closure, dec.init);
+				thread.resolveExpression(closure, dec.init);
 				return;
 			}
 			var.value = getPreviousCallResult();
@@ -27,6 +29,11 @@ public class VMVariable {
 		@Override
 		public void frameInfo(StringBuilder place) {
 			place.append("VMSetInitFrame: ").append(var);
+		}
+
+		@Override
+		public boolean finished() {
+			return finished;
 		}
 	}
 
@@ -41,10 +48,10 @@ public class VMVariable {
 			this.value = new VMValue(machine, new HashMap<Integer, VMValue>()).unsafeApplyCast(dec.type);
 	}
 
-	public void init(JASSMachine machine, VMClosure top) throws VMException {
+	public void init(JASSThread thread, VMClosure top) throws VMException {
 		if (dec.init != null) {
 			VMSetInitFrame frame = new VMSetInitFrame(top, this);
-			machine.requestFrame(frame);
+			thread.requestFrame(frame);
 		}
 	}
 

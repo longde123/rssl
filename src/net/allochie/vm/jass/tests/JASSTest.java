@@ -4,9 +4,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import net.allochie.vm.jass.JASSMachine;
+import net.allochie.vm.jass.JASSThread;
 import net.allochie.vm.jass.VMCallFrame;
 import net.allochie.vm.jass.VMClosure;
 import net.allochie.vm.jass.VMException;
+import net.allochie.vm.jass.VMFunctionPointer;
 import net.allochie.vm.jass.ast.Function;
 import net.allochie.vm.jass.ast.JASSFile;
 import net.allochie.vm.jass.ast.Statement;
@@ -14,6 +16,7 @@ import net.allochie.vm.jass.ast.StatementList;
 import net.allochie.vm.jass.ast.dec.Dec;
 import net.allochie.vm.jass.ast.statement.ConditionalStatement;
 import net.allochie.vm.jass.ast.statement.LoopStatement;
+import net.allochie.vm.jass.global.NativeMethodRegistry;
 import net.allochie.vm.jass.parser.JASSParser;
 import net.allochie.vm.jass.parser.ParseException;
 
@@ -23,20 +26,20 @@ public class JASSTest {
 		try {
 			JASSParser parse = new JASSParser(new FileInputStream("rt.jass"));
 			JASSFile file = parse.file();
+			
+			NativeMethodRegistry.registerNativeMethodProvider(NativeMethodDemo.class);
 
-			JASSMachine machine = new JASSMachine();
-			VMClosure top = new VMClosure(machine);
+			JASSMachine machine = new JASSMachine("Demo machine");
 			try {
-				machine.doFile(top, file);
-
+				JASSThread main = machine.allocateThread("main", new VMFunctionPointer("main"));
+				main.doFile(file);
+				main.runThread();
+				machine.putThread(main);
+				machine.start();
 			} catch (VMException e) {
 				e.printStackTrace();
-				System.err.println("Frames on stack: ");
-				for (int i = machine.callStack.size() - 1; i >= 0; i--) {
-					VMCallFrame frame = machine.callStack.get(i);
-					System.err.println(i + ": " + frame.dumpFrame());
-				}
 			}
+			System.out.println("All done!");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {

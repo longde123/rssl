@@ -13,7 +13,7 @@ import net.allochie.vm.jass.ast.statement.ReturnStatement;
 import net.allochie.vm.jass.ast.statement.SetArrayStatement;
 import net.allochie.vm.jass.ast.statement.SetStatement;
 
-public class VMCallFrame {
+public class VMCallFrame extends VMStackFrame {
 
 	/** List of working statements */
 	public final StatementList statements;
@@ -29,10 +29,6 @@ public class VMCallFrame {
 	public boolean finished;
 	/** The call parameters */
 	public VMValue[] args;
-	/** The resultant value */
-	public VMValue result;
-	/** The last call result */
-	public VMValue callResult;
 
 	protected VMValue store0, store1;
 	protected VMValue store2[];
@@ -53,17 +49,7 @@ public class VMCallFrame {
 		this.isLoop = false;
 	}
 
-	public boolean hasPreviousCallResult() {
-		return (callResult != null);
-	}
-
-	public VMValue getPreviousCallResult() {
-		VMValue rt = callResult;
-		callResult = null;
-		return rt;
-	}
-
-	public void step(JASSMachine machine) throws VMException {
+	public void step(JASSMachine machine, JASSThread thread) throws VMException {
 		if (finished)
 			throw new VMException("Cannot advance finished call frame");
 		Statement statement = null;
@@ -81,7 +67,7 @@ public class VMCallFrame {
 				store2 = new VMValue[numParams];
 			while (j < numParams) {
 				if (!hasPreviousCallResult()) {
-					machine.resolveExpression(closure, call.params.get(j));
+					thread.resolveExpression(closure, call.params.get(j));
 					return;
 				}
 				store2[j] = getPreviousCallResult();
@@ -92,7 +78,7 @@ public class VMCallFrame {
 			}
 			if (i == 0) {
 				i++;
-				machine.requestCall(closure, function, store2);
+				thread.requestCall(closure, function, store2);
 				return;
 			}
 			store0 = getPreviousCallResult();
@@ -100,21 +86,21 @@ public class VMCallFrame {
 			ConditionalStatement conditional = (ConditionalStatement) statement;
 			while (conditional != null) {
 				if (!hasPreviousCallResult()) {
-					machine.resolveExpression(closure, conditional.conditional);
+					thread.resolveExpression(closure, conditional.conditional);
 					return;
 				}
 				VMValue state = getPreviousCallResult();
 				if (state.type != Type.booleanType)
 					throw new VMException("Cannot perform conditional on non-boolean");
 				if (state.asBooleanType())
-					machine.requestCall(closure, conditional);
+					thread.requestCall(closure, conditional);
 				else
 					conditional = conditional.child;
 			}
 		} else if (statement instanceof LoopExitStatement) {
 			LoopExitStatement exit = (LoopExitStatement) statement;
 			if (!hasPreviousCallResult()) {
-				machine.resolveExpression(closure, exit.conditional);
+				thread.resolveExpression(closure, exit.conditional);
 				return;
 			}
 			VMValue state = getPreviousCallResult();
@@ -124,12 +110,12 @@ public class VMCallFrame {
 				finished = true;
 		} else if (statement instanceof LoopStatement) {
 			LoopStatement loop = (LoopStatement) statement;
-			machine.requestCall(closure, loop);
+			thread.requestCall(closure, loop);
 		} else if (statement instanceof ReturnStatement) {
 			ReturnStatement retn = (ReturnStatement) statement;
 			if (retn.expression != null) {
 				if (!hasPreviousCallResult()) {
-					machine.resolveExpression(closure, retn.expression);
+					thread.resolveExpression(closure, retn.expression);
 					return;
 				}
 				result = getPreviousCallResult();
@@ -143,14 +129,14 @@ public class VMCallFrame {
 			HashMap<Integer, VMValue> what = var.safeValue().asArrayType();
 			if (store0 == null) {
 				if (!hasPreviousCallResult()) {
-					machine.resolveExpression(closure, arrayset.idx);
+					thread.resolveExpression(closure, arrayset.idx);
 					return;
 				}
 				store0 = getPreviousCallResult();
 			}
 			if (store1 == null) {
 				if (!hasPreviousCallResult()) {
-					machine.resolveExpression(closure, arrayset.val);
+					thread.resolveExpression(closure, arrayset.val);
 					return;
 				}
 				store1 = getPreviousCallResult();
@@ -168,7 +154,7 @@ public class VMCallFrame {
 			SetStatement set = (SetStatement) statement;
 			VMVariable var = closure.getVariable(set.id);
 			if (!hasPreviousCallResult()) {
-				machine.resolveExpression(closure, set.val);
+				thread.resolveExpression(closure, set.val);
 				return;
 			}
 			var.safeSetValue(getPreviousCallResult());
@@ -192,14 +178,18 @@ public class VMCallFrame {
 
 	}
 
-	public String dumpFrame() {
-		StringBuilder frameInfo = new StringBuilder();
-		frameInfo.append("VMCallFrame: {");
-		frameInfo.append("i: ").append(i).append(", ");
-		frameInfo.append("j: ").append(j).append(", ");
-		frameInfo.append("k: ").append(k).append(", ");
-		frameInfo.append("currentOp: ").append(currentOp).append(", ");
-		frameInfo.append("statements: ").append(statements.size()).append("}");
-		return frameInfo.toString();
+	@Override
+	public boolean finished() {
+		return finished;
+	}
+
+	@Override
+	public void frameInfo(StringBuilder place) {
+		place.append("VMCallFrame: {");
+		place.append("i: ").append(i).append(", ");
+		place.append("j: ").append(j).append(", ");
+		place.append("k: ").append(k).append(", ");
+		place.append("currentOp: ").append(currentOp).append(", ");
+		place.append("statements: ").append(statements.size()).append("}");
 	}
 }
