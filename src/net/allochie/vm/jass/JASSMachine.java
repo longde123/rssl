@@ -166,6 +166,12 @@ public class JASSMachine {
 		}
 	}
 
+	public void requestCallImmediate(VMClosure closure, VMFunction function, VMValue[] args) throws VMException {
+		VMCallFrame topFrame = getCurrentFrame();
+		requestCall(closure, function, args);
+		advanceUntilFrame(topFrame);
+	}
+
 	public void requestCall(VMClosure closure, ConditionalStatement conditional) {
 		VMCallFrame callframe = new VMCallFrame(closure, conditional.statements, false);
 		callStack.push(callframe);
