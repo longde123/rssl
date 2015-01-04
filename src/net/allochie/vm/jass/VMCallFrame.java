@@ -61,7 +61,8 @@ public class VMCallFrame extends VMStackFrame {
 			if (function == null)
 				throw new VMException("Cannot call undefined function " + call.id);
 			int numParams = function.sig.params.size();
-			if (numParams != call.params.size())
+			int providedParams = (call.params != null) ? call.params.size() : 0;
+			if (numParams != providedParams)
 				throw new VMException("Incorrect number of parameters for function call");
 			if (store2 == null)
 				store2 = new VMValue[numParams];

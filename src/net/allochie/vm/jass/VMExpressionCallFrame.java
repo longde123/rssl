@@ -175,7 +175,8 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				if (function == null)
 					throw new VMException("Cannot call undefined function " + expr.name);
 				int numParams = function.sig.params.size();
-				if (numParams != expr.params.size())
+				int providedParams = (expr.params != null) ? expr.params.size() : 0;
+				if (numParams != providedParams)
 					throw new VMException("Incorrect number of parameters for function call");
 				if (store2 == null)
 					store2 = new VMValue[numParams];

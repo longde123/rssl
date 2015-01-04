@@ -22,7 +22,7 @@ public class VMVariable {
 				thread.resolveExpression(closure, dec.init);
 				return;
 			}
-			var.value = getPreviousCallResult();
+			var.safeSetValue(getPreviousCallResult());
 			finished = true;
 		}
 
@@ -65,13 +65,14 @@ public class VMVariable {
 		if (val == null)
 			throw new VMException("Cannot put nullpointer reference in variable " + dec.name);
 		if (val.type != dec.type)
-			throw new VMException("Cannot store " + val.type + " in var " + dec.name + " with type " + dec.type);
+			throw new VMException("Cannot store value type " + val.type + " in var " + dec.name + " with type "
+					+ dec.type);
 		value = val;
 	}
 
 	@Override
 	public String toString() {
-		return value.type + " " + dec.name + " = " + value;
+		return dec.type + " " + dec.name + " = " + ((value != null) ? value : "<null>");
 	}
 
 }
