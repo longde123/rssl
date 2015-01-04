@@ -186,8 +186,9 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						return;
 					}
 					store2[j] = getPreviousCallResult();
-					if (function.sig.params.get(j).type != store2[j].type)
-						throw new VMException("Incorrect parameter type for function call");
+					if (!function.sig.params.get(j).type.equals(store2[j].type))
+						throw new VMException("Incorrect parameter type for function call, expected "
+								+ function.sig.params.get(j).type + ", got " + store2[j].type);
 					j++;
 				}
 				if (i == 0) {

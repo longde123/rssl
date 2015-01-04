@@ -2,6 +2,8 @@ package net.allochie.vm.jass.ast;
 
 import java.util.HashMap;
 
+import net.allochie.vm.jass.global.TypeRegistry;
+
 public class Type {
 
 	public static Type codeType = new Type("code");
@@ -12,8 +14,6 @@ public class Type {
 	public static Type stringType = new Type("string");
 	public static Type nullType = new Type("null");
 
-	public static HashMap<String, Type> map = new HashMap<String, Type>();
-
 	/** Type name image */
 	public final String typename;
 
@@ -22,9 +22,7 @@ public class Type {
 	}
 
 	public static Type fromIdentifier(Identifier typetoken) {
-		if (!map.containsKey(typetoken.image))
-			map.put(typetoken.image, new Type(typetoken.image));
-		return map.get(typetoken.image);
+		return (Type) TypeRegistry.fromString(typetoken.image);
 	}
 
 	@Override

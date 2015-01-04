@@ -71,12 +71,7 @@ public class VMType extends Type {
 		return (findType(machine, z) == t);
 	}
 
-	private VMType(String typename) {
+	public VMType(String typename) {
 		super(typename);
-	}
-
-	public static VMType fromDec(TypeDec type) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
