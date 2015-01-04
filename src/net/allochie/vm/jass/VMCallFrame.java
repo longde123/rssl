@@ -66,7 +66,9 @@ public class VMCallFrame {
 	public void step(JASSMachine machine) throws VMException {
 		if (finished)
 			throw new VMException("Cannot advance finished call frame");
-		Statement statement = statements.get(currentOp);
+		Statement statement = null;
+		if (statements.size() != 0)
+			statement = statements.get(currentOp);
 		if (statement instanceof CallStatement) {
 			CallStatement call = (CallStatement) statement;
 			VMFunction function = machine.findFunction(call.id);
@@ -170,7 +172,7 @@ public class VMCallFrame {
 				return;
 			}
 			var.safeSetValue(getPreviousCallResult());
-		} else
+		} else if (statement != null)
 			throw new VMException("Unknown statement type " + statement.getClass().getName());
 		if (hasPreviousCallResult())
 			throw new VMException("Detected unused return result in op " + statement);
@@ -181,7 +183,7 @@ public class VMCallFrame {
 		store0 = null;
 		store1 = null;
 		store2 = null;
-		if (currentOp == statements.size()) {
+		if (currentOp >= statements.size()) {
 			if (isLoop)
 				currentOp = 0;
 			else

@@ -171,8 +171,6 @@ public class VMExpressionCallFrame extends VMCallFrame {
 					return;
 				}
 				result = getPreviousCallResult();
-			} else if (expression instanceof FunctionReferenceExpression) {
-				FunctionReferenceExpression expr = (FunctionReferenceExpression) expression;
 			} else if (expression instanceof IdentifierReference) {
 				IdentifierReference expr = (IdentifierReference) expression;
 				VMVariable var = closure.getVariable(expr.identifier);
@@ -217,6 +215,11 @@ public class VMExpressionCallFrame extends VMCallFrame {
 					throw new VMException("Unsupported operator " + expr.mode);
 
 				}
+			} else if (expression instanceof FunctionReferenceExpression) {
+				FunctionReferenceExpression expr = (FunctionReferenceExpression) expression;
+				VMFunction what = machine.findFunction(expr.name);
+				VMFunctionPointer pointer = new VMFunctionPointer(what);
+				result = new VMValue(pointer);
 			} else
 				throw new VMException("Unknown expression type " + expression.getClass().getName());
 		}

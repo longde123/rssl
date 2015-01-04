@@ -139,7 +139,7 @@ public class JASSMachine {
 
 				@Override
 				public void doSpecialStep(JASSMachine machine) throws VMException {
-					result = nfunc.executeNative(this.closure);
+					result = nfunc.executeNative(machine, this.closure);
 					finished = true;
 				}
 			}.setFunc((VMNativeFunction) function);

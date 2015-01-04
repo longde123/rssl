@@ -43,11 +43,14 @@ public class VMType extends Type {
 			return Type.realType;
 		if (z instanceof String || z instanceof String[])
 			return Type.stringType;
+		if (z instanceof VMFunctionPointer || z instanceof VMFunctionPointer[])
+			return Type.codeType;
 		return Type.handleType;
 	}
 
 	public static boolean arrayType(Object z) {
-		return (z instanceof Void[] || z instanceof Integer[] || z instanceof Float[] || z instanceof Double[] || z instanceof String[]);
+		return (z instanceof Void[] || z instanceof Integer[] || z instanceof Float[] || z instanceof Double[]
+				|| z instanceof String[] || z instanceof VMFunctionPointer[]);
 	}
 
 	public static boolean isInstanceOf(Type t, Object z) {

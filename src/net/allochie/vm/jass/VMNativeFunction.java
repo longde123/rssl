@@ -15,14 +15,17 @@ public class VMNativeFunction extends VMFunction {
 		this.sig = qd.def;
 	}
 
-	public VMValue executeNative(VMClosure closure) throws VMException {
-		Object[] params = new Object[qd.def.params.size()];
-		Class<?>[] args = new Class<?>[qd.def.params.size()];
-		for (int i = 0; i < params.length; i++) {
+	public VMValue executeNative(JASSMachine machine, VMClosure closure) throws VMException {
+		Object[] params = new Object[2 + qd.def.params.size()];
+		Class<?>[] args = new Class<?>[2 + qd.def.params.size()];
+		params[0] = machine;
+		params[1] = closure;
+		for (int i = 0; i < qd.def.params.size(); i++) {
 			Param pq = qd.def.params.get(i);
-			params[i] = closure.getVariable(pq.name).safeValue().value;
-			args[i] = params[i].getClass();
+			params[2 + i] = closure.getVariable(pq.name).safeValue().value;
 		}
+		for (int i = 0; i < params.length; i++)
+			args[i] = params[i].getClass();
 
 		try {
 			Method m = getClass().getMethod(qd.def.id.image, args);
@@ -32,12 +35,16 @@ public class VMNativeFunction extends VMFunction {
 		}
 	}
 
-	public static void PrintConsole(String s) {
+	public static void PrintConsole(JASSMachine machine, VMClosure closure, String s) {
 		System.out.println("_native: PrintConsole: " + s);
 	}
-	
-	public static String I2S(Integer i) {
+
+	public static String I2S(JASSMachine machine, VMClosure closure, Integer i) {
 		return Integer.toString(i);
+	}
+
+	public static void RunFunctionForAllPlayers(JASSMachine machine, VMClosure closure, VMFunctionPointer pointer) {
+		
 	}
 
 }
