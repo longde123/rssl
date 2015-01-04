@@ -489,8 +489,8 @@ Expression constval(): {
 	"null" { return Constant.nullConst; }
 }
 
-IntConstant int_const(): {
-	IntConstant cval;
+IntConst int_const(): {
+	IntConst cval;
 }
 {
 	cval = decimal() { return cval; } | 
@@ -500,36 +500,36 @@ IntConstant int_const(): {
 }
 
 TOKEN : { <DECIMALINT: ["1"-"9"](["0"-"9"])*> }
-IntConstant decimal(): {
+IntConst decimal(): {
 	Token inttoken;
 }
 {
-	inttoken = <DECIMALINT> { return IntConstant.fromToken(inttoken, IntConstType.DECIMAL); }
+	inttoken = <DECIMALINT> { return IntConst.fromToken(inttoken, IntConstType.DECIMAL); }
 }
 
 TOKEN : { <OCTALINT: "0"(["0"-"7"])*> }
-IntConstant octal(): {
+IntConst octal(): {
 	Token inttoken;
 }
 {
-	inttoken = <OCTALINT> { return IntConstant.fromToken(inttoken, IntConstType.OCTAL); }
+	inttoken = <OCTALINT> { return IntConst.fromToken(inttoken, IntConstType.OCTAL); }
 }
 
 
 TOKEN : { <HEXINT: "$"(["0"-"9","a"-"f","A"-"F"])+ | "0"["x","X"](["0"-"9","a"-"f","A"-"F"])+> }
-IntConstant hex(): {
+IntConst hex(): {
 	Token inttoken;
 }
 {
-	inttoken = <HEXINT> { return IntConstant.fromToken(inttoken, IntConstType.HEXADECIMAL); }
+	inttoken = <HEXINT> { return IntConst.fromToken(inttoken, IntConstType.HEXADECIMAL); }
 }
 
 TOKEN : { <FOURCCINT: "'" ["0"-"9","a"-"z"]["0"-"9","a"-"z"]["0"-"9","a"-"z"]["0"-"9","a"-"z"] "'"> }
-IntConstant fourcc(): {
+IntConst fourcc(): {
 	Token inttoken;
 }
 {
-	inttoken = <FOURCCINT> { return IntConstant.fromToken(inttoken, IntConstType.FOURCC); }
+	inttoken = <FOURCCINT> { return IntConst.fromToken(inttoken, IntConstType.FOURCC); }
 }
 
 TOKEN : { <REALCONST: (["0"-"9"])+"."(["0"-"9"])* | "."(["0"-"9"])+> }

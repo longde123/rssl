@@ -15,9 +15,11 @@ public class StringConst extends Constant {
 	}
 
 	public static StringConst fromToken(Token stringtoken) {
-		if (!map.containsKey(stringtoken.image))
-			map.put(stringtoken.image, new StringConst(stringtoken.image));
-		return map.get(stringtoken.image);
+		String what = stringtoken.image;
+		what = what.substring(1, what.length() - 1);
+		if (!map.containsKey(what))
+			map.put(what, new StringConst(what));
+		return map.get(what);
 	}
 
 	@Override

@@ -615,7 +615,7 @@ expr.name = tmp0; {if ("" != null) return expr;}
     throw new Error("Missing return statement in function");
   }
 
-  final public IntConstant int_const() throws ParseException {IntConstant cval;
+  final public IntConst int_const() throws ParseException {IntConst cval;
     if (jj_2_72(4)) {
       cval = decimal();
 {if ("" != null) return cval;}
@@ -635,27 +635,27 @@ expr.name = tmp0; {if ("" != null) return expr;}
     throw new Error("Missing return statement in function");
   }
 
-  final public IntConstant decimal() throws ParseException {Token inttoken;
+  final public IntConst decimal() throws ParseException {Token inttoken;
     inttoken = jj_consume_token(DECIMALINT);
-{if ("" != null) return IntConstant.fromToken(inttoken, IntConstType.DECIMAL);}
+{if ("" != null) return IntConst.fromToken(inttoken, IntConstType.DECIMAL);}
     throw new Error("Missing return statement in function");
   }
 
-  final public IntConstant octal() throws ParseException {Token inttoken;
+  final public IntConst octal() throws ParseException {Token inttoken;
     inttoken = jj_consume_token(OCTALINT);
-{if ("" != null) return IntConstant.fromToken(inttoken, IntConstType.OCTAL);}
+{if ("" != null) return IntConst.fromToken(inttoken, IntConstType.OCTAL);}
     throw new Error("Missing return statement in function");
   }
 
-  final public IntConstant hex() throws ParseException {Token inttoken;
+  final public IntConst hex() throws ParseException {Token inttoken;
     inttoken = jj_consume_token(HEXINT);
-{if ("" != null) return IntConstant.fromToken(inttoken, IntConstType.HEXADECIMAL);}
+{if ("" != null) return IntConst.fromToken(inttoken, IntConstType.HEXADECIMAL);}
     throw new Error("Missing return statement in function");
   }
 
-  final public IntConstant fourcc() throws ParseException {Token inttoken;
+  final public IntConst fourcc() throws ParseException {Token inttoken;
     inttoken = jj_consume_token(FOURCCINT);
-{if ("" != null) return IntConstant.fromToken(inttoken, IntConstType.FOURCC);}
+{if ("" != null) return IntConst.fromToken(inttoken, IntConstType.FOURCC);}
     throw new Error("Missing return statement in function");
   }
 

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import net.allochie.vm.jass.ast.Type;
 import net.allochie.vm.jass.ast.constant.BoolConst;
 import net.allochie.vm.jass.ast.constant.Constant;
-import net.allochie.vm.jass.ast.constant.IntConstant;
+import net.allochie.vm.jass.ast.constant.IntConst;
 import net.allochie.vm.jass.ast.constant.RealConst;
 import net.allochie.vm.jass.ast.constant.StringConst;
 import net.allochie.vm.jass.ast.expression.ArrayReferenceExpression;
@@ -31,8 +31,8 @@ public class VMExpressionCallFrame extends VMCallFrame {
 		if (expression instanceof Constant) {
 			if (expression instanceof BoolConst)
 				result = new VMValue(machine, ((BoolConst) expression).identity);
-			else if (expression instanceof IntConstant)
-				result = new VMValue(machine, ((IntConstant) expression).identity);
+			else if (expression instanceof IntConst)
+				result = new VMValue(machine, ((IntConst) expression).identity);
 			else if (expression instanceof RealConst)
 				result = new VMValue(machine, ((RealConst) expression).identity);
 			else if (expression instanceof StringConst)

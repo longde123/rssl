@@ -5,17 +5,17 @@ import java.util.HashMap;
 import net.allochie.vm.jass.parser.ParseException;
 import net.allochie.vm.jass.parser.Token;
 
-public class IntConstant extends Constant {
+public class IntConst extends Constant {
 
-	private static HashMap<Integer, IntConstant> map = new HashMap<Integer, IntConstant>();
+	private static HashMap<Integer, IntConst> map = new HashMap<Integer, IntConst>();
 
 	public final int identity;
 
-	private IntConstant(Integer identity) {
+	private IntConst(Integer identity) {
 		this.identity = identity;
 	}
 
-	public static IntConstant fromToken(Token inttoken, IntConstType decimal) throws ParseException {
+	public static IntConst fromToken(Token inttoken, IntConstType decimal) throws ParseException {
 		try {
 			Integer val = null;
 			switch (decimal) {
@@ -34,7 +34,7 @@ public class IntConstant extends Constant {
 				break;
 			}
 			if (!map.containsKey(val))
-				map.put(val, new IntConstant(val));
+				map.put(val, new IntConst(val));
 			return map.get(val);
 		} catch (Throwable t) {
 			throw new ParseException("Invalid number format");
@@ -48,8 +48,8 @@ public class IntConstant extends Constant {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof IntConstant))
+		if (!(o instanceof IntConst))
 			return false;
-		return ((IntConstant) o).identity == identity;
+		return ((IntConst) o).identity == identity;
 	}
 }
