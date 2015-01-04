@@ -76,6 +76,8 @@ public class JASSMachine extends Thread {
 	}
 
 	public VMFunction findFunction(VMFunctionPointer invokeFunc) {
+		if (invokeFunc == null)
+			return null;
 		if (invokeFunc.functionVal != null)
 			return invokeFunc.functionVal;
 		return findFunction(invokeFunc.functionName);
