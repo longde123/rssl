@@ -1,5 +1,7 @@
 package net.allochie.vm.jass;
 
+import java.util.HashMap;
+
 import net.allochie.vm.jass.ast.Statement;
 import net.allochie.vm.jass.ast.StatementList;
 import net.allochie.vm.jass.ast.Type;
@@ -86,7 +88,12 @@ public class VMCallFrame {
 							+ store2[j].type + ", expected " + function.sig.params.get(j).type);
 				j++;
 			}
-			machine.requestCall(closure, function, store2);
+			if (i == 0) {
+				i++;
+				machine.requestCall(closure, function, store2);
+				return;
+			}
+			store0 = getPreviousCallResult();
 		} else if (statement instanceof ConditionalStatement) {
 			ConditionalStatement conditional = (ConditionalStatement) statement;
 			while (conditional != null) {
@@ -131,7 +138,7 @@ public class VMCallFrame {
 			VMVariable var = closure.getVariable(arrayset.id);
 			if (!var.dec.array)
 				throw new VMException("Not an array");
-			Object[] what = (Object[]) var.safeValue().value;
+			HashMap<Integer, VMValue> what = var.safeValue().asArrayType();
 			if (store0 == null) {
 				if (!hasPreviousCallResult()) {
 					machine.resolveExpression(closure, arrayset.idx);
@@ -150,12 +157,11 @@ public class VMCallFrame {
 			if (index.type != Type.integerType)
 				throw new VMException(Type.integerType.typename + " expected, got " + index.type.typename);
 			Integer idx = (Integer) index.value;
-			if (0 > idx || idx < what.length - 1)
+			if (0 > idx)
 				throw new VMException("Index out of bounds");
 			if (whatSet.type != var.dec.type)
 				throw new VMException(var.dec.type + " expected, got " + whatSet.type);
-			what[idx] = whatSet.value;
-			var.safeSetValue(new VMValue(what));
+			what.put(idx, whatSet);
 		} else if (statement instanceof SetStatement) {
 			SetStatement set = (SetStatement) statement;
 			VMVariable var = closure.getVariable(set.id);
@@ -166,6 +172,8 @@ public class VMCallFrame {
 			var.safeSetValue(getPreviousCallResult());
 		} else
 			throw new VMException("Unknown statement type " + statement.getClass().getName());
+		if (hasPreviousCallResult())
+			throw new VMException("Detected unused return result in op " + statement);
 		currentOp++;
 		i = 0;
 		j = 0;

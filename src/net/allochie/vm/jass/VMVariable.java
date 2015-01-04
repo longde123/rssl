@@ -1,5 +1,7 @@
 package net.allochie.vm.jass;
 
+import java.util.HashMap;
+
 import net.allochie.vm.jass.ast.dec.VarDec;
 
 public class VMVariable {
@@ -19,7 +21,6 @@ public class VMVariable {
 				return;
 			}
 			var.value = getPreviousCallResult();
-			System.out.println("Set variable " + var.dec.name + " = " + var.value);
 			finished = true;
 		}
 	}
@@ -31,6 +32,8 @@ public class VMVariable {
 	public VMVariable(VMClosure closure, VarDec dec) {
 		this.closure = closure;
 		this.dec = dec;
+		if (this.dec.array)
+			this.value = new VMValue(new HashMap<Integer, VMValue>()).unsafeApplyCast(dec.type);
 	}
 
 	public void init(JASSMachine machine, VMClosure top) throws VMException {
@@ -48,7 +51,7 @@ public class VMVariable {
 
 	public void safeSetValue(VMValue val) throws VMException {
 		if (val == null)
-			throw new VMException("Cannot put nullpointer reference in variable");
+			throw new VMException("Cannot put nullpointer reference in variable " + dec.name);
 		if (val.type != dec.type)
 			throw new VMException("Cannot store " + val.type + " in var " + dec.name + " with type " + dec.type);
 		value = val;

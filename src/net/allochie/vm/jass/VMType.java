@@ -46,6 +46,10 @@ public class VMType extends Type {
 		return Type.handleType;
 	}
 
+	public static boolean arrayType(Object z) {
+		return (z instanceof Void[] || z instanceof Integer[] || z instanceof Float[] || z instanceof Double[] || z instanceof String[]);
+	}
+
 	public static boolean isInstanceOf(Type t, Object z) {
 		return (findType(z) == t);
 	}

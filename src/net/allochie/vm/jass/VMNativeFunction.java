@@ -32,8 +32,12 @@ public class VMNativeFunction extends VMFunction {
 		}
 	}
 
-	public static void PrintInteger(Integer i) {
-		System.out.println("PrintInteger: " + i);
+	public static void PrintConsole(String s) {
+		System.out.println("_native: PrintConsole: " + s);
+	}
+	
+	public static String I2S(Integer i) {
+		return Integer.toString(i);
 	}
 
 }

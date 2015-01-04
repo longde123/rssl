@@ -1,5 +1,7 @@
 package net.allochie.vm.jass;
 
+import java.util.HashMap;
+
 import net.allochie.vm.jass.ast.Type;
 import net.allochie.vm.jass.ast.constant.BoolConst;
 import net.allochie.vm.jass.ast.constant.Constant;
@@ -44,7 +46,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				VMVariable var = closure.getVariable(expr.name);
 				if (!var.dec.array)
 					throw new VMException("Not an array");
-				Object[] what = (Object[]) var.safeValue().value;
+				HashMap<Integer, VMValue> what = var.safeValue().asArrayType();
 				if (!hasPreviousCallResult()) {
 					machine.resolveExpression(closure, expr.idx);
 					return;
@@ -53,9 +55,9 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				if (index.type != Type.integerType)
 					throw new VMException(Type.integerType.typename + " expected, got " + index.type.typename);
 				Integer idx = (Integer) index.value;
-				if (0 > idx || idx < what.length - 1)
-					throw new VMException("Index out of bounds");
-				result = new VMValue(what[idx]);
+				if (0 > idx || idx > what.size() - 1)
+					throw new VMException("Index out of bounds: got " + idx + ", min 0, max " + what.size());
+				result = what.get(idx);
 			} else if (expression instanceof BinaryOpExpression) {
 				BinaryOpExpression expr = (BinaryOpExpression) expression;
 				if (store0 == null) {
@@ -163,7 +165,8 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						throw new VMException("Incorrect parameter type for function call");
 					j++;
 				}
-				if (!hasPreviousCallResult()) {
+				if (i == 0) {
+					i++;
 					machine.requestCall(closure, function, store2);
 					return;
 				}
