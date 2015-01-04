@@ -1,6 +1,8 @@
 package net.allochie.vm.jass;
 
 import net.allochie.vm.jass.ast.Type;
+import net.allochie.vm.jass.ast.dec.TypeDec;
+import net.allochie.vm.jass.global.TypeRegistry;
 
 public class VMType extends Type {
 
@@ -30,11 +32,13 @@ public class VMType extends Type {
 	 * Find the VM type of an object. If the object has no native type in the
 	 * VM, the type is HANDLE. If the object is null, the VM type is NULLTYPE.
 	 * 
+	 * @param machine
+	 *            The working VM
 	 * @param z
 	 *            The object
 	 * @return The type
 	 */
-	public static Type findType(Object z) {
+	public static Type findType(JASSMachine machine, Object z) {
 		if (z == null || z instanceof Void || z instanceof Void[])
 			return Type.nullType;
 		if (z instanceof Integer || z instanceof Integer[])
@@ -45,7 +49,7 @@ public class VMType extends Type {
 			return Type.stringType;
 		if (z instanceof VMFunctionPointer || z instanceof VMFunctionPointer[])
 			return Type.codeType;
-		return Type.handleType;
+		return TypeRegistry.findPreferredType(z, machine);
 	}
 
 	public static boolean arrayType(Object z) {
@@ -53,11 +57,16 @@ public class VMType extends Type {
 				|| z instanceof String[] || z instanceof VMFunctionPointer[]);
 	}
 
-	public static boolean isInstanceOf(Type t, Object z) {
-		return (findType(z) == t);
+	public static boolean isInstanceOf(JASSMachine machine, Type t, Object z) {
+		return (findType(machine, z) == t);
 	}
 
 	private VMType(String typename) {
 		super(typename);
+	}
+
+	public static VMType fromDec(TypeDec type) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

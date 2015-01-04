@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import net.allochie.vm.jass.JASSMachine;
+import net.allochie.vm.jass.VMCallFrame;
 import net.allochie.vm.jass.VMClosure;
 import net.allochie.vm.jass.VMException;
 import net.allochie.vm.jass.ast.Function;
@@ -25,12 +26,20 @@ public class JASSTest {
 
 			JASSMachine machine = new JASSMachine();
 			VMClosure top = new VMClosure(machine);
-			machine.doFile(top, file);
+			try {
+				machine.doFile(top, file);
+
+			} catch (VMException e) {
+				e.printStackTrace();
+				System.err.println("Frames on stack: ");
+				for (int i = machine.callStack.size() - 1; i >= 0; i--) {
+					VMCallFrame frame = machine.callStack.get(i);
+					System.err.println(i + ": " + frame.dumpFrame());
+				}
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (VMException e) {
 			e.printStackTrace();
 		}
 	}
@@ -40,7 +49,7 @@ public class JASSTest {
 			System.out.println(prefix + s);
 			if (s instanceof LoopStatement)
 				listStatements(((LoopStatement) s).statements, prefix + "  ");
-			if (s instanceof ConditionalStatement) 
+			if (s instanceof ConditionalStatement)
 				listStatements(((ConditionalStatement) s).statements, prefix + "  ");
 		}
 	}

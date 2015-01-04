@@ -19,14 +19,14 @@ import net.allochie.vm.jass.ast.statement.LoopStatement;
 public class JASSMachine {
 
 	/** List of all known VM types */
-	public HashMap<String, TypeDec> types = new HashMap<String, TypeDec>();
+	public HashMap<String, VMType> types = new HashMap<String, VMType>();
 	/** List of all global variables */
 	public HashMap<String, VMVariable> globals = new HashMap<String, VMVariable>();
 	/** List of all native functions */
 	public HashMap<String, VMNativeFunction> natives = new HashMap<String, VMNativeFunction>();
 	/** List of all real functions */
 	public HashMap<String, VMFunction> funcs = new HashMap<String, VMFunction>();
-
+	/** Current call stack */
 	public Stack<VMCallFrame> callStack = new Stack<VMCallFrame>();
 
 	public void doFile(VMClosure closure, JASSFile file) throws VMException {
@@ -36,13 +36,13 @@ public class JASSMachine {
 				if (type.type == null)
 					if (!types.containsKey(type.typename.image))
 						throw new VMException("Cannot extend unknown type " + type.typename.image);
-				types.put(type.id.image, type);
+				types.put(type.id.image, VMType.fromDec(type));
 			} else if (what instanceof GlobalsDec) {
 				GlobalsDec heap = (GlobalsDec) what;
 				for (VarDec var : heap.decs) {
 					if (globals.containsKey(var.name.image) && globals.get(var.name.image).dec.constant)
 						throw new VMException("Cannot redeclare existing variable " + var.name.image);
-					globals.put(var.name.image, new VMVariable(closure, var));
+					globals.put(var.name.image, new VMVariable(this, closure, var));
 					VMCallFrame topFrame = getCurrentFrame();
 					globals.get(var.name.image).init(this, closure);
 					advanceUntilFrame(topFrame);
@@ -58,20 +58,11 @@ public class JASSMachine {
 			funcs.put(func.sig.id.image, new VMFunction(func));
 
 		VMFunction function = findFunction(Identifier.fromString("main"));
-		try {
-			if (function != null)
-				requestCall(closure, function, new VMValue[0]);
-			while (getCurrentFrame() != null) {
-				advanceVM();
-			}
-		} catch (VMException e) {
-			e.printStackTrace();
-			for (int i = 0; i < callStack.size(); i++) {
-				VMCallFrame frame = callStack.get(i);
-				System.out.println("frame: " + frame);
-			}
+		if (function != null)
+			requestCall(closure, function, new VMValue[0]);
+		while (getCurrentFrame() != null) {
+			advanceVM();
 		}
-
 	}
 
 	public void advanceVM() throws VMException {
@@ -126,7 +117,7 @@ public class JASSMachine {
 			for (int i = 0; i < args.length; i++) {
 				Param param = function.sig.params.get(i);
 				VarDec pvar = new VarDec(param.name, param.type, param.array, false, null);
-				child.createVariable(pvar);
+				child.createVariable(this, pvar);
 				child.getVariable(param.name).safeSetValue(args[i]);
 			}
 			VMSpecialFrame frame = new VMSpecialFrame(child) {
@@ -142,6 +133,11 @@ public class JASSMachine {
 					result = nfunc.executeNative(machine, this.closure);
 					finished = true;
 				}
+
+				@Override
+				public void frameInfo(StringBuilder place) {
+					place.append("NativeFunctionCall: ").append(nfunc);
+				}
 			}.setFunc((VMNativeFunction) function);
 			callStack.push(frame);
 		} else {
@@ -149,14 +145,14 @@ public class JASSMachine {
 			for (int i = 0; i < args.length; i++) {
 				Param param = function.sig.params.get(i);
 				VarDec pvar = new VarDec(param.name, param.type, param.array, false, null);
-				child.createVariable(pvar);
+				child.createVariable(this, pvar);
 				child.getVariable(param.name).safeSetValue(args[i]);
 			}
 
 			VMCallFrame topFrame = getCurrentFrame();
 			if (function.lvars != null)
 				for (VarDec var : function.lvars) {
-					child.createVariable(var);
+					child.createVariable(this, var);
 					child.getVariable(var.name).init(this, child);
 					advanceUntilFrame(topFrame);
 				}

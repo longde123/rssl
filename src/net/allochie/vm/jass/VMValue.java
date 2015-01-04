@@ -20,24 +20,24 @@ public class VMValue {
 	public final boolean array;
 	public final Type type;
 
-	public VMValue(Object value) {
+	public VMValue(JASSMachine machine, Object value) {
 		if (VMType.arrayType(value)) {
 			HashMap<Integer, VMValue> store = new HashMap<Integer, VMValue>();
 			Object[] d0 = (Object[]) value;
 			for (int i = 0; i < d0.length; i++)
-				store.put(i, new VMValue(d0[i]));
+				store.put(i, new VMValue(machine, d0[i]));
 			this.value = store;
 			this.array = true;
-			this.type = VMType.findType(d0[0]);
+			this.type = VMType.findType(machine, d0[0]);
 		} else if (value instanceof HashMap) {
 			HashMap<Integer, VMValue> map = (HashMap<Integer, VMValue>) value;
 			this.value = map;
 			this.array = true;
-			this.type = VMType.findType(map.get(0));
+			this.type = VMType.findType(machine, map.get(0));
 		} else {
 			this.value = value;
 			this.array = false;
-			this.type = VMType.findType(value);
+			this.type = VMType.findType(machine, value);
 		}
 	}
 
@@ -51,17 +51,17 @@ public class VMValue {
 		return (type == Type.nullType) || value == null;
 	}
 
-	public VMValue applyCast(Type productType) throws VMException {
+	public VMValue applyCast(JASSMachine machine, Type productType) throws VMException {
 		if (array)
 			throw new VMException("Cannot cast array");
 		if (productType == type)
-			return new VMValue(value);
+			return new VMValue(machine, value);
 		if ((type == Type.integerType || type == Type.realType)
 				&& (productType == Type.integerType || productType == Type.realType)) {
 			if (productType == Type.integerType)
-				return new VMValue((int) Math.floor(asNumericType()));
+				return new VMValue(machine, (int) Math.floor(asNumericType()));
 			else
-				return new VMValue(asNumericType());
+				return new VMValue(machine, asNumericType());
 		}
 		throw new VMException("Cast from " + type + " to " + productType + " not supported");
 	}

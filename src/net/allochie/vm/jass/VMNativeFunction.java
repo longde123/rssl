@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import net.allochie.vm.jass.ast.Param;
 import net.allochie.vm.jass.ast.dec.NativeFuncDef;
+import net.allochie.vm.jass.global.NativeMethodRegistry;
 
 public class VMNativeFunction extends VMFunction {
 
@@ -28,23 +29,12 @@ public class VMNativeFunction extends VMFunction {
 			args[i] = params[i].getClass();
 
 		try {
-			Method m = getClass().getMethod(qd.def.id.image, args);
-			return new VMValue(m.invoke(null, params));
+			Method m = NativeMethodRegistry.findNativeMethod(qd.def.id.image);
+			return new VMValue(machine, m.invoke(null, params));
 		} catch (Throwable t) {
-			throw new VMException("Problem calling method!", t);
+			if (t instanceof VMException)
+				throw (VMException) t;
+			throw new VMException("Uncaught exception from native method.", t);
 		}
 	}
-
-	public static void PrintConsole(JASSMachine machine, VMClosure closure, String s) {
-		System.out.println("_native: PrintConsole: " + s);
-	}
-
-	public static String I2S(JASSMachine machine, VMClosure closure, Integer i) {
-		return Integer.toString(i);
-	}
-
-	public static void RunFunctionForAllPlayers(JASSMachine machine, VMClosure closure, VMFunctionPointer pointer) {
-		
-	}
-
 }

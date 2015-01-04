@@ -31,13 +31,13 @@ public class VMExpressionCallFrame extends VMCallFrame {
 	public void step(JASSMachine machine) throws VMException {
 		if (expression instanceof Constant) {
 			if (expression instanceof BoolConst)
-				result = new VMValue(((BoolConst) expression).identity);
+				result = new VMValue(machine, ((BoolConst) expression).identity);
 			else if (expression instanceof IntConstant)
-				result = new VMValue(((IntConstant) expression).identity);
+				result = new VMValue(machine, ((IntConstant) expression).identity);
 			else if (expression instanceof RealConst)
-				result = new VMValue(((RealConst) expression).identity);
+				result = new VMValue(machine, ((RealConst) expression).identity);
 			else if (expression instanceof StringConst)
-				result = new VMValue(((StringConst) expression).identity);
+				result = new VMValue(machine, ((StringConst) expression).identity);
 			else
 				throw new VMException("Unknown constant type " + expression.getClass().getName());
 		} else if (expression instanceof Expression) {
@@ -83,54 +83,54 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				case ADD:
 					if (productType == Type.stringType) {
 						String vv0 = v0.asStringType(), vv1 = v1.asStringType();
-						result = new VMValue(vv0 + vv1);
+						result = new VMValue(machine, vv0 + vv1);
 					} else if (productType == Type.integerType || productType == Type.realType) {
 						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
-						VMValue what = new VMValue(vv0 + vv1);
-						result = what.applyCast(productType);
+						VMValue what = new VMValue(machine, vv0 + vv1);
+						result = what.applyCast(machine, productType);
 					} else
 						throw new VMException("Unknown use of operator + on types " + v0.type + " and " + v1.type);
 					break;
 				case SUB:
 					if (productType == Type.integerType || productType == Type.realType) {
 						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
-						VMValue what = new VMValue(vv0 - vv1);
-						result = what.applyCast(productType);
+						VMValue what = new VMValue(machine, vv0 - vv1);
+						result = what.applyCast(machine, productType);
 					} else
 						throw new VMException("Unknown use of operator - on types " + v0.type + " and " + v1.type);
 					break;
 				case DIV:
 					if (productType == Type.integerType || productType == Type.realType) {
 						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
-						VMValue what = new VMValue(vv0 / vv1);
-						result = what.applyCast(productType);
+						VMValue what = new VMValue(machine, vv0 / vv1);
+						result = what.applyCast(machine, productType);
 					} else
 						throw new VMException("Unknown use of operator / on types " + v0.type + " and " + v1.type);
 					break;
 				case MUL:
 					if (productType == Type.integerType || productType == Type.realType) {
 						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
-						VMValue what = new VMValue(vv0 * vv1);
-						result = what.applyCast(productType);
+						VMValue what = new VMValue(machine, vv0 * vv1);
+						result = what.applyCast(machine, productType);
 					} else
 						throw new VMException("Unknown use of operator * on types " + v0.type + " and " + v1.type);
 					break;
 				case BOOLAND:
 					if (productType == Type.booleanType) {
 						boolean vv0 = v0.asBooleanType(), vv1 = v1.asBooleanType();
-						result = new VMValue(vv0 && vv1);
+						result = new VMValue(machine, vv0 && vv1);
 					} else
 						throw new VMException("Unknown use of operator AND on types " + v0.type + " and " + v1.type);
 					break;
 				case BOOLOR:
 					if (productType == Type.booleanType) {
 						boolean vv0 = v0.asBooleanType(), vv1 = v1.asBooleanType();
-						result = new VMValue(vv0 || vv1);
+						result = new VMValue(machine, vv0 || vv1);
 					} else
 						throw new VMException("Unknown use of operator OR on types " + v0.type + " and " + v1.type);
 					break;
 				case EQUALS:
-					result = new VMValue(VMValue.areValuesEqual(v0, v1));
+					result = new VMValue(machine, VMValue.areValuesEqual(v0, v1));
 				case GT:
 					throw new VMException("Unknown use of operator < on types " + v0.type + " and " + v1.type);
 				case GTEQ:
@@ -140,7 +140,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				case LTEQ:
 					throw new VMException("Unknown use of operator >= on types " + v0.type + " and " + v1.type);
 				case NOTEQUALS:
-					result = new VMValue(!VMValue.areValuesEqual(v0, v1));
+					result = new VMValue(machine, !VMValue.areValuesEqual(v0, v1));
 					break;
 				default:
 					throw new VMException("Unsupported operator " + expr.mode);
@@ -192,22 +192,22 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				switch (expr.mode) {
 				case POS:
 					if (v0.type == Type.integerType || v0.type == Type.realType) {
-						VMValue what = new VMValue(Math.abs(v0.asNumericType()));
-						result = what.applyCast(v0.type);
+						VMValue what = new VMValue(machine, Math.abs(v0.asNumericType()));
+						result = what.applyCast(machine, v0.type);
 					} else
 						throw new VMException("Unknown use of unary + on type " + v0.type);
 					break;
 				case NEG:
 					if (v0.type == Type.integerType || v0.type == Type.realType) {
-						VMValue what = new VMValue(-Math.abs(v0.asNumericType()));
-						result = what.applyCast(v0.type);
+						VMValue what = new VMValue(machine, -Math.abs(v0.asNumericType()));
+						result = what.applyCast(machine, v0.type);
 					} else
 						throw new VMException("Unknown use of unary - on type " + v0.type);
 					break;
 				case NOT:
 					if (v0.type == Type.booleanType) {
-						VMValue what = new VMValue(!v0.asBooleanType());
-						result = what.applyCast(v0.type);
+						VMValue what = new VMValue(machine, !v0.asBooleanType());
+						result = what.applyCast(machine, v0.type);
 					} else
 						throw new VMException("Unknown use of unary - on type " + v0.type);
 					break;
@@ -219,7 +219,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				FunctionReferenceExpression expr = (FunctionReferenceExpression) expression;
 				VMFunction what = machine.findFunction(expr.name);
 				VMFunctionPointer pointer = new VMFunctionPointer(what);
-				result = new VMValue(pointer);
+				result = new VMValue(machine, pointer);
 			} else
 				throw new VMException("Unknown expression type " + expression.getClass().getName());
 		}
@@ -228,5 +228,16 @@ public class VMExpressionCallFrame extends VMCallFrame {
 			finished = true;
 		else
 			throw new VMException("Unknown object expression type " + expression.getClass().getName());
+	}
+
+	@Override
+	public String dumpFrame() {
+		StringBuilder frameInfo = new StringBuilder();
+		frameInfo.append("VMExpressionCallFrame: {");
+		frameInfo.append("i: ").append(i).append(", ");
+		frameInfo.append("j: ").append(j).append(", ");
+		frameInfo.append("k: ").append(k).append(", ");
+		frameInfo.append("expression: ").append(expression).append("}");
+		return frameInfo.toString();
 	}
 }

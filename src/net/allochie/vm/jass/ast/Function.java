@@ -18,7 +18,7 @@ public class Function {
 		StringBuilder result = new StringBuilder();
 		result.append(sig).append(", ");
 		result.append("locals: (").append(lvars).append("), ");
-		result.append(statements.size()).append(" statements, ");
+		result.append((statements != null) ? statements.size() : "<null>").append(" statements, ");
 		result.append((constant) ? "constant declaration" : "variable declaration");
 		return result.toString();
 	}

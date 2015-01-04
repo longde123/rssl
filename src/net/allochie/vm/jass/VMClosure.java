@@ -26,8 +26,8 @@ public class VMClosure {
 		return parent == null;
 	}
 
-	public void createVariable(VarDec dec) throws VMException {
-		VMVariable var = new VMVariable(this, dec);
+	public void createVariable(JASSMachine machine, VarDec dec) throws VMException {
+		VMVariable var = new VMVariable(machine, this, dec);
 		vars.put(var.dec.name.image, var);
 	}
 

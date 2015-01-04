@@ -12,4 +12,12 @@ public abstract class VMSpecialFrame extends VMCallFrame {
 	}
 
 	public abstract void doSpecialStep(JASSMachine machine) throws VMException;
+
+	public abstract void frameInfo(StringBuilder place);
+
+	public String dumpFrame() {
+		StringBuilder frameInfo = new StringBuilder();
+		frameInfo(frameInfo);
+		return frameInfo.toString();
+	}
 }

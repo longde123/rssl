@@ -191,4 +191,15 @@ public class VMCallFrame {
 		}
 
 	}
+
+	public String dumpFrame() {
+		StringBuilder frameInfo = new StringBuilder();
+		frameInfo.append("VMCallFrame: {");
+		frameInfo.append("i: ").append(i).append(", ");
+		frameInfo.append("j: ").append(j).append(", ");
+		frameInfo.append("k: ").append(k).append(", ");
+		frameInfo.append("currentOp: ").append(currentOp).append(", ");
+		frameInfo.append("statements: ").append(statements.size()).append("}");
+		return frameInfo.toString();
+	}
 }

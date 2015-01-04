@@ -23,17 +23,22 @@ public class VMVariable {
 			var.value = getPreviousCallResult();
 			finished = true;
 		}
+
+		@Override
+		public void frameInfo(StringBuilder place) {
+			place.append("VMSetInitFrame: ").append(var);
+		}
 	}
 
 	public final VarDec dec;
 	public final VMClosure closure;
 	private VMValue value;
 
-	public VMVariable(VMClosure closure, VarDec dec) {
+	public VMVariable(JASSMachine machine, VMClosure closure, VarDec dec) {
 		this.closure = closure;
 		this.dec = dec;
 		if (this.dec.array)
-			this.value = new VMValue(new HashMap<Integer, VMValue>()).unsafeApplyCast(dec.type);
+			this.value = new VMValue(machine, new HashMap<Integer, VMValue>()).unsafeApplyCast(dec.type);
 	}
 
 	public void init(JASSMachine machine, VMClosure top) throws VMException {
