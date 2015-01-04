@@ -47,6 +47,8 @@ public class VMType extends Type {
 			return Type.realType;
 		if (z instanceof String || z instanceof String[])
 			return Type.stringType;
+		if (z instanceof Boolean)
+			return Type.booleanType;
 		if (z instanceof VMFunctionPointer || z instanceof VMFunctionPointer[])
 			return Type.codeType;
 		return TypeRegistry.findPreferredType(z, machine);
@@ -55,6 +57,14 @@ public class VMType extends Type {
 	public static boolean arrayType(Object z) {
 		return (z instanceof Void[] || z instanceof Integer[] || z instanceof Float[] || z instanceof Double[]
 				|| z instanceof String[] || z instanceof VMFunctionPointer[]);
+	}
+
+	public static boolean numericType(Object z) {
+		return (z instanceof Integer || z instanceof Float || z instanceof Double);
+	}
+
+	public static boolean isTypeNumeric(Type t) {
+		return (t == Type.integerType || t == Type.realType);
 	}
 
 	public static boolean isInstanceOf(JASSMachine machine, Type t, Object z) {

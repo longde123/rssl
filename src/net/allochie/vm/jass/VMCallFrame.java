@@ -85,17 +85,23 @@ public class VMCallFrame extends VMStackFrame {
 		} else if (statement instanceof ConditionalStatement) {
 			ConditionalStatement conditional = (ConditionalStatement) statement;
 			while (conditional != null) {
-				if (!hasPreviousCallResult()) {
-					thread.resolveExpression(closure, conditional.conditional);
-					return;
-				}
-				VMValue state = getPreviousCallResult();
-				if (state.type != Type.booleanType)
-					throw new VMException("Cannot perform conditional on non-boolean");
-				if (state.asBooleanType())
+				if (conditional.conditional != null) {
+					if (!hasPreviousCallResult()) {
+						thread.resolveExpression(closure, conditional.conditional);
+						return;
+					}
+					VMValue state = getPreviousCallResult();
+					if (state.type != Type.booleanType)
+						throw new VMException("Cannot perform conditional on non-boolean");
+					if (state.asBooleanType()) {
+						thread.requestCall(closure, conditional);
+						break;
+					} else
+						conditional = conditional.child;
+				} else {
 					thread.requestCall(closure, conditional);
-				else
-					conditional = conditional.child;
+					break;
+				}
 			}
 		} else if (statement instanceof LoopExitStatement) {
 			LoopExitStatement exit = (LoopExitStatement) statement;

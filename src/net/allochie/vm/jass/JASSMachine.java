@@ -52,7 +52,6 @@ public class JASSMachine extends Thread {
 		for (JASSThread thread : threads) {
 			if (!thread.dead()) {
 				try {
-					System.out.println("Stepping thread.");
 					thread.advance();
 				} catch (VMException e) {
 					e.printStackTrace();

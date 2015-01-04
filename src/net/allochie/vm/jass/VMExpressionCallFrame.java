@@ -130,14 +130,39 @@ public class VMExpressionCallFrame extends VMCallFrame {
 					break;
 				case EQUALS:
 					result = new VMValue(machine, VMValue.areValuesEqual(v0, v1));
+					break;
 				case GT:
-					throw new VMException("Unknown use of operator < on types " + v0.type + " and " + v1.type);
+					if (VMType.isTypeNumeric(v0.type) && VMType.isTypeNumeric(v1.type)) {
+						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
+						VMValue what = new VMValue(machine, vv0 < vv1);
+						result = what.applyCast(machine, Type.booleanType);
+					} else
+						throw new VMException("Unknown use of operator < on types " + v0.type + " and " + v1.type);
+					break;
 				case GTEQ:
-					throw new VMException("Unknown use of operator <= on types " + v0.type + " and " + v1.type);
+					if (VMType.isTypeNumeric(v0.type) && VMType.isTypeNumeric(v1.type)) {
+						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
+						VMValue what = new VMValue(machine, vv0 <= vv1);
+						result = what.applyCast(machine, Type.booleanType);
+					} else
+						throw new VMException("Unknown use of operator <= on types " + v0.type + " and " + v1.type);
+					break;
 				case LT:
-					throw new VMException("Unknown use of operator > on types " + v0.type + " and " + v1.type);
+					if (VMType.isTypeNumeric(v0.type) && VMType.isTypeNumeric(v1.type)) {
+						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
+						VMValue what = new VMValue(machine, vv0 > vv1);
+						result = what.applyCast(machine, Type.booleanType);
+					} else
+						throw new VMException("Unknown use of operator > on types " + v0.type + " and " + v1.type);
+					break;
 				case LTEQ:
-					throw new VMException("Unknown use of operator >= on types " + v0.type + " and " + v1.type);
+					if (VMType.isTypeNumeric(v0.type) && VMType.isTypeNumeric(v1.type)) {
+						double vv0 = v0.asNumericType(), vv1 = v1.asNumericType();
+						VMValue what = new VMValue(machine, vv0 >= vv1);
+						result = what.applyCast(machine, Type.booleanType);
+					} else
+						throw new VMException("Unknown use of operator >= on types " + v0.type + " and " + v1.type);
+					break;
 				case NOTEQUALS:
 					result = new VMValue(machine, !VMValue.areValuesEqual(v0, v1));
 					break;
