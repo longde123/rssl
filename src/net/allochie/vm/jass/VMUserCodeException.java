@@ -32,9 +32,10 @@ public class VMUserCodeException extends VMException {
 					if (f.getType().equals(CodePlace.class)) {
 						f.setAccessible(true);
 						CodePlace place = (CodePlace) f.get(this.what);
-						what.append("(").append(f.getName()).append(":) ");
-						what.append(place);
-						what.append("\n");
+						if (place != null) {
+							what.append("\t").append(f.getName()).append(": ");
+							what.append(place).append("\n");
+						}
 					}
 				}
 			} catch (Throwable t) {
