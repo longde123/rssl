@@ -18,6 +18,7 @@ import net.allochie.vm.jass.ast.statement.ConditionalStatement;
 import net.allochie.vm.jass.ast.statement.LoopStatement;
 import net.allochie.vm.jass.global.NativeMethodRegistry;
 import net.allochie.vm.jass.global.TypeRegistry;
+import net.allochie.vm.jass.natives.NativeThreading;
 import net.allochie.vm.jass.parser.JASSParser;
 import net.allochie.vm.jass.parser.ParseException;
 import net.allochie.vm.jass.types.BooleanFuncWrapper;
@@ -33,6 +34,9 @@ public class JASSTest {
 
 			TypeRegistry.registerTypeWithClass("boolexpr", BooleanFuncWrapper.class);
 			NativeMethodRegistry.registerNativeMethodProvider(BooleanFuncWrapper.class);
+
+			TypeRegistry.registerTypeWithClass("thread", JASSThread.class);
+			NativeMethodRegistry.registerNativeMethodProvider(NativeThreading.class);
 
 			JASSMachine machine = new JASSMachine("Demo machine");
 			try {

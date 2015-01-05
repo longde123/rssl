@@ -72,7 +72,7 @@ public class VMValue {
 
 	@Override
 	public String toString() {
-		return value.toString();
+		return (value != null) ? value.toString() : "<null>";
 	}
 
 	public double asNumericType() throws VMException {

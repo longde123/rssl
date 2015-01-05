@@ -37,7 +37,7 @@ public class VMClosure {
 		if (var != null)
 			return var;
 		if (parent != null) {
-			var = parent.vars.get(var);
+			var = parent.getVariable(identifier);
 			if (var != null)
 				return var;
 			throw new VMException("Undefined identifier " + identifier.image);

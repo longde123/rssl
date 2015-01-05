@@ -2,9 +2,7 @@ package net.allochie.vm.jass;
 
 import java.util.Stack;
 
-import net.allochie.vm.jass.VMVariable.VMSetInitFrame;
 import net.allochie.vm.jass.ast.Function;
-import net.allochie.vm.jass.ast.Identifier;
 import net.allochie.vm.jass.ast.JASSFile;
 import net.allochie.vm.jass.ast.Param;
 import net.allochie.vm.jass.ast.Type;
@@ -63,7 +61,7 @@ public class JASSThread {
 	public void runThread() throws VMException {
 		VMFunction function = machine.findFunction(invokeFunc);
 		if (function == null)
-			throw new VMException("Can't start thread, no such function exists");
+			throw new VMException("Can't start thread, no function named " + invokeFunc);
 		requestCall(top, function, new VMValue[0]);
 	}
 
@@ -104,8 +102,10 @@ public class JASSThread {
 				throw new VMException("Unknown definition type " + what.getClass().getName());
 		}
 
-		for (Function func : file.funcs)
+		for (Function func : file.funcs) {
 			machine.funcs.put(func.sig.id.image, new VMFunction(func));
+			System.out.println("vmfunc: " + machine.funcs.get(func.sig.id.image));
+		}
 	}
 
 	public void setFrequency(int speed) {
@@ -155,7 +155,7 @@ public class JASSThread {
 		}
 	}
 
-	public void requestCallImmediate(VMClosure closure, VMFunction function, VMValue[] args) throws VMException {
+	public void foreignCallImmediately(VMClosure closure, VMFunction function, VMValue[] args) throws VMException {
 		VMStackFrame topFrame = getCurrentFrame();
 		requestCall(closure, function, args);
 		advanceUntilFrame(topFrame);
@@ -240,6 +240,10 @@ public class JASSThread {
 			if (callStack.size() != 0)
 				callStack.peek().setInvokeResult(last.getReturnResult());
 		}
+	}
+
+	public boolean running() {
+		return isInit && !isDead;
 	}
 
 }

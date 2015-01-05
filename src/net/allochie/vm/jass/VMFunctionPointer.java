@@ -15,4 +15,12 @@ public class VMFunctionPointer {
 		this.functionName = name;
 	}
 
+	@Override
+	public String toString() {
+		if (functionVal != null)
+			return "FunctionPointer: real ref < " + functionVal + " >";
+		else
+			return "FunctionPointer: name ref < " + functionName + " >";
+	}
+
 }

@@ -30,7 +30,7 @@ public class BooleanFuncWrapper {
 		if (wx == null)
 			throw new Exception("Can't find pointer function!");
 		// TODO: this will dirty the stack of the calling thread. :c
-		vm.thread.requestCallImmediate(vm.closure, wx, new VMValue[0]);
+		vm.thread.foreignCallImmediately(vm.closure, wx, new VMValue[0]);
 		return vm.thread.callStack.peek().getPreviousCallResult().asBooleanType();
 	}
 

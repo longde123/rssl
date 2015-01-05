@@ -169,7 +169,7 @@ public class VMCallFrame extends VMStackFrame {
 			if (!VMType.instanceofType(result.type, var.dec.type))
 				throw new VMUserCodeException(statement, "Incorrect type for set, got " + result.type + ", expected "
 						+ var.dec.type);
-			var.safeSetValue(getPreviousCallResult());
+			var.safeSetValue(result);
 		} else if (statement != null)
 			throw new VMException("Unknown statement type " + statement.getClass().getName());
 		if (hasPreviousCallResult())
