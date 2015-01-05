@@ -1,18 +1,16 @@
 package net.allochie.vm.jass.ast;
 
-import java.util.HashMap;
-
 import net.allochie.vm.jass.global.TypeRegistry;
 
 public class Type {
 
-	public static Type codeType = new Type("code");
-	public static Type handleType = new Type("handle");
-	public static Type integerType = new Type("integer");
-	public static Type realType = new Type("real");
-	public static Type booleanType = new Type("boolean");
-	public static Type stringType = new Type("string");
-	public static Type nullType = new Type("null");
+	public static Type codeType = Type.fromIdentifier("code");
+	public static Type handleType = Type.fromIdentifier("handle");
+	public static Type integerType = Type.fromIdentifier("integer");
+	public static Type realType = Type.fromIdentifier("real");
+	public static Type booleanType = Type.fromIdentifier("boolean");
+	public static Type stringType = Type.fromIdentifier("string");
+	public static Type nullType = Type.fromIdentifier("null");
 
 	/** Type name image */
 	public final String typename;
@@ -22,7 +20,11 @@ public class Type {
 	}
 
 	public static Type fromIdentifier(Identifier typetoken) {
-		return (Type) TypeRegistry.fromString(typetoken.image);
+		return Type.fromIdentifier(typetoken.image);
+	}
+
+	public static Type fromIdentifier(String what) {
+		return TypeRegistry.fromString(what);
 	}
 
 	@Override

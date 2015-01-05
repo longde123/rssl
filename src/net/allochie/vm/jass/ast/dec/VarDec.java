@@ -1,6 +1,7 @@
 package net.allochie.vm.jass.ast.dec;
 
 import net.allochie.vm.jass.VMValue;
+import net.allochie.vm.jass.ast.CodePlace;
 import net.allochie.vm.jass.ast.Identifier;
 import net.allochie.vm.jass.ast.Type;
 import net.allochie.vm.jass.ast.expression.Expression;
@@ -17,6 +18,7 @@ public class VarDec extends Dec {
 	public Expression init;
 	/** The constant declaration flag */
 	public boolean constant;
+	public CodePlace where;
 
 	public VarDec() {
 	}

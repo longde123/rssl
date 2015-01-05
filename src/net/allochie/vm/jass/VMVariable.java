@@ -64,7 +64,7 @@ public class VMVariable {
 	public void safeSetValue(VMValue val) throws VMException {
 		if (val == null)
 			throw new VMException("Cannot put nullpointer reference in variable " + dec.name);
-		if (!val.type.equals(dec.type))
+		if (!VMType.instanceofType(val.type, dec.type))
 			throw new VMException("Cannot store value type " + val.type + " in var " + dec.name + " with type "
 					+ dec.type);
 		value = val;

@@ -92,9 +92,10 @@ JASSFile file(): {
 TypeDec typedef(): { 
 	TypeDec dec = new TypeDec();
 	Identifier tmp0, tmp1;
+	Token cp0;
 }
 {
-	<TYPE>
+	cp0 = <TYPE> { dec.where = new CodePlace(cp0); }
 	tmp0 = id() { dec.id = tmp0; }
 	<EXTENDS> 
 	(
@@ -107,9 +108,10 @@ TypeDec typedef(): {
 
 GlobalsDec globals(): { 
 	GlobalsDec dec = new GlobalsDec();
+	Token cp0;
 }
 {
-	<GLOBALS>
+	cp0 = <GLOBALS> { dec.where = new CodePlace(cp0); }
 	global_var_list(dec)
 	<ENDGLOBALS> { return dec; }
 }
@@ -119,10 +121,11 @@ void global_var_list(GlobalsDec dec): {
 	Identifier tmp1;
 	Expression tmp2;
 	VarDec tmp3;
+	Token cp0;
 }
 {
 	(
-		<CONSTANT> { tmp3 = new VarDec(); tmp3.constant = true; }
+		cp0 = <CONSTANT> { dec.where = new CodePlace(cp0); tmp3 = new VarDec(); tmp3.constant = true; }
 		tmp0 = type() { tmp3.type = tmp0; }
 		tmp1 = id()  { tmp3.name = tmp1; }
 		"="
@@ -136,11 +139,12 @@ NativeFuncDef native_func(): {
 	NativeFuncDef def;
 	FuncDef def0;
 	boolean flag0 = false;
+	Token cp0;
 }
 {
 	( <CONSTANT> { flag0 = true; } )? 
- 	<NATIVE> 
- 	def0 = func_declr() { def = new NativeFuncDef(def0, flag0); return def; }
+ 	cp0 = <NATIVE>
+ 	def0 = func_declr() { def = new NativeFuncDef(def0, flag0); def.where = new CodePlace(cp0); return def; }
 }
 
 FuncDef func_declr(): {
@@ -182,10 +186,11 @@ ParamList param_list(): {
 Function func(): { 
 	Function func = new Function();
 	FuncDef tmp0; VarList tmp1; StatementList tmp2;
+	Token cp0;
 }
 { 
 	( <CONSTANT> { func.constant = true; } )?
-	<FUNCTION>
+	cp0 = <FUNCTION> { func.where = new CodePlace(cp0); }
 	tmp0 = func_declr() { func.sig = tmp0; }
 	tmp1 = local_var_list() { func.lvars = tmp1; }
 	tmp2 = statement_list() { func.statements = tmp2; }
@@ -196,11 +201,13 @@ Function func(): {
 VarList local_var_list(): {
 	VarList list = new VarList();
 	VarDec tmp0;
+	Token cp0;
+	CodePlace place;
 }
 {
 	(
-		<LOCAL> 
-		tmp0 = var_declr() { list.add(tmp0); }
+		cp0 = <LOCAL> { place = new CodePlace(cp0); } 
+		tmp0 = var_declr() { tmp0.where = place; list.add(tmp0); }
 	)* { return list; }
 }
 
@@ -248,14 +255,15 @@ Statement statement(): {
 Statement set(): { 
 	SetStatement setStmt; SetArrayStatement setArrStmt;
 	Identifier tmp0; Expression tmp1, tmp2;
+	Token cp0;
 }
 {
-		<SET> { setStmt = new SetStatement(); }
+		cp0 = <SET> { setStmt = new SetStatement(); setStmt.where = new CodePlace(cp0); }
 		tmp0 = id() { setStmt.id = tmp0; }
 		"=" 
 		tmp1 = expr() { setStmt.val = tmp1; return setStmt; } 
 	| 
-		<SET> { setArrStmt = new SetArrayStatement(); }
+		cp0 = <SET> { setArrStmt = new SetArrayStatement(); setArrStmt.where = new CodePlace(cp0); }
 		tmp0 = id() { setArrStmt.id = tmp0; }
 		"[" 
 		tmp1 = expr() { setArrStmt.idx = tmp1; }
@@ -268,9 +276,10 @@ Statement set(): {
 Statement call(): { 
 	CallStatement stmt;
 	Identifier tmp0; ParamInvokeList tmp1;
+	Token cp0;
 }
 {
-	<CALL> { stmt = new CallStatement(); }
+	cp0 = <CALL> { stmt = new CallStatement(); stmt.where = new CodePlace(cp0); }
 	tmp0 = id() { stmt.id = tmp0; } 
 	"(" 
 	(
@@ -295,9 +304,10 @@ ParamInvokeList args(): {
 Statement ifthenelse(): {
 	ConditionalStatement stmt;
 	Expression tmp0; StatementList tmp1; ConditionalStatement tmp2;
+	Token cp0;
 }
 {
-	<IF> { stmt = new ConditionalStatement(StatementType.IF); }
+	cp0 = <IF> { stmt = new ConditionalStatement(StatementType.IF); stmt.where = new CodePlace(cp0); }
 	tmp0 = expr() { stmt.conditional = tmp0; }
 	<THEN> 
 	tmp1 = statement_list()  { stmt.statements = tmp1; } 
@@ -310,12 +320,13 @@ Statement ifthenelse(): {
 ConditionalStatement else_clause(): { 
 	ConditionalStatement nest = new ConditionalStatement();
 	Expression tmp0; StatementList tmp1; ConditionalStatement tmp2;
+	Token cp0;
 } 
 {
-		<ELSE> { nest.type = StatementType.ELSE; }
+		cp0 = <ELSE> { nest.type = StatementType.ELSE; nest.where = new CodePlace(cp0); }
 		tmp1 = statement_list()  { nest.statements = tmp1; return nest; } 
 	|
-		<ELSEIF> { nest.type = StatementType.ELSEIF; }
+		cp0 = <ELSEIF> { nest.type = StatementType.ELSEIF; nest.where = new CodePlace(cp0); }
 		tmp0 = expr() { nest.conditional = tmp0; }
 		<THEN> 
 		tmp1 = statement_list()  { nest.statements = tmp1; } 
@@ -327,9 +338,10 @@ ConditionalStatement else_clause(): {
 Statement loop(): { 
 	LoopStatement stmt;
 	StatementList tmp0;
+	Token cp0;
 }
 {
-	<LOOP> { stmt = new LoopStatement(); }
+	cp0 = <LOOP> { stmt = new LoopStatement(); stmt.where = new CodePlace(cp0); }
 	tmp0 = statement_list() { stmt.statements = tmp0; }
 	<ENDLOOP> { return stmt; }
 }
@@ -337,18 +349,20 @@ Statement loop(): {
 Statement exitwhen(): {
 	LoopExitStatement stmt; 
 	Expression tmp0;
+	Token cp0;
 }
 {
-	<EXITWHEN> { stmt = new LoopExitStatement(); }
+	cp0 = <EXITWHEN> { stmt = new LoopExitStatement(); stmt.where = new CodePlace(cp0); }
 	tmp0 = expr() { stmt.conditional = tmp0; return stmt; }
 }
 
 Statement retn(): {
 	ReturnStatement stmt;
 	Expression tmp0;
+	Token cp0;
 }
 {
-	<RETURN> { stmt = new ReturnStatement(); }
+	cp0 = <RETURN> { stmt = new ReturnStatement(); stmt.where = new CodePlace(cp0); }
 	(
 		tmp0 = expr() { stmt.expression = tmp0; }
 	)? { return stmt; }
@@ -356,9 +370,10 @@ Statement retn(): {
 
 Statement debug(): { 
 	Statement rt;
+	Token cp0;
 }
 {
-	<DEBUG> 
+	cp0 = <DEBUG>
 	(
 			rt = set() 
 		| 
@@ -367,7 +382,7 @@ Statement debug(): {
 			rt = ifthenelse() 
 		| 
 			rt = loop()
-	) { rt.debug = true; return rt; }
+	) { rt.debug = true; rt.debugWhere = new CodePlace(cp0);  return rt; }
 }
 
 Expression expr(): {

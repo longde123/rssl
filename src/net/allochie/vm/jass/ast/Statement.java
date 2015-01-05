@@ -6,5 +6,6 @@ public class Statement {
 
 	/** Debug flag */
 	public boolean debug;
+	public CodePlace debugWhere;
 
 }

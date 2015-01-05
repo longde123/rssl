@@ -7,6 +7,7 @@ import net.allochie.vm.jass.ast.Function;
 import net.allochie.vm.jass.ast.Identifier;
 import net.allochie.vm.jass.ast.JASSFile;
 import net.allochie.vm.jass.ast.Param;
+import net.allochie.vm.jass.ast.Type;
 import net.allochie.vm.jass.ast.dec.Dec;
 import net.allochie.vm.jass.ast.dec.GlobalsDec;
 import net.allochie.vm.jass.ast.dec.NativeFuncDef;
@@ -73,7 +74,19 @@ public class JASSThread {
 				if (type.type == null)
 					if (!machine.types.containsKey(type.typename.image))
 						throw new VMException("Cannot extend unknown type " + type.typename.image);
-				machine.types.put(type.id.image, TypeRegistry.fromString(type.id.image));
+				machine.types.put(type.id.image, (VMType) TypeRegistry.fromString(type.id.image));
+				if (type.type == null)
+					machine.types.get(type.id.image).setExtensionOf(type.typename.image);
+				else {
+					switch (type.type) {
+					case HANDLE:
+						machine.types.get(type.id.image).setExtensionOf(Type.handleType);
+						break;
+					default:
+						break;
+					
+					}
+				}
 			} else if (what instanceof GlobalsDec) {
 				GlobalsDec heap = (GlobalsDec) what;
 				for (VarDec var : heap.decs) {

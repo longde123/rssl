@@ -30,8 +30,9 @@ public class NativeMethodRegistry {
 						if (fargs.length == args.length) {
 							boolean flag = true;
 							for (int i = 0; i < fargs.length; i++)
-								if (fargs[i] != args[i])
-									flag = false;
+								if (fargs[i] != Object.class)
+									if (fargs[i] != args[i])
+										flag = false;
 							if (flag) {
 								owner = vals.get(zz);
 								method = m;

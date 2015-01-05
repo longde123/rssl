@@ -1,5 +1,6 @@
 package net.allochie.vm.jass.ast.statement;
 
+import net.allochie.vm.jass.ast.CodePlace;
 import net.allochie.vm.jass.ast.Statement;
 import net.allochie.vm.jass.ast.StatementList;
 import net.allochie.vm.jass.ast.expression.Expression;
@@ -14,6 +15,7 @@ public class ConditionalStatement extends Statement {
 	public ConditionalStatement child;
 	/** The type of conditional */
 	public StatementType type;
+	public CodePlace where;
 
 	public ConditionalStatement() {
 	}

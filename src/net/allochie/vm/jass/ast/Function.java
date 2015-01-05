@@ -12,6 +12,7 @@ public class Function {
 	public VarList lvars;
 	/** Function statement heap */
 	public StatementList statements;
+	public CodePlace where;
 
 	@Override
 	public String toString() {

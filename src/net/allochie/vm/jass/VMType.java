@@ -29,8 +29,30 @@ public class VMType extends Type {
 	}
 
 	/**
-	 * Find the VM type of an object. If the object has no native type in the
-	 * VM, the type is HANDLE. If the object is null, the VM type is NULLTYPE.
+	 * <p>
+	 * Find the VM type of an object.
+	 * </p>
+	 * 
+	 * <p>
+	 * <ul>
+	 * <li>If the object is NULL, or Void or Void[], the type is nulltype</li>
+	 * <li>If the object is Integer or Integer[], the type is integertype</li>
+	 * <li>If the object is Float, Float[], Double or Double[], the type is
+	 * realtype</li>
+	 * <li>If the object is String or String[], the type is stringtype</li>
+	 * <li>If the object is Boolean or Boolean[], the type is booleantype</li>
+	 * <li>If the object is VMFunctionPointer or VMFunctionPointer[], the type
+	 * is codetype</li>
+	 * <li>Else, the VM asks the type registry if it knows what "type name" the
+	 * object is, and:
+	 * <ul>
+	 * <li>If the registry does not have an explicit type for the object, the
+	 * type is HANDLE and cannot be cast; or</li>
+	 * <li>The registry has an explicit type name for the object; the type name
+	 * is provided and the handle can be cast to that type name or any parent of
+	 * the type (including HANDLE).</li></li>
+	 * </ul>
+	 * </p>
 	 * 
 	 * @param machine
 	 *            The working VM
@@ -47,11 +69,42 @@ public class VMType extends Type {
 			return Type.realType;
 		if (z instanceof String || z instanceof String[])
 			return Type.stringType;
-		if (z instanceof Boolean)
+		if (z instanceof Boolean || z instanceof Boolean[])
 			return Type.booleanType;
 		if (z instanceof VMFunctionPointer || z instanceof VMFunctionPointer[])
 			return Type.codeType;
 		return TypeRegistry.findPreferredType(z, machine);
+	}
+
+	public static boolean isInstanceOf(JASSMachine machine, Type t, Object z) {
+		return instanceofType(findType(machine, z), t);
+	}
+
+	/**
+	 * Determines if the source type is an instance of the receiving type.
+	 * 
+	 * @param src
+	 *            The source type.
+	 * @param recv
+	 *            The receiving type.
+	 * @return If the source type is an instance of the receiving type.
+	 */
+	public static boolean instanceofType(Type src, Type recv) {
+		if (src.equals(recv))
+			return true;
+		if ((src instanceof VMType) && (recv instanceof VMType)) {
+			VMType a = (VMType) src, rt = (VMType) recv;
+			while (a != null) {
+				if (rt.mutableOf(a))
+					return true;
+				a = a.parentType;
+			}
+		}
+		return false;
+	}
+
+	private boolean mutableOf(VMType a) {
+		return a.typename.equals(typename);
 	}
 
 	public static boolean arrayType(Object z) {
@@ -67,11 +120,22 @@ public class VMType extends Type {
 		return (t == Type.integerType || t == Type.realType);
 	}
 
-	public static boolean isInstanceOf(JASSMachine machine, Type t, Object z) {
-		return (findType(machine, z) == t);
+	private VMType parentType;
+
+	public VMType(String type) {
+		super(type);
 	}
 
-	public VMType(String typename) {
-		super(typename);
+	public void setExtensionOf(String image) {
+		setExtensionOf(TypeRegistry.fromString(image));
+	}
+
+	public void setExtensionOf(Type handleType) {
+		this.parentType = (VMType) handleType;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return false;
 	}
 }

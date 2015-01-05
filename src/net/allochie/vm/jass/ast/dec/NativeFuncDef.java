@@ -1,11 +1,14 @@
 package net.allochie.vm.jass.ast.dec;
 
+import net.allochie.vm.jass.ast.CodePlace;
+
 public class NativeFuncDef extends Dec {
 
 	/** The function signature */
 	public FuncDef def;
 	/** Constant declaration flag */
 	public boolean constant;
+	public CodePlace where;
 
 	public NativeFuncDef(FuncDef def, boolean constant) {
 		this.def = def;

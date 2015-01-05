@@ -2,6 +2,7 @@ package net.allochie.vm.jass.global;
 
 import net.allochie.vm.jass.JASSMachine;
 import net.allochie.vm.jass.VMType;
+import net.allochie.vm.jass.ast.Identifier;
 import net.allochie.vm.jass.ast.Type;
 
 import java.util.ArrayList;
@@ -33,10 +34,10 @@ public class TypeRegistry {
 		dict.get(typename.toLowerCase()).add(what);
 	}
 
-	public static VMType fromString(String s) {
-		if (!TypeRegistry.typeMap.containsKey(s))
-			TypeRegistry.typeMap.put(s, new VMType(s));
-		return TypeRegistry.typeMap.get(s);
+	public static Type fromString(String type) {
+		if (!TypeRegistry.typeMap.containsKey(type))
+			TypeRegistry.typeMap.put(type, new VMType(type));
+		return TypeRegistry.typeMap.get(type);
 	}
 
 }

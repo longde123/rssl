@@ -2,9 +2,12 @@ package net.allochie.vm.jass.ast.dec;
 
 import java.util.ArrayList;
 
+import net.allochie.vm.jass.ast.CodePlace;
+
 public class GlobalsDec extends Dec {
 
 	public ArrayList<VarDec> decs;
+	public CodePlace where;
 
 	public GlobalsDec() {
 		this.decs = new ArrayList<VarDec>();
