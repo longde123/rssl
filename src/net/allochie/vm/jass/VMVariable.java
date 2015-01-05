@@ -2,6 +2,7 @@ package net.allochie.vm.jass;
 
 import java.util.HashMap;
 
+import net.allochie.vm.jass.ast.Statement;
 import net.allochie.vm.jass.ast.dec.VarDec;
 
 public class VMVariable {
@@ -9,11 +10,13 @@ public class VMVariable {
 	class VMSetInitFrame extends VMStackFrame {
 		private VMVariable var;
 		private VMClosure closure;
+		private VarDec statement;
 		private boolean finished = false;
 
-		public VMSetInitFrame(VMClosure closure, VMVariable var) {
+		public VMSetInitFrame(VMClosure closure, VarDec statement, VMVariable var) {
 			this.closure = closure;
 			this.var = var;
+			this.statement = statement;
 		}
 
 		@Override
@@ -22,7 +25,11 @@ public class VMVariable {
 				thread.resolveExpression(closure, dec.init);
 				return;
 			}
-			var.safeSetValue(getPreviousCallResult());
+			VMValue result = getPreviousCallResult();
+			if (!VMType.instanceofType(result.type, var.dec.type))
+				throw new VMUserCodeException(statement, "Invalid initializer, got " + result.type + ", expected "
+						+ var.dec.type);
+			var.safeSetValue(result);
 			finished = true;
 		}
 
@@ -48,9 +55,9 @@ public class VMVariable {
 			this.value = new VMValue(machine, new HashMap<Integer, VMValue>()).unsafeApplyCast(dec.type);
 	}
 
-	public void init(JASSThread thread, VMClosure top) throws VMException {
+	public void init(JASSThread thread, VarDec var, VMClosure top) throws VMException {
 		if (dec.init != null) {
-			VMSetInitFrame frame = new VMSetInitFrame(top, this);
+			VMSetInitFrame frame = new VMSetInitFrame(top, var, this);
 			thread.requestFrame(frame);
 		}
 	}

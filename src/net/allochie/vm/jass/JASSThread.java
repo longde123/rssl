@@ -84,7 +84,7 @@ public class JASSThread {
 						break;
 					default:
 						break;
-					
+
 					}
 				}
 			} else if (what instanceof GlobalsDec) {
@@ -94,7 +94,7 @@ public class JASSThread {
 						throw new VMException("Cannot redeclare existing variable " + var.name.image);
 					machine.globals.put(var.name.image, new VMVariable(machine, top, var));
 					VMStackFrame topFrame = getCurrentFrame();
-					machine.globals.get(var.name.image).init(this, top);
+					machine.globals.get(var.name.image).init(this, var, top);
 					advanceUntilFrame(topFrame);
 				}
 			} else if (what instanceof NativeFuncDef) {
@@ -146,7 +146,7 @@ public class JASSThread {
 			if (function.lvars != null)
 				for (VarDec var : function.lvars) {
 					child.createVariable(machine, var);
-					child.getVariable(var.name).init(this, child);
+					child.getVariable(var.name).init(this, var, child);
 					advanceUntilFrame(topFrame);
 				}
 

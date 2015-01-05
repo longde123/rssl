@@ -59,11 +59,11 @@ public class VMCallFrame extends VMStackFrame {
 			CallStatement call = (CallStatement) statement;
 			VMFunction function = machine.findFunction(call.id);
 			if (function == null)
-				throw new VMException("Cannot call undefined function " + call.id);
+				throw new VMUserCodeException(statement, "Cannot call undefined function " + call.id);
 			int numParams = function.sig.params.size();
 			int providedParams = (call.params != null) ? call.params.size() : 0;
 			if (numParams != providedParams)
-				throw new VMException("Incorrect number of parameters for function call");
+				throw new VMUserCodeException(statement, "Incorrect number of parameters for function call");
 			if (store2 == null)
 				store2 = new VMValue[numParams];
 			while (j < numParams) {
@@ -73,8 +73,8 @@ public class VMCallFrame extends VMStackFrame {
 				}
 				store2[j] = getPreviousCallResult();
 				if (function.sig.params.get(j).type != store2[j].type)
-					throw new VMException("Incorrect parameter type for call " + function.sig.id + ": got "
-							+ store2[j].type + ", expected " + function.sig.params.get(j).type);
+					throw new VMUserCodeException(statement, "Incorrect parameter type for call " + function.sig.id
+							+ ": got " + store2[j].type + ", expected " + function.sig.params.get(j).type);
 				j++;
 			}
 			if (i == 0) {
@@ -93,7 +93,7 @@ public class VMCallFrame extends VMStackFrame {
 					}
 					VMValue state = getPreviousCallResult();
 					if (state.type != Type.booleanType)
-						throw new VMException("Cannot perform conditional on non-boolean");
+						throw new VMUserCodeException(statement, "Cannot perform conditional on non-boolean");
 					if (state.asBooleanType()) {
 						thread.requestCall(closure, conditional);
 						break;
@@ -112,7 +112,7 @@ public class VMCallFrame extends VMStackFrame {
 			}
 			VMValue state = getPreviousCallResult();
 			if (state.type != Type.booleanType)
-				throw new VMException("Cannot leave loop on non-boolean");
+				throw new VMUserCodeException(statement, "Cannot leave loop on non-boolean");
 			if (state.asBooleanType())
 				finished = true;
 		} else if (statement instanceof LoopStatement) {
@@ -132,7 +132,7 @@ public class VMCallFrame extends VMStackFrame {
 			SetArrayStatement arrayset = (SetArrayStatement) statement;
 			VMVariable var = closure.getVariable(arrayset.id);
 			if (!var.dec.array)
-				throw new VMException("Not an array");
+				throw new VMUserCodeException(statement, "Not an array");
 			HashMap<Integer, VMValue> what = var.safeValue().asArrayType();
 			if (store0 == null) {
 				if (!hasPreviousCallResult()) {
@@ -150,12 +150,13 @@ public class VMCallFrame extends VMStackFrame {
 			}
 			VMValue index = store0, whatSet = store1;
 			if (index.type != Type.integerType)
-				throw new VMException(Type.integerType.typename + " expected, got " + index.type.typename);
+				throw new VMUserCodeException(statement, Type.integerType.typename + " expected, got "
+						+ index.type.typename);
 			Integer idx = (Integer) index.value;
 			if (0 > idx)
-				throw new VMException("Index out of bounds");
+				throw new VMUserCodeException(statement, "Index out of bounds");
 			if (whatSet.type != var.dec.type)
-				throw new VMException(var.dec.type + " expected, got " + whatSet.type);
+				throw new VMUserCodeException(statement, var.dec.type + " expected, got " + whatSet.type);
 			what.put(idx, whatSet);
 		} else if (statement instanceof SetStatement) {
 			SetStatement set = (SetStatement) statement;
@@ -164,6 +165,10 @@ public class VMCallFrame extends VMStackFrame {
 				thread.resolveExpression(closure, set.val);
 				return;
 			}
+			VMValue result = getPreviousCallResult();
+			if (!VMType.instanceofType(result.type, var.dec.type))
+				throw new VMUserCodeException(statement, "Incorrect type for set, got " + result.type + ", expected "
+						+ var.dec.type);
 			var.safeSetValue(getPreviousCallResult());
 		} else if (statement != null)
 			throw new VMException("Unknown statement type " + statement.getClass().getName());

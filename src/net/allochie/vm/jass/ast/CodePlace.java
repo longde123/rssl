@@ -12,4 +12,9 @@ public class CodePlace {
 		this.column = what.beginColumn;
 	}
 
+	@Override
+	public String toString() {
+		return "line " + line + ", col " + column;
+	}
+
 }
