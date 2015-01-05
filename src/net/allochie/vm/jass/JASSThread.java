@@ -102,10 +102,8 @@ public class JASSThread {
 				throw new VMException("Unknown definition type " + what.getClass().getName());
 		}
 
-		for (Function func : file.funcs) {
+		for (Function func : file.funcs)
 			machine.funcs.put(func.sig.id.image, new VMFunction(func));
-			System.out.println("vmfunc: " + machine.funcs.get(func.sig.id.image));
-		}
 	}
 
 	public void setFrequency(int speed) {
@@ -214,22 +212,24 @@ public class JASSThread {
 			init();
 		if (!isInit)
 			throw new VMException("Failed to init thread");
-
-		int count = frequency;
-		while (count >= 0) {
-			if (interrupted())
-				break;
-			if (callStack.size() == 0)
-				break;
-			advanceFrame();
-			count--;
+		try {
+			int count = frequency;
+			while (count > 0) {
+				if (interrupted())
+					break;
+				if (callStack.size() == 0)
+					break;
+				advanceFrame();
+				count--;
+			}
+		} catch (VMException e) {
+			isDead = true;
+			throw e;
 		}
 
 		flushInterrupts();
-		if (callStack.size() == 0) {
-			System.out.println("Finished thread.");
+		if (callStack.size() == 0)
 			isDead = true;
-		}
 	}
 
 	private void advanceFrame() throws VMException {

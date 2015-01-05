@@ -62,10 +62,8 @@ public class JASSMachine extends Thread {
 					}
 					dead.add(thread);
 				}
-				if (thread.dead()) {
-					System.out.println("Thread done!");
+				if (thread.dead()) 
 					dead.add(thread);
-				}
 			}
 		}
 		if (dead.size() > 0) {
