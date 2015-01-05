@@ -19,6 +19,7 @@ import net.allochie.vm.jass.ast.statement.LoopStatement;
 import net.allochie.vm.jass.global.NativeMethodRegistry;
 import net.allochie.vm.jass.global.TypeRegistry;
 import net.allochie.vm.jass.natives.NativeThreading;
+import net.allochie.vm.jass.natives.NativeTypeCasts;
 import net.allochie.vm.jass.parser.JASSParser;
 import net.allochie.vm.jass.parser.ParseException;
 import net.allochie.vm.jass.types.BooleanFuncWrapper;
@@ -37,6 +38,7 @@ public class JASSTest {
 
 			TypeRegistry.registerTypeWithClass("thread", JASSThread.class);
 			NativeMethodRegistry.registerNativeMethodProvider(NativeThreading.class);
+			NativeMethodRegistry.registerNativeMethodProvider(NativeTypeCasts.class);
 
 			JASSMachine machine = new JASSMachine("Demo machine");
 			try {
@@ -48,21 +50,10 @@ public class JASSTest {
 			} catch (VMException e) {
 				e.printStackTrace();
 			}
-			System.out.println("All done!");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}
-	}
-
-	private static void listStatements(StatementList list, String prefix) {
-		for (Statement s : list) {
-			System.out.println(prefix + s);
-			if (s instanceof LoopStatement)
-				listStatements(((LoopStatement) s).statements, prefix + "  ");
-			if (s instanceof ConditionalStatement)
-				listStatements(((ConditionalStatement) s).statements, prefix + "  ");
 		}
 	}
 }
