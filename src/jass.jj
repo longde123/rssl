@@ -1,3 +1,7 @@
+/**
+ * AST definition file 
+ */
+
 options {
 	LOOKAHEAD = 4;						/** far ahead */
 	CHOICE_AMBIGUITY_CHECK = 2;		
@@ -35,15 +39,18 @@ public class JASSParser
 }
 PARSER_END(JASSParser)
 
+/* Skip spaces, tabs, newlines, returns and comments */
 SKIP : { 
 	" " | "\t" | 
 	"\r\n" | "\n" | "\r" |
 	"//" : WithinComment0
 }
 
+/* In comments, skip to the EOL */
 <WithinComment0> SKIP : { "\r\n" : DEFAULT | "\n" : DEFAULT | "\r" : DEFAULT }
 <WithinComment0> MORE : { <~[]> }
 
+/* Token list */
 TOKEN : {
 	<TYPE: "type"> | 
 	<EXTENDS: "extends"> | 
@@ -75,6 +82,8 @@ TOKEN : {
 
 }
 
+/* Main production; creates one file with typedef, globals, 
+	native_func or func entries. */
 JASSFile file(): { 
 	JASSFile file = new JASSFile();
 	Dec tmp0; Function tmp1;
@@ -89,6 +98,8 @@ JASSFile file(): {
 	{ return file; }
 }
 
+/* Type defintion: a type name and a rawtype or
+	a type name and an existing type to extend */
 TypeDec typedef(): { 
 	TypeDec dec = new TypeDec();
 	Identifier tmp0, tmp1;
@@ -106,6 +117,7 @@ TypeDec typedef(): {
 	) { return dec; }
 }
 
+/* A globals block */
 GlobalsDec globals(): { 
 	GlobalsDec dec = new GlobalsDec();
 	Token cp0;
@@ -116,6 +128,7 @@ GlobalsDec globals(): {
 	<ENDGLOBALS> { return dec; }
 }
 
+/* A list of vars in the block */
 void global_var_list(GlobalsDec dec): {
 	Type tmp0;
 	Identifier tmp1;
@@ -135,6 +148,7 @@ void global_var_list(GlobalsDec dec): {
 	)*
 }
 
+/* A native function definition */
 NativeFuncDef native_func(): {
 	NativeFuncDef def;
 	FuncDef def0;
@@ -147,6 +161,7 @@ NativeFuncDef native_func(): {
  	def0 = func_declr() { def = new NativeFuncDef(def0, flag0); def.where = new CodePlace(cp0); return def; }
 }
 
+/* A function declaration */
 FuncDef func_declr(): {
 	FuncDef def = new FuncDef();
 	Identifier tmp0; ParamList tmp1; Type tmp2;
@@ -168,6 +183,7 @@ FuncDef func_declr(): {
 	{ return def; }
 }
 
+/* A parameter list */
 ParamList param_list(): {
 	ParamList list = new ParamList();
 	Param param0;
@@ -183,6 +199,7 @@ ParamList param_list(): {
 	)* { return list; }
 }
 
+/* A function */
 Function func(): { 
 	Function func = new Function();
 	FuncDef tmp0; VarList tmp1; StatementList tmp2;
@@ -198,6 +215,7 @@ Function func(): {
 	
 }
 
+/* A local var list */
 VarList local_var_list(): {
 	VarList list = new VarList();
 	VarDec tmp0;
@@ -211,6 +229,7 @@ VarList local_var_list(): {
 	)* { return list; }
 }
 
+/* A variable definition */
 VarDec var_declr(): {
 	VarDec dec = new VarDec();
 	Type tmp0; Identifier tmp1; Expression tmp2;
@@ -228,6 +247,7 @@ VarDec var_declr(): {
 		tmp1 = id() { dec.name = tmp1; return dec; }
 }
 
+/* A list of statements */
 StatementList statement_list(): { 
 	StatementList list = new StatementList();
 	Statement tmp0;
@@ -238,6 +258,7 @@ StatementList statement_list(): {
 	)* { return list; }
 }
 
+/* A single statement */
 Statement statement(): {
 	Statement stmt;
 }
@@ -252,6 +273,7 @@ Statement statement(): {
 	
 }
 
+/* A SET statement */
 Statement set(): { 
 	SetStatement setStmt; SetArrayStatement setArrStmt;
 	Identifier tmp0; Expression tmp1, tmp2;
@@ -272,7 +294,7 @@ Statement set(): {
 		tmp2 = expr() { setArrStmt.val = tmp2; return setArrStmt; }
 } 
 
-
+/* A CALL statement */
 Statement call(): { 
 	CallStatement stmt;
 	Identifier tmp0; ParamInvokeList tmp1;
@@ -288,6 +310,7 @@ Statement call(): {
 	")" { return stmt; }
 }
 
+/* A list of passed arguments for a CALL */
 ParamInvokeList args(): { 
 	ParamInvokeList list = new ParamInvokeList();
 	Expression tmp0;
@@ -300,7 +323,7 @@ ParamInvokeList args(): {
 	)* { return list; }
 }
 
-
+/* An if-then[-elseif][-else]-end block */
 Statement ifthenelse(): {
 	ConditionalStatement stmt;
 	Expression tmp0; StatementList tmp1; ConditionalStatement tmp2;
@@ -317,6 +340,7 @@ Statement ifthenelse(): {
 	<ENDIF> { return stmt; }
 }
 
+/* An else clause */
 ConditionalStatement else_clause(): { 
 	ConditionalStatement nest = new ConditionalStatement();
 	Expression tmp0; StatementList tmp1; ConditionalStatement tmp2;
@@ -335,6 +359,7 @@ ConditionalStatement else_clause(): {
 		)? { return nest; }
 }
 
+/* A LOOP statement */
 Statement loop(): { 
 	LoopStatement stmt;
 	StatementList tmp0;
@@ -346,6 +371,7 @@ Statement loop(): {
 	<ENDLOOP> { return stmt; }
 }
 
+/* An EXITWHEN statement */
 Statement exitwhen(): {
 	LoopExitStatement stmt; 
 	Expression tmp0;
@@ -356,6 +382,7 @@ Statement exitwhen(): {
 	tmp0 = expr() { stmt.conditional = tmp0; return stmt; }
 }
 
+/* A RETURN statement */
 Statement retn(): {
 	ReturnStatement stmt;
 	Expression tmp0;
@@ -368,6 +395,7 @@ Statement retn(): {
 	)? { return stmt; }
 }
 
+/* A DEBUG statement */
 Statement debug(): { 
 	Statement rt;
 	Token cp0;
@@ -385,6 +413,7 @@ Statement debug(): {
 	) { rt.debug = true; rt.debugWhere = new CodePlace(cp0);  return rt; }
 }
 
+/* An expression */
 Expression expr(): {
 	Expression e0;
 }
@@ -396,6 +425,10 @@ Expression expr(): {
 	{ return e0; }
 }
 
+/* A simple expression component:
+	a set of parens, a function call, a unary op,
+	an array reference, a function reference, an
+	identifier reference or a constant value only */
 Expression simple_expr(): { 
 	Expression exp;
 	Identifier tmp0;
@@ -410,6 +443,7 @@ Expression simple_expr(): {
 	exp = constval() { return exp; }
 }
 
+/* A binary operation */
 Expression binary_op(Expression lhs): {
 	BinaryOpExpression expr = new BinaryOpExpression();
 	Expression tmp1;
@@ -445,6 +479,7 @@ Expression binary_op(Expression lhs): {
 	tmp1 = expr() { expr.rhs = tmp1; return expr; }
 }
 
+/* A unary operation */
 Expression unary_op(): {
 	UnaryOpExpression expr = new UnaryOpExpression();
 	Expression tmp0;
@@ -460,6 +495,7 @@ Expression unary_op(): {
 	tmp0 = expr() { expr.rhs = tmp0; return expr; }
 }
 
+/* A nested function call expression (tailcall-like) */
 Expression func_call(): {
 	FunctionCallExpression expr = new FunctionCallExpression();
 	Identifier tmp0; ParamInvokeList tmp1;
@@ -473,6 +509,7 @@ Expression func_call(): {
 	")" { return expr; }
 }
 
+/* An array reference expression */
 Expression array_ref(): {
 	ArrayReferenceExpression expr = new ArrayReferenceExpression();
 	Identifier tmp0; Expression tmp1;
@@ -484,6 +521,7 @@ Expression array_ref(): {
 	"]" { return expr; }
 }
 
+/* A function reference (pointer) expression */
 Expression func_ref(): {
 	FunctionReferenceExpression expr = new FunctionReferenceExpression();
 	Identifier tmp0;
@@ -493,6 +531,9 @@ Expression func_ref(): {
 	tmp0 = id() { expr.name = tmp0; return expr; }
 }
 
+/* A constant value, one of:
+	an int const, a real const, a bool const,
+	a string const or "null" only */
 Expression constval(): {
 	Constant cval;
 }
@@ -562,19 +603,18 @@ BoolConst bool_const(): {}
 		"false"	{ return BoolConst.constFalse; }
 }
 
-// A string literal may be
 TOKEN : { <STRING_LITERAL: "\"" 
 		( 
-			~["\"","\\","\n","\r"] // Anything not an excape code
+			~["\"","\\","\n","\r"]
 		| 
-			"\\" // An escape slash and then
+			"\\"
 			( 
-					["n","t","b","r","f","\\","\'","\""] // any of ntbrf\'"
+					["n","t","b","r","f","\\","\'","\""]
 				| 
 					( 
-							["\n","\r"] // a return
+							["\n","\r"]
 						| 
-							"\r\n" // or a windows return
+							"\r\n"
 					)
 			)
 		)* 
@@ -586,6 +626,7 @@ StringConst string_const(): {
 	stringtoken = <STRING_LITERAL> { return StringConst.fromToken(stringtoken); }
 }
 
+/* A nested expression (parens) */
 Expression parens(): {
 	ParenExpression expr = new ParenExpression();
 	Expression tmp0;
@@ -596,6 +637,9 @@ Expression parens(): {
 	")" { return expr; }
 }
 
+/* A type name, one of:
+	an identifying type name, code, handle,
+	integer, real, boolean, string only */
 Type type(): {
 	Type type;
 	Identifier tmp0;
