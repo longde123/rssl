@@ -21,7 +21,9 @@ public class VMValue {
 	public final Type type;
 
 	public VMValue(JASSMachine machine, Object value) {
+		machine.debugger.trace("vmValue.createValue", value);
 		if (VMType.arrayType(value)) {
+			machine.debugger.trace("vmValue.createValue.arrayType", value);
 			HashMap<Integer, VMValue> store = new HashMap<Integer, VMValue>();
 			Object[] d0 = (Object[]) value;
 			for (int i = 0; i < d0.length; i++)
@@ -30,11 +32,13 @@ public class VMValue {
 			this.array = true;
 			this.type = VMType.findType(machine, d0[0]);
 		} else if (value instanceof HashMap) {
+			machine.debugger.trace("vmValue.createType.hashType", value);
 			HashMap<Integer, VMValue> map = (HashMap<Integer, VMValue>) value;
 			this.value = map;
 			this.array = true;
 			this.type = VMType.findType(machine, map.get(0));
 		} else {
+			machine.debugger.trace("vmValue.createType.rawType", value);
 			this.value = value;
 			this.array = false;
 			this.type = VMType.findType(machine, value);
@@ -52,10 +56,12 @@ public class VMValue {
 	}
 
 	public VMValue applyCast(JASSMachine machine, Type productType) throws VMException {
+		machine.debugger.trace("vmValue.applyCast", this, productType);
 		if (array)
 			throw new VMException("Cannot cast array");
 		if (productType == type)
 			return new VMValue(machine, value);
+		machine.debugger.trace("vmValue.applyCast.apply", this, productType);
 		if ((type == Type.integerType || type == Type.realType)
 				&& (productType == Type.integerType || productType == Type.realType)) {
 			if (productType == Type.integerType)

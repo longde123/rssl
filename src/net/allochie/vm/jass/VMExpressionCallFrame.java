@@ -28,6 +28,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 
 	@Override
 	public void step(JASSMachine machine, JASSThread thread) throws VMException {
+		machine.debugger.trace("vmExpressionCallFrame.step", this, thread);
 		if (expression instanceof Constant) {
 			if (expression instanceof BoolConst)
 				result = new VMValue(machine, ((BoolConst) expression).identity);
@@ -90,7 +91,8 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						VMValue what = new VMValue(machine, vv0 + vv1);
 						result = what.applyCast(machine, productType);
 					} else
-						throw new VMUserCodeException(expression, "Unknown use of operator + on types " + v0.type + " and " + v1.type);
+						throw new VMUserCodeException(expression, "Unknown use of operator + on types " + v0.type
+								+ " and " + v1.type);
 					break;
 				case SUB:
 					if (productType == Type.integerType || productType == Type.realType) {
@@ -98,7 +100,8 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						VMValue what = new VMValue(machine, vv0 - vv1);
 						result = what.applyCast(machine, productType);
 					} else
-						throw new VMUserCodeException(expression, "Unknown use of operator - on types " + v0.type + " and " + v1.type);
+						throw new VMUserCodeException(expression, "Unknown use of operator - on types " + v0.type
+								+ " and " + v1.type);
 					break;
 				case DIV:
 					if (productType == Type.integerType || productType == Type.realType) {
@@ -106,7 +109,8 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						VMValue what = new VMValue(machine, vv0 / vv1);
 						result = what.applyCast(machine, productType);
 					} else
-						throw new VMUserCodeException(expression, "Unknown use of operator / on types " + v0.type + " and " + v1.type);
+						throw new VMUserCodeException(expression, "Unknown use of operator / on types " + v0.type
+								+ " and " + v1.type);
 					break;
 				case MUL:
 					if (productType == Type.integerType || productType == Type.realType) {
@@ -114,21 +118,24 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						VMValue what = new VMValue(machine, vv0 * vv1);
 						result = what.applyCast(machine, productType);
 					} else
-						throw new VMUserCodeException(expression, "Unknown use of operator * on types " + v0.type + " and " + v1.type);
+						throw new VMUserCodeException(expression, "Unknown use of operator * on types " + v0.type
+								+ " and " + v1.type);
 					break;
 				case BOOLAND:
 					if (productType == Type.booleanType) {
 						boolean vv0 = v0.asBooleanType(), vv1 = v1.asBooleanType();
 						result = new VMValue(machine, vv0 && vv1);
 					} else
-						throw new VMUserCodeException(expression, "Unknown use of operator AND on types " + v0.type + " and " + v1.type);
+						throw new VMUserCodeException(expression, "Unknown use of operator AND on types " + v0.type
+								+ " and " + v1.type);
 					break;
 				case BOOLOR:
 					if (productType == Type.booleanType) {
 						boolean vv0 = v0.asBooleanType(), vv1 = v1.asBooleanType();
 						result = new VMValue(machine, vv0 || vv1);
 					} else
-						throw new VMUserCodeException(expression, "Unknown use of operator OR on types " + v0.type + " and " + v1.type);
+						throw new VMUserCodeException(expression, "Unknown use of operator OR on types " + v0.type
+								+ " and " + v1.type);
 					break;
 				case EQUALS:
 					result = new VMValue(machine, VMValue.areValuesEqual(v0, v1));
@@ -139,7 +146,8 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						VMValue what = new VMValue(machine, vv0 < vv1);
 						result = what.applyCast(machine, Type.booleanType);
 					} else
-						throw new VMUserCodeException(expression, "Unknown use of operator < on types " + v0.type + " and " + v1.type);
+						throw new VMUserCodeException(expression, "Unknown use of operator < on types " + v0.type
+								+ " and " + v1.type);
 					break;
 				case GTEQ:
 					if (VMType.isTypeNumeric(v0.type) && VMType.isTypeNumeric(v1.type)) {
@@ -147,7 +155,8 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						VMValue what = new VMValue(machine, vv0 <= vv1);
 						result = what.applyCast(machine, Type.booleanType);
 					} else
-						throw new VMUserCodeException(expression, "Unknown use of operator <= on types " + v0.type + " and " + v1.type);
+						throw new VMUserCodeException(expression, "Unknown use of operator <= on types " + v0.type
+								+ " and " + v1.type);
 					break;
 				case LT:
 					if (VMType.isTypeNumeric(v0.type) && VMType.isTypeNumeric(v1.type)) {
@@ -155,7 +164,8 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						VMValue what = new VMValue(machine, vv0 > vv1);
 						result = what.applyCast(machine, Type.booleanType);
 					} else
-						throw new VMUserCodeException(expression, "Unknown use of operator > on types " + v0.type + " and " + v1.type);
+						throw new VMUserCodeException(expression, "Unknown use of operator > on types " + v0.type
+								+ " and " + v1.type);
 					break;
 				case LTEQ:
 					if (VMType.isTypeNumeric(v0.type) && VMType.isTypeNumeric(v1.type)) {
@@ -163,7 +173,8 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						VMValue what = new VMValue(machine, vv0 >= vv1);
 						result = what.applyCast(machine, Type.booleanType);
 					} else
-						throw new VMUserCodeException(expression, "Unknown use of operator >= on types " + v0.type + " and " + v1.type);
+						throw new VMUserCodeException(expression, "Unknown use of operator >= on types " + v0.type
+								+ " and " + v1.type);
 					break;
 				case NOTEQUALS:
 					result = new VMValue(machine, !VMValue.areValuesEqual(v0, v1));
@@ -189,8 +200,9 @@ public class VMExpressionCallFrame extends VMCallFrame {
 					}
 					store2[j] = getPreviousCallResult();
 					if (!VMType.instanceofType(store2[j].type, function.sig.params.get(j).type))
-						throw new VMUserCodeException(expression, "Incorrect parameter type for function call, expected "
-								+ function.sig.params.get(j).type + ", got " + store2[j].type);
+						throw new VMUserCodeException(expression,
+								"Incorrect parameter type for function call, expected "
+										+ function.sig.params.get(j).type + ", got " + store2[j].type);
 					j++;
 				}
 				if (i == 0) {

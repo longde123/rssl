@@ -13,7 +13,9 @@ public class VMNativeCallFrame extends VMStackFrame {
 
 	@Override
 	public void step(JASSMachine machine, JASSThread thread) throws VMException {
+		machine.debugger.trace("vmNativeCallFrame.step", this, thread);
 		result = nfunc.executeNative(machine, thread, this.closure);
+		machine.debugger.trace("vmNativeCallFrame.exitFrame", this, thread, result);
 		done = true;
 	}
 

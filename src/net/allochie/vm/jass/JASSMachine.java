@@ -46,6 +46,7 @@ public class JASSMachine extends Thread {
 	}
 
 	public void advance() {
+		debugger.trace("machine.advance");
 		synchronized (live) {
 			if (live.size() > 0) {
 				for (JASSThread add : live)
@@ -56,8 +57,10 @@ public class JASSMachine extends Thread {
 		for (JASSThread thread : threads) {
 			if (!thread.dead()) {
 				try {
+					debugger.trace("thread.advance", thread);
 					thread.advance();
 				} catch (VMException e) {
+					debugger.fatal("thread.advance", thread, e);
 					e.printStackTrace();
 					System.err.println("Frames on stack: ");
 					for (int i = thread.callStack.size() - 1; i >= 0; i--) {
@@ -86,10 +89,12 @@ public class JASSMachine extends Thread {
 	}
 
 	public VMFunction findFunction(Identifier identifier) {
+		debugger.trace("machine.findFunction", identifier);
 		return findFunction(identifier.image);
 	}
 
 	public VMFunction findFunction(String name) {
+		debugger.trace("machine.findFunction", name);
 		VMFunction function = funcs.get(name);
 		if (function != null)
 			return function;
@@ -100,10 +105,12 @@ public class JASSMachine extends Thread {
 	}
 
 	public VMVariable findGlobal(Identifier identifier) {
+		debugger.trace("machine.findGlobal", identifier);
 		return globals.get(identifier.image);
 	}
 
 	public JASSThread allocateThread(String name, VMFunctionPointer pointer) {
+		debugger.trace("machine.allocateThread", name, pointer);
 		return new JASSThread(this, name, global, pointer);
 	}
 

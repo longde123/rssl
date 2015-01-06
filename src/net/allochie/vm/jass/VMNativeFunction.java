@@ -16,6 +16,7 @@ public class VMNativeFunction extends VMFunction {
 	}
 
 	public VMValue executeNative(JASSMachine machine, JASSThread thread, VMClosure closure) throws VMException {
+		machine.debugger.trace("vmNativeFunction.executeNative", this, thread, closure);
 		Object[] params = new Object[1 + qd.def.params.size()];
 		Class<?>[] args = new Class<?>[1 + qd.def.params.size()];
 		params[0] = new Callout(machine, thread, closure);

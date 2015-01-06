@@ -59,6 +59,7 @@ public class JASSThread {
 	}
 
 	public void runThread() throws VMException {
+		machine.debugger.trace("thread.runThread", this);
 		VMFunction function = machine.findFunction(invokeFunc);
 		if (function == null)
 			throw new VMException("Can't start thread, no function named " + invokeFunc);
@@ -66,12 +67,14 @@ public class JASSThread {
 	}
 
 	public void doFile(JASSFile file) throws VMException {
+		machine.debugger.trace("thread.doFile", this, file);
 		for (Dec what : file.decs) {
 			if (what instanceof TypeDec) {
 				TypeDec type = (TypeDec) what;
 				if (type.type == null)
 					if (!machine.types.containsKey(type.typename.image))
-						throw new VMException("Cannot extend unknown type " + type.typename.image);
+						throw new VMUserCodeException(type, "Cannot extend unknown type " + type.typename.image);
+				machine.debugger.trace("thread.doFile.registerType", this, file, type);
 				machine.types.put(type.id.image, (VMType) TypeRegistry.fromString(type.id.image));
 				if (type.type == null)
 					machine.types.get(type.id.image).setExtensionOf(type.typename.image);
@@ -89,7 +92,8 @@ public class JASSThread {
 				GlobalsDec heap = (GlobalsDec) what;
 				for (VarDec var : heap.decs) {
 					if (machine.globals.containsKey(var.name.image) && machine.globals.get(var.name.image).dec.constant)
-						throw new VMException("Cannot redeclare existing variable " + var.name.image);
+						throw new VMUserCodeException(var, "Cannot redeclare existing variable " + var.name.image);
+					machine.debugger.trace("thread.doFile.registerGlobal", this, file, var);
 					machine.globals.put(var.name.image, new VMVariable(machine, top, var));
 					VMStackFrame topFrame = getCurrentFrame();
 					machine.globals.get(var.name.image).init(this, var, top);
@@ -97,20 +101,25 @@ public class JASSThread {
 				}
 			} else if (what instanceof NativeFuncDef) {
 				NativeFuncDef nativeFn = (NativeFuncDef) what;
+				machine.debugger.trace("thread.doFile.registerNative", this, nativeFn);
 				machine.natives.put(nativeFn.def.id.image, new VMNativeFunction(nativeFn));
 			} else
 				throw new VMException("Unknown definition type " + what.getClass().getName());
 		}
 
-		for (Function func : file.funcs)
+		for (Function func : file.funcs) {
+			machine.debugger.trace("thread.doFile.registerFunction", this, func);
 			machine.funcs.put(func.sig.id.image, new VMFunction(func));
+		}
 	}
 
 	public void setFrequency(int speed) {
+		machine.debugger.trace("thread.setFrequency", this, speed);
 		this.frequency = speed;
 	}
 
 	public void interrupt() {
+		machine.debugger.trace("thread.interrupt", this);
 		this.interrupt = true;
 	}
 
@@ -121,6 +130,7 @@ public class JASSThread {
 	}
 
 	public void requestCall(VMClosure closure, VMFunction function, VMValue[] args) throws VMException {
+		machine.debugger.trace("thread.requestCall", this, closure, function, args);
 		if (function instanceof VMNativeFunction) {
 			VMClosure child = new VMClosure(closure);
 			for (int i = 0; i < args.length; i++) {
@@ -154,22 +164,26 @@ public class JASSThread {
 	}
 
 	public void foreignCallImmediately(VMClosure closure, VMFunction function, VMValue[] args) throws VMException {
+		machine.debugger.trace("thread.foreignCallImmediately", this, closure, function, args);
 		VMStackFrame topFrame = getCurrentFrame();
 		requestCall(closure, function, args);
 		advanceUntilFrame(topFrame);
 	}
 
 	public void requestCall(VMClosure closure, ConditionalStatement conditional) {
+		machine.debugger.trace("thread.requestCall", this, closure, conditional);
 		VMStackFrame callframe = new VMCallFrame(closure, conditional.statements, false);
 		callStack.push(callframe);
 	}
 
 	public void requestCall(VMClosure closure, LoopStatement loop) {
+		machine.debugger.trace("thread.requestCall", this, closure, loop);
 		VMStackFrame callframe = new VMCallFrame(closure, loop.statements, true);
 		callStack.push(callframe);
 	}
 
 	public void resolveExpression(VMClosure closure, Expression expression) throws VMException {
+		machine.debugger.trace("thread.resolveExpression", this, closure, expression);
 		VMExpressionCallFrame callframe = new VMExpressionCallFrame(closure, expression);
 		callStack.push(callframe);
 	}
@@ -179,10 +193,12 @@ public class JASSThread {
 	}
 
 	public void requestFrame(VMStackFrame frame) {
+		machine.debugger.trace("thread.requestFrame", this, frame);
 		callStack.push(frame);
 	}
 
 	private void advanceUntilFrame(VMStackFrame frame) throws VMException {
+		machine.debugger.trace("thread.advanceUntilFrame", this, frame);
 		while (true) {
 			if (callStack.size() == 0)
 				break;
@@ -198,14 +214,17 @@ public class JASSThread {
 	}
 
 	private void flushInterrupts() {
+		machine.debugger.trace("thread.flushInterrupts", this);
 		this.interrupt = false;
 	}
 
 	private void init() throws VMException {
+		machine.debugger.trace("thread.init", this);
 		isInit = true;
 	}
 
 	public void advance() throws VMException {
+		machine.debugger.trace("thread.advance", this);
 		if (isDead)
 			throw new VMException("Can't resume dead thread");
 		if (!isInit)
@@ -233,6 +252,7 @@ public class JASSThread {
 	}
 
 	private void advanceFrame() throws VMException {
+		machine.debugger.trace("thread.advanceFrame", this);
 		if (callStack.size() != 0)
 			callStack.peek().step(machine, this);
 		while (callStack.size() != 0 && callStack.peek().finished()) {

@@ -21,6 +21,7 @@ public class VMVariable {
 
 		@Override
 		public void step(JASSMachine machine, JASSThread thread) throws VMException {
+			machine.debugger.trace("vmSetInitFrame.step", this, thread);
 			if (!hasPreviousCallResult()) {
 				thread.resolveExpression(closure, dec.init);
 				return;

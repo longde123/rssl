@@ -61,6 +61,7 @@ public class VMType extends Type {
 	 * @return The type
 	 */
 	public static Type findType(JASSMachine machine, Object z) {
+		machine.debugger.trace("vmType.findType", z);
 		if (z == null || z instanceof Void || z instanceof Void[])
 			return Type.nullType;
 		if (z instanceof Integer || z instanceof Integer[])
@@ -77,6 +78,7 @@ public class VMType extends Type {
 	}
 
 	public static boolean isInstanceOf(JASSMachine machine, Type t, Object z) {
+		machine.debugger.trace("vmType.isInstanceOf", t, z);
 		return instanceofType(findType(machine, z), t);
 	}
 

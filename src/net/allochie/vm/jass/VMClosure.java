@@ -27,11 +27,13 @@ public class VMClosure {
 	}
 
 	public void createVariable(JASSMachine machine, VarDec dec) throws VMException {
+		machine.debugger.trace("closure.createVariable", this, dec);
 		VMVariable var = new VMVariable(machine, this, dec);
 		vars.put(var.dec.name.image, var);
 	}
 
 	public VMVariable getVariable(Identifier identifier) throws VMException {
+		machine.debugger.trace("closure.getVariable", this, identifier);
 		VMVariable var;
 		var = vars.get(identifier.image);
 		if (var != null)
@@ -50,6 +52,7 @@ public class VMClosure {
 	}
 
 	public VMVariable[] getAllVariables() {
+		machine.debugger.trace("closure.getAllVariables", this);
 		return vars.values().toArray(new VMVariable[0]);
 	}
 }

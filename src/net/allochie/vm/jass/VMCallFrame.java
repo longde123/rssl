@@ -50,6 +50,7 @@ public class VMCallFrame extends VMStackFrame {
 	}
 
 	public void step(JASSMachine machine, JASSThread thread) throws VMException {
+		machine.debugger.trace("vmCallFrame.step", this, thread);
 		if (finished)
 			throw new VMException("Cannot advance finished call frame");
 		Statement statement = null;
