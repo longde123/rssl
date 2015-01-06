@@ -3,6 +3,7 @@ package net.allochie.vm.jass;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.allochie.vm.jass.api.IDebugger;
 import net.allochie.vm.jass.ast.Identifier;
 
 public class JASSMachine extends Thread {
@@ -23,6 +24,9 @@ public class JASSMachine extends Thread {
 	public ArrayList<JASSThread> dead = new ArrayList<JASSThread>();
 	/** The list of new live threads */
 	public ArrayList<JASSThread> live = new ArrayList<JASSThread>();
+
+	/** The system debugger */
+	public IDebugger debugger;
 
 	public JASSMachine(String title) {
 		super(title);
@@ -62,7 +66,7 @@ public class JASSMachine extends Thread {
 					}
 					dead.add(thread);
 				}
-				if (thread.dead()) 
+				if (thread.dead())
 					dead.add(thread);
 			}
 		}
