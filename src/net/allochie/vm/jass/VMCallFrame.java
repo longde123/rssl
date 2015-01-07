@@ -131,7 +131,7 @@ public class VMCallFrame extends VMStackFrame {
 			finished = true;
 		} else if (statement instanceof SetArrayStatement) {
 			SetArrayStatement arrayset = (SetArrayStatement) statement;
-			VMVariable var = closure.getVariable(arrayset.id);
+			VMVariable var = closure.getVariable(machine, arrayset.id);
 			if (!var.dec.array)
 				throw new VMUserCodeException(statement, "Not an array");
 			HashMap<Integer, VMValue> what = var.safeValue().asArrayType();
@@ -161,7 +161,7 @@ public class VMCallFrame extends VMStackFrame {
 			what.put(idx, whatSet);
 		} else if (statement instanceof SetStatement) {
 			SetStatement set = (SetStatement) statement;
-			VMVariable var = closure.getVariable(set.id);
+			VMVariable var = closure.getVariable(machine, set.id);
 			if (!hasPreviousCallResult()) {
 				thread.resolveExpression(closure, set.val);
 				return;

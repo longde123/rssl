@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import net.allochie.vm.jass.api.IDebugger;
 import net.allochie.vm.jass.ast.Identifier;
+import net.allochie.vm.jass.debug.VoidDebugger;
 
 public class JASSMachine extends Thread {
 
@@ -26,10 +27,14 @@ public class JASSMachine extends Thread {
 	public ArrayList<JASSThread> live = new ArrayList<JASSThread>();
 
 	/** The system debugger */
-	public IDebugger debugger;
+	public IDebugger debugger = new VoidDebugger();
 
 	public JASSMachine(String title) {
 		super(title);
+	}
+
+	public void setDebugger(IDebugger what) {
+		this.debugger = what;
 	}
 
 	public void putThread(JASSThread thread) {

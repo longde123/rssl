@@ -137,7 +137,7 @@ public class JASSThread {
 				Param param = function.sig.params.get(i);
 				VarDec pvar = new VarDec(param.name, param.type, param.array, false, null);
 				child.createVariable(machine, pvar);
-				child.getVariable(param.name).safeSetValue(args[i]);
+				child.getVariable(this.machine, param.name).safeSetValue(args[i]);
 			}
 			VMNativeCallFrame frame = new VMNativeCallFrame(child, (VMNativeFunction) function);
 			callStack.push(frame);
@@ -147,14 +147,14 @@ public class JASSThread {
 				Param param = function.sig.params.get(i);
 				VarDec pvar = new VarDec(param.name, param.type, param.array, false, null);
 				child.createVariable(machine, pvar);
-				child.getVariable(param.name).safeSetValue(args[i]);
+				child.getVariable(this.machine, param.name).safeSetValue(args[i]);
 			}
 
 			VMStackFrame topFrame = getCurrentFrame();
 			if (function.lvars != null)
 				for (VarDec var : function.lvars) {
 					child.createVariable(machine, var);
-					child.getVariable(var.name).init(this, var, child);
+					child.getVariable(this.machine, var.name).init(this, var, child);
 					advanceUntilFrame(topFrame);
 				}
 

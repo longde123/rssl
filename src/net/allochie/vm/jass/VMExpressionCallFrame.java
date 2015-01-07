@@ -43,7 +43,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 		} else if (expression instanceof Expression) {
 			if (expression instanceof ArrayReferenceExpression) {
 				ArrayReferenceExpression expr = (ArrayReferenceExpression) expression;
-				VMVariable var = closure.getVariable(expr.name);
+				VMVariable var = closure.getVariable(machine, expr.name);
 				if (!var.dec.array)
 					throw new VMUserCodeException(expression, "Not an array");
 				HashMap<Integer, VMValue> what = var.safeValue().asArrayType();
@@ -213,7 +213,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				result = getPreviousCallResult();
 			} else if (expression instanceof IdentifierReference) {
 				IdentifierReference expr = (IdentifierReference) expression;
-				VMVariable var = closure.getVariable(expr.identifier);
+				VMVariable var = closure.getVariable(machine, expr.identifier);
 				result = var.safeValue();
 			} else if (expression instanceof ParenExpression) {
 				ParenExpression expr = (ParenExpression) expression;

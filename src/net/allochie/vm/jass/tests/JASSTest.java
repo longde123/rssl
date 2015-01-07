@@ -16,6 +16,7 @@ import net.allochie.vm.jass.ast.StatementList;
 import net.allochie.vm.jass.ast.dec.Dec;
 import net.allochie.vm.jass.ast.statement.ConditionalStatement;
 import net.allochie.vm.jass.ast.statement.LoopStatement;
+import net.allochie.vm.jass.debug.AllDebugger;
 import net.allochie.vm.jass.global.NativeMethodRegistry;
 import net.allochie.vm.jass.global.TypeRegistry;
 import net.allochie.vm.jass.natives.NativeThreading;
@@ -41,6 +42,7 @@ public class JASSTest {
 			NativeMethodRegistry.registerNativeMethodProvider(NativeTypeCasts.class);
 
 			JASSMachine machine = new JASSMachine("Demo machine");
+			machine.setDebugger(new AllDebugger());
 			try {
 				JASSThread main = machine.allocateThread("main", new VMFunctionPointer("main"));
 				main.doFile(file);

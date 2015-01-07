@@ -32,14 +32,14 @@ public class VMClosure {
 		vars.put(var.dec.name.image, var);
 	}
 
-	public VMVariable getVariable(Identifier identifier) throws VMException {
+	public VMVariable getVariable(JASSMachine machine, Identifier identifier) throws VMException {
 		machine.debugger.trace("closure.getVariable", this, identifier);
 		VMVariable var;
 		var = vars.get(identifier.image);
 		if (var != null)
 			return var;
 		if (parent != null) {
-			var = parent.getVariable(identifier);
+			var = parent.getVariable(machine, identifier);
 			if (var != null)
 				return var;
 			throw new VMException("Undefined identifier " + identifier.image);
