@@ -10,8 +10,7 @@ public class SetStatement extends Statement {
 	public Identifier id;
 	/** The value to set */
 	public Expression val;
-	public CodePlace where;
-
+	
 	@Override
 	public String toString() {
 		return "SetStatement: " + id + " = " + val;

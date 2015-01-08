@@ -2,6 +2,7 @@ package net.allochie.vm.jass.ast.constant;
 
 import java.util.HashMap;
 
+import net.allochie.vm.jass.ast.CodePlace;
 import net.allochie.vm.jass.parser.ParseException;
 import net.allochie.vm.jass.parser.Token;
 
@@ -15,14 +16,14 @@ public class RealConst extends Constant {
 		this.identity = identity;
 	}
 
-	public static RealConst fromToken(Token realtoken) throws ParseException {
+	public static RealConst fromToken(Token realtoken, CodePlace place) throws ParseException {
 		try {
 			Double val = Double.parseDouble(realtoken.image);
 			if (!map.containsKey(val))
 				map.put(val, new RealConst(val));
 			return map.get(val);
 		} catch (Throwable t) {
-			throw new ParseException("Invalid number format");
+			throw new ParseException("Invalid number format at line " + place.line + ", column " + place.column);
 		}
 	}
 

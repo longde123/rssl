@@ -8,7 +8,6 @@ public class LoopExitStatement extends Statement {
 
 	/** The exit statement expression */
 	public Expression conditional;
-	public CodePlace where;
 
 	@Override
 	public String toString() {

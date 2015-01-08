@@ -14,28 +14,4 @@ public class VMUserCodeException extends VMException {
 		super(what, reason, t);
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder what = new StringBuilder();
-		what.append("Code problem: ").append(getMessage()).append("\n");
-		if (this.what != null) {
-			try {
-				Class<?> thing = this.what.getClass();
-				for (Field f : thing.getFields()) {
-					if (f.getType().equals(CodePlace.class)) {
-						f.setAccessible(true);
-						CodePlace place = (CodePlace) f.get(this.what);
-						if (place != null) {
-							what.append("\t").append(f.getName()).append(": ");
-							what.append(place).append("\n");
-						}
-					}
-				}
-			} catch (Throwable t) {
-				what.append("No debug info available.");
-			}
-		}
-		return what.toString();
-	}
-
 }

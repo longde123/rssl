@@ -63,6 +63,10 @@ public class VMVariable {
 		}
 	}
 
+	public boolean defined() {
+		return (value != null);
+	}
+
 	public VMValue safeValue() throws VMException {
 		if (value == null)
 			throw new VMException(dec, "Attempt to access undefined variable " + dec.name);

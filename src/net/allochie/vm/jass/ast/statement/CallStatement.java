@@ -10,7 +10,6 @@ public class CallStatement extends Statement {
 	public Identifier id;
 	/** The list of parameters */
 	public ParamInvokeList params;
-	public CodePlace where;
 
 	@Override
 	public String toString() {

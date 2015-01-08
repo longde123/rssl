@@ -524,7 +524,7 @@ rt.debug = true; rt.debugWhere = new CodePlace(cp0);  {if ("" != null) return rt
 {if ("" != null) return exp;}
     } else if (jj_2_49(4)) {
       tmp0 = id();
-{if ("" != null) return new IdentifierReference(tmp0);}
+{if ("" != null) return new IdentifierReference(tmp0, new CodePlace(token));}
     } else if (jj_2_50(4)) {
       exp = constval();
 {if ("" != null) return exp;}
@@ -541,40 +541,40 @@ rt.debug = true; rt.debugWhere = new CodePlace(cp0);  {if ("" != null) return rt
 expr.lhs = lhs;
     if (jj_2_51(4)) {
       jj_consume_token(43);
-expr.mode = BinaryOp.ADD;
+expr.mode = BinaryOp.ADD; expr.where = new CodePlace(token);
     } else if (jj_2_52(4)) {
       jj_consume_token(44);
-expr.mode = BinaryOp.SUB;
+expr.mode = BinaryOp.SUB; expr.where = new CodePlace(token);
     } else if (jj_2_53(4)) {
       jj_consume_token(45);
-expr.mode = BinaryOp.MUL;
+expr.mode = BinaryOp.MUL; expr.where = new CodePlace(token);
     } else if (jj_2_54(4)) {
       jj_consume_token(46);
-expr.mode = BinaryOp.DIV;
+expr.mode = BinaryOp.DIV; expr.where = new CodePlace(token);
     } else if (jj_2_55(4)) {
       jj_consume_token(47);
-expr.mode = BinaryOp.EQUALS;
+expr.mode = BinaryOp.EQUALS; expr.where = new CodePlace(token);
     } else if (jj_2_56(4)) {
       jj_consume_token(48);
-expr.mode = BinaryOp.NOTEQUALS;
+expr.mode = BinaryOp.NOTEQUALS; expr.where = new CodePlace(token);
     } else if (jj_2_57(4)) {
       jj_consume_token(49);
-expr.mode = BinaryOp.LT;
+expr.mode = BinaryOp.LT; expr.where = new CodePlace(token);
     } else if (jj_2_58(4)) {
       jj_consume_token(50);
-expr.mode = BinaryOp.GT;
+expr.mode = BinaryOp.GT; expr.where = new CodePlace(token);
     } else if (jj_2_59(4)) {
       jj_consume_token(51);
-expr.mode = BinaryOp.LTEQ;
+expr.mode = BinaryOp.LTEQ; expr.where = new CodePlace(token);
     } else if (jj_2_60(4)) {
       jj_consume_token(52);
-expr.mode = BinaryOp.GTEQ;
+expr.mode = BinaryOp.GTEQ; expr.where = new CodePlace(token);
     } else if (jj_2_61(4)) {
       jj_consume_token(53);
-expr.mode = BinaryOp.BOOLAND;
+expr.mode = BinaryOp.BOOLAND; expr.where = new CodePlace(token);
     } else if (jj_2_62(4)) {
       jj_consume_token(54);
-expr.mode = BinaryOp.BOOLOR;
+expr.mode = BinaryOp.BOOLOR; expr.where = new CodePlace(token);
     } else {
       jj_consume_token(-1);
       throw new ParseException();
@@ -589,13 +589,13 @@ expr.rhs = tmp1; {if ("" != null) return expr;}
         Expression tmp0;
     if (jj_2_63(4)) {
       jj_consume_token(43);
-expr.mode = UnaryOp.POS;
+expr.mode = UnaryOp.POS; expr.where = new CodePlace(token);
     } else if (jj_2_64(4)) {
       jj_consume_token(44);
-expr.mode = UnaryOp.NEG;
+expr.mode = UnaryOp.NEG; expr.where = new CodePlace(token);
     } else if (jj_2_65(4)) {
       jj_consume_token(55);
-expr.mode = UnaryOp.NOT;
+expr.mode = UnaryOp.NOT; expr.where = new CodePlace(token);
     } else {
       jj_consume_token(-1);
       throw new ParseException();
@@ -609,7 +609,7 @@ expr.rhs = tmp0; {if ("" != null) return expr;}
   final public Expression func_call() throws ParseException {FunctionCallExpression expr = new FunctionCallExpression();
         Identifier tmp0; ParamInvokeList tmp1;
     tmp0 = id();
-expr.name = tmp0;
+expr.name = tmp0; expr.where = new CodePlace(token);
     jj_consume_token(41);
     if (jj_2_66(4)) {
       tmp1 = args();
@@ -626,7 +626,7 @@ expr.params = tmp1;
   final public Expression array_ref() throws ParseException {ArrayReferenceExpression expr = new ArrayReferenceExpression();
         Identifier tmp0; Expression tmp1;
     tmp0 = id();
-expr.name = tmp0;
+expr.name = tmp0; expr.where = new CodePlace(token);
     jj_consume_token(39);
     tmp1 = expr();
 expr.idx = tmp1;
@@ -639,6 +639,7 @@ expr.idx = tmp1;
   final public Expression func_ref() throws ParseException {FunctionReferenceExpression expr = new FunctionReferenceExpression();
         Identifier tmp0;
     jj_consume_token(FUNCTION);
+expr.where = new CodePlace(token);
     tmp0 = id();
 expr.name = tmp0; {if ("" != null) return expr;}
     throw new Error("Missing return statement in function");
@@ -692,31 +693,31 @@ expr.name = tmp0; {if ("" != null) return expr;}
 
   final public IntConst decimal() throws ParseException {Token inttoken;
     inttoken = jj_consume_token(DECIMALINT);
-{if ("" != null) return IntConst.fromToken(inttoken, IntConstType.DECIMAL);}
+{if ("" != null) return IntConst.fromToken(inttoken, new CodePlace(token), IntConstType.DECIMAL);}
     throw new Error("Missing return statement in function");
   }
 
   final public IntConst octal() throws ParseException {Token inttoken;
     inttoken = jj_consume_token(OCTALINT);
-{if ("" != null) return IntConst.fromToken(inttoken, IntConstType.OCTAL);}
+{if ("" != null) return IntConst.fromToken(inttoken, new CodePlace(token), IntConstType.OCTAL);}
     throw new Error("Missing return statement in function");
   }
 
   final public IntConst hex() throws ParseException {Token inttoken;
     inttoken = jj_consume_token(HEXINT);
-{if ("" != null) return IntConst.fromToken(inttoken, IntConstType.HEXADECIMAL);}
+{if ("" != null) return IntConst.fromToken(inttoken, new CodePlace(token), IntConstType.HEXADECIMAL);}
     throw new Error("Missing return statement in function");
   }
 
   final public IntConst fourcc() throws ParseException {Token inttoken;
     inttoken = jj_consume_token(FOURCCINT);
-{if ("" != null) return IntConst.fromToken(inttoken, IntConstType.FOURCC);}
+{if ("" != null) return IntConst.fromToken(inttoken, new CodePlace(token), IntConstType.FOURCC);}
     throw new Error("Missing return statement in function");
   }
 
   final public RealConst real_const() throws ParseException {Token realtoken;
     realtoken = jj_consume_token(REALCONST);
-{if ("" != null) return RealConst.fromToken(realtoken);}
+{if ("" != null) return RealConst.fromToken(realtoken, new CodePlace(token));}
     throw new Error("Missing return statement in function");
   }
 
@@ -736,7 +737,7 @@ expr.name = tmp0; {if ("" != null) return expr;}
 
   final public StringConst string_const() throws ParseException {Token stringtoken;
     stringtoken = jj_consume_token(STRING_LITERAL);
-{if ("" != null) return StringConst.fromToken(stringtoken);}
+{if ("" != null) return StringConst.fromToken(stringtoken, new CodePlace(token));}
     throw new Error("Missing return statement in function");
   }
 
@@ -744,6 +745,7 @@ expr.name = tmp0; {if ("" != null) return expr;}
   final public Expression parens() throws ParseException {ParenExpression expr = new ParenExpression();
         Expression tmp0;
     jj_consume_token(41);
+expr.where = new CodePlace(token);
     tmp0 = expr();
 expr.child = tmp0;
     jj_consume_token(42);
@@ -758,7 +760,7 @@ expr.child = tmp0;
         Identifier tmp0;
     if (jj_2_78(4)) {
       tmp0 = id();
-{if ("" != null) return Type.fromIdentifier(tmp0);}
+{if ("" != null) return Type.fromIdentifier(tmp0, new CodePlace(token));}
     } else if (jj_2_79(4)) {
       jj_consume_token(65);
 {if ("" != null) return Type.codeType;}
@@ -786,7 +788,7 @@ expr.child = tmp0;
 
   final public Identifier id() throws ParseException {Token identoken;
     identoken = jj_consume_token(IDENTIFIER);
-{if ("" != null) return Identifier.fromToken(identoken);}
+{if ("" != null) return Identifier.fromToken(identoken, new CodePlace(token));}
     throw new Error("Missing return statement in function");
   }
 
@@ -1460,18 +1462,6 @@ expr.child = tmp0;
     try { return !jj_3_84(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(83, xla); }
-  }
-
-  private boolean jj_3R_38()
- {
-    if (jj_scan_token(DECIMALINT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_12()
- {
-    if (jj_scan_token(NOTHING)) return true;
-    return false;
   }
 
   private boolean jj_3R_20()
@@ -2473,6 +2463,18 @@ expr.child = tmp0;
   private boolean jj_3_35()
  {
     if (jj_3R_25()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_38()
+ {
+    if (jj_scan_token(DECIMALINT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_12()
+ {
+    if (jj_scan_token(NOTHING)) return true;
     return false;
   }
 

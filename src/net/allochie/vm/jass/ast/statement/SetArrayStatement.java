@@ -13,7 +13,6 @@ public class SetArrayStatement extends Statement {
 	public Expression idx;
 	/** The value to set */
 	public Expression val;
-	public CodePlace where;
 
 	@Override
 	public String toString() {

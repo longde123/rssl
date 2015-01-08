@@ -8,7 +8,6 @@ public class LoopStatement extends Statement {
 
 	/** The list of loop statements */
 	public StatementList statements;
-	public CodePlace where;
 
 	@Override
 	public String toString() {

@@ -2,6 +2,7 @@ package net.allochie.vm.jass;
 
 import java.util.HashMap;
 
+import net.allochie.vm.jass.ast.CodePlace;
 import net.allochie.vm.jass.ast.Statement;
 import net.allochie.vm.jass.ast.StatementList;
 import net.allochie.vm.jass.ast.Type;
@@ -56,6 +57,7 @@ public class VMCallFrame extends VMStackFrame {
 		Statement statement = null;
 		if (statements.size() != 0)
 			statement = statements.get(currentOp);
+		workPlace = statement.where;
 		if (statement instanceof CallStatement) {
 			CallStatement call = (CallStatement) statement;
 			VMFunction function = machine.findFunction(call.id);
@@ -134,6 +136,8 @@ public class VMCallFrame extends VMStackFrame {
 			VMVariable var = closure.getVariable(machine, arrayset.id);
 			if (!var.dec.array)
 				throw new VMUserCodeException(statement, "Not an array");
+			if (!var.defined())
+				throw new VMUserCodeException(statement, "Attempt to access undefined variable " + var.dec.name.image);
 			HashMap<Integer, VMValue> what = var.safeValue().asArrayType();
 			if (store0 == null) {
 				if (!hasPreviousCallResult()) {

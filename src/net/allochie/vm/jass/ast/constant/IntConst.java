@@ -2,6 +2,7 @@ package net.allochie.vm.jass.ast.constant;
 
 import java.util.HashMap;
 
+import net.allochie.vm.jass.ast.CodePlace;
 import net.allochie.vm.jass.parser.ParseException;
 import net.allochie.vm.jass.parser.Token;
 
@@ -15,7 +16,7 @@ public class IntConst extends Constant {
 		this.identity = identity;
 	}
 
-	public static IntConst fromToken(Token inttoken, IntConstType decimal) throws ParseException {
+	public static IntConst fromToken(Token inttoken, CodePlace place, IntConstType decimal) throws ParseException {
 		try {
 			Integer val = null;
 			switch (decimal) {
@@ -37,7 +38,7 @@ public class IntConst extends Constant {
 				map.put(val, new IntConst(val));
 			return map.get(val);
 		} catch (Throwable t) {
-			throw new ParseException("Invalid number format");
+			throw new ParseException("Invalid number format at line " + place.line + ", column " + place.column);
 		}
 	}
 

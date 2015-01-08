@@ -22,6 +22,7 @@ options {
 	FORCE_LA_CHECK = true;
 }
 
+
 PARSER_BEGIN(JASSParser)
 
 package net.allochie.vm.jass.parser;
@@ -38,6 +39,7 @@ public class JASSParser
 
 }
 PARSER_END(JASSParser)
+
 
 /* Skip spaces, tabs, newlines, returns and comments */
 SKIP : { 
@@ -439,7 +441,7 @@ Expression simple_expr(): {
 	exp = unary_op() { return exp; } | 
 	exp = array_ref() { return exp; } | 
 	exp = func_ref() { return exp; } | 
-	tmp0 = id() { return new IdentifierReference(tmp0); } | 
+	tmp0 = id() { return new IdentifierReference(tmp0, new CodePlace(token)); } | 
 	exp = constval() { return exp; }
 }
 
@@ -451,29 +453,29 @@ Expression binary_op(Expression lhs): {
 {
 	{ expr.lhs = lhs; }
 	(
-			"+"	{ expr.mode = BinaryOp.ADD; }
+			"+"	{ expr.mode = BinaryOp.ADD; expr.where = new CodePlace(token); }
 		|
-			"-"	{ expr.mode = BinaryOp.SUB; }
+			"-"	{ expr.mode = BinaryOp.SUB; expr.where = new CodePlace(token); }
 		|
-			"*"	{ expr.mode = BinaryOp.MUL; }
+			"*"	{ expr.mode = BinaryOp.MUL; expr.where = new CodePlace(token); }
 		|
-			"/"	{ expr.mode = BinaryOp.DIV; }
+			"/"	{ expr.mode = BinaryOp.DIV; expr.where = new CodePlace(token); }
 		|
-			"==" { expr.mode = BinaryOp.EQUALS; }
+			"==" { expr.mode = BinaryOp.EQUALS; expr.where = new CodePlace(token); }
 		|
-			"!=" { expr.mode = BinaryOp.NOTEQUALS; }
+			"!=" { expr.mode = BinaryOp.NOTEQUALS; expr.where = new CodePlace(token); }
 		|
-			">" { expr.mode = BinaryOp.LT; }
+			">" { expr.mode = BinaryOp.LT; expr.where = new CodePlace(token); }
 		|
-			"<" { expr.mode = BinaryOp.GT; }
+			"<" { expr.mode = BinaryOp.GT; expr.where = new CodePlace(token); }
 		|
-			">=" { expr.mode = BinaryOp.LTEQ; }
+			">=" { expr.mode = BinaryOp.LTEQ; expr.where = new CodePlace(token); }
 		|
-			"<=" { expr.mode = BinaryOp.GTEQ; }
+			"<=" { expr.mode = BinaryOp.GTEQ; expr.where = new CodePlace(token); }
 		|
-			"and" { expr.mode = BinaryOp.BOOLAND; }
+			"and" { expr.mode = BinaryOp.BOOLAND; expr.where = new CodePlace(token); }
 		|
-			"or" { expr.mode = BinaryOp.BOOLOR; }
+			"or" { expr.mode = BinaryOp.BOOLOR; expr.where = new CodePlace(token); }
 	)
 	
 	tmp1 = expr() { expr.rhs = tmp1; return expr; }
@@ -486,11 +488,11 @@ Expression unary_op(): {
 }
 {
 	(
-			"+" { expr.mode = UnaryOp.POS; }
+			"+" { expr.mode = UnaryOp.POS; expr.where = new CodePlace(token); }
 		|
-			"-" { expr.mode = UnaryOp.NEG; }
+			"-" { expr.mode = UnaryOp.NEG; expr.where = new CodePlace(token); }
 		|
-			"not" { expr.mode = UnaryOp.NOT; }
+			"not" { expr.mode = UnaryOp.NOT; expr.where = new CodePlace(token); }
 	) 
 	tmp0 = expr() { expr.rhs = tmp0; return expr; }
 }
@@ -501,7 +503,7 @@ Expression func_call(): {
 	Identifier tmp0; ParamInvokeList tmp1;
 }
 {
-	tmp0 = id() { expr.name = tmp0; }
+	tmp0 = id() { expr.name = tmp0; expr.where = new CodePlace(token); }
 	"(" 
 	( 
 		tmp1 = args() { expr.params = tmp1; } 
@@ -515,7 +517,7 @@ Expression array_ref(): {
 	Identifier tmp0; Expression tmp1;
 }
 {
-	tmp0 = id() { expr.name = tmp0; }
+	tmp0 = id() { expr.name = tmp0; expr.where = new CodePlace(token); }
 	"["
 	tmp1 = expr() { expr.idx = tmp1; }
 	"]" { return expr; }
@@ -527,7 +529,7 @@ Expression func_ref(): {
 	Identifier tmp0;
 }
 {
-	<FUNCTION>
+	<FUNCTION> { expr.where = new CodePlace(token); }
 	tmp0 = id() { expr.name = tmp0; return expr; }
 }
 
@@ -560,7 +562,7 @@ IntConst decimal(): {
 	Token inttoken;
 }
 {
-	inttoken = <DECIMALINT> { return IntConst.fromToken(inttoken, IntConstType.DECIMAL); }
+	inttoken = <DECIMALINT> { return IntConst.fromToken(inttoken, new CodePlace(token), IntConstType.DECIMAL); }
 }
 
 TOKEN : { <OCTALINT: "0"(["0"-"7"])*> }
@@ -568,7 +570,7 @@ IntConst octal(): {
 	Token inttoken;
 }
 {
-	inttoken = <OCTALINT> { return IntConst.fromToken(inttoken, IntConstType.OCTAL); }
+	inttoken = <OCTALINT> { return IntConst.fromToken(inttoken, new CodePlace(token), IntConstType.OCTAL); }
 }
 
 
@@ -577,7 +579,7 @@ IntConst hex(): {
 	Token inttoken;
 }
 {
-	inttoken = <HEXINT> { return IntConst.fromToken(inttoken, IntConstType.HEXADECIMAL); }
+	inttoken = <HEXINT> { return IntConst.fromToken(inttoken, new CodePlace(token), IntConstType.HEXADECIMAL); }
 }
 
 TOKEN : { <FOURCCINT: "'" ["0"-"9","a"-"z"]["0"-"9","a"-"z"]["0"-"9","a"-"z"]["0"-"9","a"-"z"] "'"> }
@@ -585,7 +587,7 @@ IntConst fourcc(): {
 	Token inttoken;
 }
 {
-	inttoken = <FOURCCINT> { return IntConst.fromToken(inttoken, IntConstType.FOURCC); }
+	inttoken = <FOURCCINT> { return IntConst.fromToken(inttoken, new CodePlace(token), IntConstType.FOURCC); }
 }
 
 TOKEN : { <REALCONST: (["0"-"9"])+"."(["0"-"9"])* | "."(["0"-"9"])+> }
@@ -593,7 +595,7 @@ RealConst real_const(): {
 	Token realtoken;
 }
 {
-	realtoken = <REALCONST> { return RealConst.fromToken(realtoken); }
+	realtoken = <REALCONST> { return RealConst.fromToken(realtoken, new CodePlace(token)); }
 }
 
 BoolConst bool_const(): {}
@@ -623,7 +625,7 @@ StringConst string_const(): {
 	Token stringtoken;
 } 
 { 
-	stringtoken = <STRING_LITERAL> { return StringConst.fromToken(stringtoken); }
+	stringtoken = <STRING_LITERAL> { return StringConst.fromToken(stringtoken, new CodePlace(token)); }
 }
 
 /* A nested expression (parens) */
@@ -632,7 +634,7 @@ Expression parens(): {
 	Expression tmp0;
 }
 {
-	"("
+	"(" { expr.where = new CodePlace(token); }
 	tmp0 = expr() { expr.child = tmp0; }
 	")" { return expr; }
 }
@@ -645,7 +647,7 @@ Type type(): {
 	Identifier tmp0;
 }
 {
-	tmp0 = id() { return Type.fromIdentifier(tmp0); } | 
+	tmp0 = id() { return Type.fromIdentifier(tmp0, new CodePlace(token)); } | 
 	"code" { return Type.codeType; } | 
 	"handle" { return Type.handleType; } | 
 	"integer" { return Type.integerType; } | 
@@ -659,5 +661,5 @@ Identifier id(): {
 	Token identoken;
 }
 {
-	identoken = <IDENTIFIER> { return Identifier.fromToken(identoken); }
+	identoken = <IDENTIFIER> { return Identifier.fromToken(identoken, new CodePlace(token)); }
 }

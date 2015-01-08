@@ -19,7 +19,7 @@ public class Type {
 		this.typename = typename;
 	}
 
-	public static Type fromIdentifier(Identifier typetoken) {
+	public static Type fromIdentifier(Identifier typetoken, CodePlace codePlace) {
 		return Type.fromIdentifier(typetoken.image);
 	}
 

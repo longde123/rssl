@@ -10,16 +10,19 @@ public class VMException extends Exception {
 
 	public VMException(Object what, String reason) {
 		super(reason);
+		this.what = what;
 	}
 
 	public VMException(Object what, String reason, Throwable t) {
 		super(reason, t);
+		this.what = what;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder what = new StringBuilder();
-		what.append("Unrecoverable VM exception: ").append(getMessage()).append("\n");
+		what.append(getClass().getName()).append(": ").append(getMessage()).append("\n");
+		what.append((this.what != null) ? this.what.getClass().getName() : "<null>").append("\n");
 		if (this.what != null) {
 			try {
 				Class<?> thing = this.what.getClass();
@@ -30,6 +33,8 @@ public class VMException extends Exception {
 						if (place != null) {
 							what.append("\t").append(f.getName()).append(": ");
 							what.append(place).append("\n");
+						} else {
+							what.append("\t").append("<blank place>").append("\n");
 						}
 					}
 				}

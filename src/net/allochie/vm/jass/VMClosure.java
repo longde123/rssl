@@ -3,7 +3,6 @@ package net.allochie.vm.jass;
 import java.util.HashMap;
 
 import net.allochie.vm.jass.ast.Identifier;
-import net.allochie.vm.jass.ast.Type;
 import net.allochie.vm.jass.ast.dec.VarDec;
 
 public class VMClosure {

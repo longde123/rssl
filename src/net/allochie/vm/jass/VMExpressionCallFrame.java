@@ -46,6 +46,9 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				VMVariable var = closure.getVariable(machine, expr.name);
 				if (!var.dec.array)
 					throw new VMUserCodeException(expression, "Not an array");
+				if (!var.defined())
+					throw new VMUserCodeException(expression, "Attempt to access undefined variable "
+							+ var.dec.name.image);
 				HashMap<Integer, VMValue> what = var.safeValue().asArrayType();
 				if (!hasPreviousCallResult()) {
 					thread.resolveExpression(closure, expr.idx);
@@ -214,6 +217,9 @@ public class VMExpressionCallFrame extends VMCallFrame {
 			} else if (expression instanceof IdentifierReference) {
 				IdentifierReference expr = (IdentifierReference) expression;
 				VMVariable var = closure.getVariable(machine, expr.identifier);
+				if (!var.defined())
+					throw new VMUserCodeException(expression, "Attempt to access undefined variable "
+							+ var.dec.name.image);
 				result = var.safeValue();
 			} else if (expression instanceof ParenExpression) {
 				ParenExpression expr = (ParenExpression) expression;

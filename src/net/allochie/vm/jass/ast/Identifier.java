@@ -15,7 +15,7 @@ public class Identifier {
 		this.image = image;
 	}
 
-	public static Identifier fromToken(Token identoken) {
+	public static Identifier fromToken(Token identoken, CodePlace codePlace) {
 		return fromString(identoken.image);
 	}
 

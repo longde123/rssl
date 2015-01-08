@@ -8,7 +8,6 @@ public class ReturnStatement extends Statement {
 
 	/** The return expression */
 	public Expression expression;
-	public CodePlace where;
 
 	@Override
 	public String toString() {

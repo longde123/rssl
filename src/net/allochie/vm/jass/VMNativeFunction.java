@@ -22,7 +22,10 @@ public class VMNativeFunction extends VMFunction {
 		params[0] = new Callout(machine, thread, closure);
 		for (int i = 0; i < qd.def.params.size(); i++) {
 			Param pq = qd.def.params.get(i);
-			params[1 + i] = closure.getVariable(machine, pq.name).safeValue().value;
+			VMVariable pv = closure.getVariable(machine, pq.name);
+			if (!pv.defined())
+				throw new VMUserCodeException(qd, "Attempt to access undefined variable " + pv.dec.name.image);
+			params[1 + i] = pv.safeValue().value;
 		}
 		for (int i = 0; i < params.length; i++)
 			args[i] = params[i].getClass();

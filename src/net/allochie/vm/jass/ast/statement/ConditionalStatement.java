@@ -15,7 +15,6 @@ public class ConditionalStatement extends Statement {
 	public ConditionalStatement child;
 	/** The type of conditional */
 	public StatementType type;
-	public CodePlace where;
 
 	public ConditionalStatement() {
 	}
