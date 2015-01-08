@@ -180,7 +180,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 					result = new VMValue(machine, !VMValue.areValuesEqual(v0, v1));
 					break;
 				default:
-					throw new VMException("Unsupported operator " + expr.mode);
+					throw new VMException(expr, "Unsupported operator " + expr.mode);
 				}
 			} else if (expression instanceof FunctionCallExpression) {
 				FunctionCallExpression expr = (FunctionCallExpression) expression;
@@ -252,7 +252,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 						throw new VMUserCodeException(expression, "Unknown use of unary - on type " + v0.type);
 					break;
 				default:
-					throw new VMException("Unsupported operator " + expr.mode);
+					throw new VMException(expr, "Unsupported operator " + expr.mode);
 
 				}
 			} else if (expression instanceof FunctionReferenceExpression) {
@@ -261,13 +261,13 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				VMFunctionPointer pointer = new VMFunctionPointer(what);
 				result = new VMValue(machine, pointer);
 			} else
-				throw new VMException("Unknown expression type " + expression.getClass().getName());
+				throw new VMException(expression, "Unknown expression type " + expression.getClass().getName());
 		}
 
 		if (result != null)
 			finished = true;
 		else
-			throw new VMException("Unknown object expression type " + expression.getClass().getName());
+			throw new VMException(expression, "Unknown object expression type " + expression.getClass().getName());
 	}
 
 	@Override

@@ -62,7 +62,6 @@ public class JASSMachine extends Thread {
 		for (JASSThread thread : threads) {
 			if (!thread.dead()) {
 				try {
-					debugger.trace("thread.advance", thread);
 					thread.advance();
 				} catch (VMException e) {
 					debugger.fatal("thread.advance", thread, e);

@@ -32,7 +32,7 @@ public class VMNativeFunction extends VMFunction {
 		} catch (Throwable t) {
 			if (t instanceof VMException)
 				throw (VMException) t;
-			throw new VMException("Uncaught exception from native method.", t);
+			throw new VMException(qd, "Uncaught exception from native method.", t);
 		}
 	}
 }

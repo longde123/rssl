@@ -65,15 +65,15 @@ public class VMVariable {
 
 	public VMValue safeValue() throws VMException {
 		if (value == null)
-			throw new VMException("Attempt to access undefined variable " + dec.name);
+			throw new VMException(dec, "Attempt to access undefined variable " + dec.name);
 		return value;
 	}
 
 	public void safeSetValue(VMValue val) throws VMException {
 		if (val == null)
-			throw new VMException("Cannot put nullpointer reference in variable " + dec.name);
+			throw new VMException(dec, "Unchecked nullpointer write to " + dec.name);
 		if (!VMType.instanceofType(val.type, dec.type))
-			throw new VMException("Cannot store value type " + val.type + " in var " + dec.name + " with type "
+			throw new VMException(dec, "Unchecked write of type " + val.type + " to var " + dec.name + ", expected "
 					+ dec.type);
 		value = val;
 	}

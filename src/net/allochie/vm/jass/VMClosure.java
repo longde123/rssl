@@ -42,12 +42,12 @@ public class VMClosure {
 			var = parent.getVariable(machine, identifier);
 			if (var != null)
 				return var;
-			throw new VMException("Undefined identifier " + identifier.image);
+			throw new VMUserCodeException(identifier, "Undefined identifier " + identifier.image);
 		} else {
 			var = machine.findGlobal(identifier);
 			if (var != null)
 				return var;
-			throw new VMException("Undefined identifier " + identifier.image);
+			throw new VMUserCodeException(identifier, "Undefined identifier " + identifier.image);
 		}
 	}
 

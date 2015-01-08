@@ -20,7 +20,7 @@ public class NativeMethodRegistry {
 				try {
 					vals.put(zz, zz.newInstance());
 				} catch (Throwable t) {
-					throw new VMException("Can't instantiate native method provider " + zz.getName());
+					throw new VMException(zz, "Can't instantiate native method provider " + zz.getName());
 				}
 			for (Method m : zz.getMethods()) {
 				if (m.isAnnotationPresent(NativeMethod.class)) {
@@ -43,11 +43,11 @@ public class NativeMethodRegistry {
 			}
 		}
 		if (method == null)
-			throw new VMException("Unresolved native method " + image);
+			throw new VMException(image, "Unresolved native method " + image);
 		try {
 			return method.invoke(owner, params);
 		} catch (Throwable t) {
-			throw new VMException("Error invoking method", t);
+			throw new VMException(method, "Error invoking method", t);
 		}
 	}
 

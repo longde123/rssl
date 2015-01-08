@@ -52,7 +52,7 @@ public class VMCallFrame extends VMStackFrame {
 	public void step(JASSMachine machine, JASSThread thread) throws VMException {
 		machine.debugger.trace("vmCallFrame.step", this, thread);
 		if (finished)
-			throw new VMException("Cannot advance finished call frame");
+			throw new VMException(this, "Cannot advance finished call frame");
 		Statement statement = null;
 		if (statements.size() != 0)
 			statement = statements.get(currentOp);
@@ -172,9 +172,9 @@ public class VMCallFrame extends VMStackFrame {
 						+ var.dec.type);
 			var.safeSetValue(result);
 		} else if (statement != null)
-			throw new VMException("Unknown statement type " + statement.getClass().getName());
+			throw new VMException(statement, "Unknown statement type " + statement.getClass().getName());
 		if (hasPreviousCallResult())
-			throw new VMException("Detected unused return result in op " + statement);
+			throw new VMException(statement, "Detected uncollected return result in statement " + statement);
 		currentOp++;
 		i = 0;
 		j = 0;

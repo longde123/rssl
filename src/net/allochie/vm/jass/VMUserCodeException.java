@@ -6,19 +6,12 @@ import net.allochie.vm.jass.ast.CodePlace;
 
 public class VMUserCodeException extends VMException {
 
-	public Object what;
-
-	public VMUserCodeException(String reason) {
-		super(reason);
-	}
-
 	public VMUserCodeException(Object what, String reason) {
-		super(reason);
-		this.what = what;
+		super(what, reason);
 	}
 
-	public VMUserCodeException(String reason, Throwable t) {
-		super(reason, t);
+	public VMUserCodeException(Object what, String reason, Throwable t) {
+		super(what, reason, t);
 	}
 
 	@Override

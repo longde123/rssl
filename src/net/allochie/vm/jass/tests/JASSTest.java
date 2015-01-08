@@ -42,7 +42,7 @@ public class JASSTest {
 			NativeMethodRegistry.registerNativeMethodProvider(NativeTypeCasts.class);
 
 			JASSMachine machine = new JASSMachine("Demo machine");
-			machine.setDebugger(new AllDebugger());
+			//machine.setDebugger(new AllDebugger());
 			try {
 				JASSThread main = machine.allocateThread("main", new VMFunctionPointer("main"));
 				main.doFile(file);

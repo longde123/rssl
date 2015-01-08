@@ -58,7 +58,7 @@ public class VMValue {
 	public VMValue applyCast(JASSMachine machine, Type productType) throws VMException {
 		machine.debugger.trace("vmValue.applyCast", this, productType);
 		if (array)
-			throw new VMException("Cannot cast array");
+			throw new VMException(this, "Cannot cast array");
 		if (productType == type)
 			return new VMValue(machine, value);
 		machine.debugger.trace("vmValue.applyCast.apply", this, productType);
@@ -69,7 +69,7 @@ public class VMValue {
 			else
 				return new VMValue(machine, asNumericType());
 		}
-		throw new VMException("Cast from " + type + " to " + productType + " not supported");
+		throw new VMException(this, "Cast from " + type + " to " + productType + " not supported");
 	}
 
 	public VMValue unsafeApplyCast(Type productType) {
@@ -83,9 +83,9 @@ public class VMValue {
 
 	public double asNumericType() throws VMException {
 		if (type != Type.integerType && type != Type.realType)
-			throw new VMException("Not a number");
+			throw new VMException(this, "Not a number");
 		if (array)
-			throw new VMException("Cannot take numeric value of array");
+			throw new VMException(this, "Cannot take numeric value of array");
 		if (value instanceof Integer)
 			return (double) ((Integer) value).doubleValue();
 		return (double) value;
@@ -93,23 +93,23 @@ public class VMValue {
 
 	public String asStringType() throws VMException {
 		if (type != Type.stringType)
-			throw new VMException("Not a string");
+			throw new VMException(this, "Not a string");
 		if (array)
-			throw new VMException("Cannot take string value of array");
+			throw new VMException(this, "Cannot take string value of array");
 		return (String) value;
 	}
 
 	public boolean asBooleanType() throws VMException {
 		if (type != Type.booleanType)
-			throw new VMException("Not a boolean");
+			throw new VMException(this, "Not a boolean");
 		if (array)
-			throw new VMException("Cannot take boolean value of array");
+			throw new VMException(this, "Cannot take boolean value of array");
 		return (boolean) value;
 	}
 
 	public HashMap<Integer, VMValue> asArrayType() throws VMException {
 		if (!array)
-			throw new VMException("Cannot take array type of non-array type");
+			throw new VMException(this, "Cannot take array type of non-array type");
 		return (HashMap<Integer, VMValue>) value;
 	}
 

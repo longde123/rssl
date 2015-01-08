@@ -62,7 +62,7 @@ public class JASSThread {
 		machine.debugger.trace("thread.runThread", this);
 		VMFunction function = machine.findFunction(invokeFunc);
 		if (function == null)
-			throw new VMException("Can't start thread, no function named " + invokeFunc);
+			throw new VMException(invokeFunc, "Can't start thread, no function named " + invokeFunc);
 		requestCall(top, function, new VMValue[0]);
 	}
 
@@ -104,7 +104,7 @@ public class JASSThread {
 				machine.debugger.trace("thread.doFile.registerNative", this, nativeFn);
 				machine.natives.put(nativeFn.def.id.image, new VMNativeFunction(nativeFn));
 			} else
-				throw new VMException("Unknown definition type " + what.getClass().getName());
+				throw new VMException(what, "Unknown definition type " + what.getClass().getName());
 		}
 
 		for (Function func : file.funcs) {
@@ -226,11 +226,11 @@ public class JASSThread {
 	public void advance() throws VMException {
 		machine.debugger.trace("thread.advance", this);
 		if (isDead)
-			throw new VMException("Can't resume dead thread");
+			throw new VMException(this, "Can't resume dead thread");
 		if (!isInit)
 			init();
 		if (!isInit)
-			throw new VMException("Failed to init thread");
+			throw new VMException(this, "Failed to init thread");
 		try {
 			int count = frequency;
 			while (count > 0) {
