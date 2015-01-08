@@ -34,7 +34,7 @@ public class JASSMachine extends Thread {
 	}
 
 	public void setDebugger(IDebugger what) {
-		this.debugger = what;
+		debugger = what;
 	}
 
 	public void putThread(JASSThread thread) {
@@ -45,9 +45,8 @@ public class JASSMachine extends Thread {
 
 	@Override
 	public void run() {
-		while (threads.size() != 0 || live.size() != 0) {
+		while (threads.size() != 0 || live.size() != 0)
 			advance();
-		}
 	}
 
 	public void advance() {
@@ -59,24 +58,18 @@ public class JASSMachine extends Thread {
 				live.clear();
 			}
 		}
-		for (JASSThread thread : threads) {
+		for (JASSThread thread : threads)
 			if (!thread.dead()) {
 				try {
 					thread.advance();
 				} catch (VMException e) {
 					debugger.fatal("thread.advance", thread, e);
-					e.printStackTrace();
-					System.err.println("Frames on stack: ");
-					for (int i = thread.callStack.size() - 1; i >= 0; i--) {
-						VMStackFrame frame = thread.callStack.get(i);
-						System.err.println(i + ": " + frame.dumpFrame());
-					}
+					System.err.println(e.generateMessage(this, thread));
 					dead.add(thread);
 				}
 				if (thread.dead())
 					dead.add(thread);
 			}
-		}
 		if (dead.size() > 0) {
 			for (JASSThread remove : dead)
 				threads.remove(remove);

@@ -1,6 +1,5 @@
 package net.allochie.vm.jass.ast.dec;
 
-import net.allochie.vm.jass.VMValue;
 import net.allochie.vm.jass.ast.CodePlace;
 import net.allochie.vm.jass.ast.Identifier;
 import net.allochie.vm.jass.ast.Type;

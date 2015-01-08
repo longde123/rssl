@@ -6,13 +6,13 @@ public class VMFunctionPointer {
 	public final String functionName;
 
 	public VMFunctionPointer(VMFunction what) {
-		this.functionVal = what;
-		this.functionName = null;
+		functionVal = what;
+		functionName = null;
 	}
 
 	public VMFunctionPointer(String name) {
-		this.functionVal = null;
-		this.functionName = name;
+		functionVal = null;
+		functionName = name;
 	}
 
 	@Override

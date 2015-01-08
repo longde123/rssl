@@ -5,18 +5,9 @@ import java.io.FileNotFoundException;
 
 import net.allochie.vm.jass.JASSMachine;
 import net.allochie.vm.jass.JASSThread;
-import net.allochie.vm.jass.VMCallFrame;
-import net.allochie.vm.jass.VMClosure;
 import net.allochie.vm.jass.VMException;
 import net.allochie.vm.jass.VMFunctionPointer;
-import net.allochie.vm.jass.ast.Function;
 import net.allochie.vm.jass.ast.JASSFile;
-import net.allochie.vm.jass.ast.Statement;
-import net.allochie.vm.jass.ast.StatementList;
-import net.allochie.vm.jass.ast.dec.Dec;
-import net.allochie.vm.jass.ast.statement.ConditionalStatement;
-import net.allochie.vm.jass.ast.statement.LoopStatement;
-import net.allochie.vm.jass.debug.AllDebugger;
 import net.allochie.vm.jass.global.NativeMethodRegistry;
 import net.allochie.vm.jass.global.TypeRegistry;
 import net.allochie.vm.jass.natives.NativeThreading;
@@ -42,7 +33,7 @@ public class JASSTest {
 			NativeMethodRegistry.registerNativeMethodProvider(NativeTypeCasts.class);
 
 			JASSMachine machine = new JASSMachine("Demo machine");
-			//machine.setDebugger(new AllDebugger());
+			// machine.setDebugger(new AllDebugger());
 			try {
 				JASSThread main = machine.allocateThread("main", new VMFunctionPointer("main"));
 				main.doFile(file);

@@ -12,16 +12,16 @@ public class JASSFile {
 	public ArrayList<Function> funcs;
 
 	public JASSFile() {
-		this.decs = new ArrayList<Dec>();
-		this.funcs = new ArrayList<Function>();
+		decs = new ArrayList<Dec>();
+		funcs = new ArrayList<Function>();
 	}
 
 	public void put(Dec d) {
-		this.decs.add(d);
+		decs.add(d);
 	}
 
 	public void put(Function f) {
-		this.funcs.add(f);
+		funcs.add(f);
 	}
 
 }

@@ -15,7 +15,7 @@ public class BooleanFuncWrapper {
 	}
 
 	public BooleanFuncWrapper(Callout vm, VMFunctionPointer pointer) {
-		this.context = vm;
+		context = vm;
 		this.pointer = pointer;
 	}
 

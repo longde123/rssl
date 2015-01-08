@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.allochie.vm.jass.VMException;
-import net.allochie.vm.jass.VMValue;
 
 public class NativeMethodRegistry {
 
@@ -22,7 +21,7 @@ public class NativeMethodRegistry {
 				} catch (Throwable t) {
 					throw new VMException(zz, "Can't instantiate native method provider " + zz.getName());
 				}
-			for (Method m : zz.getMethods()) {
+			for (Method m : zz.getMethods())
 				if (m.isAnnotationPresent(NativeMethod.class)) {
 					NativeMethod z0 = m.getAnnotation(NativeMethod.class);
 					if (z0.name().equalsIgnoreCase(image)) {
@@ -40,7 +39,6 @@ public class NativeMethodRegistry {
 						}
 					}
 				}
-			}
 		}
 		if (method == null)
 			throw new VMException(image, "Unresolved native method " + image);

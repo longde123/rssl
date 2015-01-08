@@ -12,7 +12,7 @@ public class VMNativeFunction extends VMFunction {
 	public VMNativeFunction(NativeFuncDef qd) {
 		super();
 		this.qd = qd;
-		this.sig = qd.def;
+		sig = qd.def;
 	}
 
 	public VMValue executeNative(JASSMachine machine, JASSThread thread, VMClosure closure) throws VMException {

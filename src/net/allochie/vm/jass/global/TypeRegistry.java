@@ -1,13 +1,12 @@
 package net.allochie.vm.jass.global;
 
-import net.allochie.vm.jass.JASSMachine;
-import net.allochie.vm.jass.VMType;
-import net.allochie.vm.jass.ast.Identifier;
-import net.allochie.vm.jass.ast.Type;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import net.allochie.vm.jass.JASSMachine;
+import net.allochie.vm.jass.VMType;
+import net.allochie.vm.jass.ast.Type;
 
 public class TypeRegistry {
 	public static HashMap<String, VMType> typeMap = new HashMap<String, VMType>();
@@ -15,14 +14,12 @@ public class TypeRegistry {
 
 	public static Type findPreferredType(Object z, JASSMachine machine) {
 		Type t0 = null;
-		main: for (Entry<String, ArrayList<Class<? extends Object>>> entry : dict.entrySet()) {
-			for (Class<? extends Object> what : entry.getValue()) {
+		main: for (Entry<String, ArrayList<Class<? extends Object>>> entry : dict.entrySet())
+			for (Class<? extends Object> what : entry.getValue())
 				if (z.getClass().equals(what)) {
 					t0 = machine.types.get(entry.getKey());
 					break main;
 				}
-			}
-		}
 		if (t0 == null)
 			return Type.handleType;
 		return t0;

@@ -12,13 +12,13 @@ public class VMClosure {
 	private final HashMap<String, VMVariable> vars = new HashMap<String, VMVariable>();
 
 	public VMClosure(JASSMachine machine) {
-		this.parent = null;
+		parent = null;
 		this.machine = machine;
 	}
 
 	public VMClosure(VMClosure closure) {
-		this.parent = closure;
-		this.machine = null;
+		parent = closure;
+		machine = null;
 	}
 
 	public boolean top() {

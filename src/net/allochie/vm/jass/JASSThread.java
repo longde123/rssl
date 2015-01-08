@@ -41,7 +41,7 @@ public class JASSThread {
 
 	/**
 	 * Create a new JASSThread scheduler
-	 * 
+	 *
 	 * @param machine
 	 *            The JASS machine
 	 * @param threadName
@@ -53,9 +53,9 @@ public class JASSThread {
 	 */
 	public JASSThread(JASSMachine machine, String threadName, VMClosure closure, VMFunctionPointer runFunc) {
 		this.machine = machine;
-		this.name = threadName;
-		this.top = closure;
-		this.invokeFunc = runFunc;
+		name = threadName;
+		top = closure;
+		invokeFunc = runFunc;
 	}
 
 	public void runThread() throws VMException {
@@ -68,7 +68,7 @@ public class JASSThread {
 
 	public void doFile(JASSFile file) throws VMException {
 		machine.debugger.trace("thread.doFile", this, file);
-		for (Dec what : file.decs) {
+		for (Dec what : file.decs)
 			if (what instanceof TypeDec) {
 				TypeDec type = (TypeDec) what;
 				if (type.type == null)
@@ -78,7 +78,7 @@ public class JASSThread {
 				machine.types.put(type.id.image, (VMType) TypeRegistry.fromString(type.id.image));
 				if (type.type == null)
 					machine.types.get(type.id.image).setExtensionOf(type.typename.image);
-				else {
+				else
 					switch (type.type) {
 					case HANDLE:
 						machine.types.get(type.id.image).setExtensionOf(Type.handleType);
@@ -87,7 +87,6 @@ public class JASSThread {
 						break;
 
 					}
-				}
 			} else if (what instanceof GlobalsDec) {
 				GlobalsDec heap = (GlobalsDec) what;
 				for (VarDec var : heap.decs) {
@@ -105,7 +104,6 @@ public class JASSThread {
 				machine.natives.put(nativeFn.def.id.image, new VMNativeFunction(nativeFn));
 			} else
 				throw new VMException(what, "Unknown definition type " + what.getClass().getName());
-		}
 
 		for (Function func : file.funcs) {
 			machine.debugger.trace("thread.doFile.registerFunction", this, func);
@@ -115,12 +113,12 @@ public class JASSThread {
 
 	public void setFrequency(int speed) {
 		machine.debugger.trace("thread.setFrequency", this, speed);
-		this.frequency = speed;
+		frequency = speed;
 	}
 
 	public void interrupt() {
 		machine.debugger.trace("thread.interrupt", this);
-		this.interrupt = true;
+		interrupt = true;
 	}
 
 	public VMStackFrame getCurrentFrame() throws VMException {
@@ -137,7 +135,7 @@ public class JASSThread {
 				Param param = function.sig.params.get(i);
 				VarDec pvar = new VarDec(param.name, param.type, param.array, false, null);
 				child.createVariable(machine, pvar);
-				child.getVariable(this.machine, param.name).safeSetValue(args[i]);
+				child.getVariable(machine, param.name).safeSetValue(args[i]);
 			}
 			VMNativeCallFrame frame = new VMNativeCallFrame(child, (VMNativeFunction) function);
 			callStack.push(frame);
@@ -147,14 +145,14 @@ public class JASSThread {
 				Param param = function.sig.params.get(i);
 				VarDec pvar = new VarDec(param.name, param.type, param.array, false, null);
 				child.createVariable(machine, pvar);
-				child.getVariable(this.machine, param.name).safeSetValue(args[i]);
+				child.getVariable(machine, param.name).safeSetValue(args[i]);
 			}
 
 			VMStackFrame topFrame = getCurrentFrame();
 			if (function.lvars != null)
 				for (VarDec var : function.lvars) {
 					child.createVariable(machine, var);
-					child.getVariable(this.machine, var.name).init(this, var, child);
+					child.getVariable(machine, var.name).init(this, var, child);
 					advanceUntilFrame(topFrame);
 				}
 
@@ -210,12 +208,12 @@ public class JASSThread {
 	}
 
 	private boolean interrupted() {
-		return this.interrupt;
+		return interrupt;
 	}
 
 	private void flushInterrupts() {
 		machine.debugger.trace("thread.flushInterrupts", this);
-		this.interrupt = false;
+		interrupt = false;
 	}
 
 	private void init() throws VMException {

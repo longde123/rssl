@@ -2,7 +2,6 @@ package net.allochie.vm.jass;
 
 import java.util.HashMap;
 
-import net.allochie.vm.jass.ast.CodePlace;
 import net.allochie.vm.jass.ast.Statement;
 import net.allochie.vm.jass.ast.StatementList;
 import net.allochie.vm.jass.ast.Type;
@@ -38,18 +37,19 @@ public class VMCallFrame extends VMStackFrame {
 	public VMCallFrame(VMClosure closure, StatementList statements, boolean loop) {
 		this.closure = closure;
 		this.statements = statements;
-		this.isFunc = false;
-		this.isLoop = loop;
+		isFunc = false;
+		isLoop = loop;
 	}
 
 	public VMCallFrame(VMClosure closure, StatementList statements, VMValue[] args) {
 		this.closure = closure;
 		this.statements = statements;
 		this.args = args;
-		this.isFunc = true;
-		this.isLoop = false;
+		isFunc = true;
+		isLoop = false;
 	}
 
+	@Override
 	public void step(JASSMachine machine, JASSThread thread) throws VMException {
 		machine.debugger.trace("vmCallFrame.step", this, thread);
 		if (finished)
@@ -88,7 +88,7 @@ public class VMCallFrame extends VMStackFrame {
 			store0 = getPreviousCallResult();
 		} else if (statement instanceof ConditionalStatement) {
 			ConditionalStatement conditional = (ConditionalStatement) statement;
-			while (conditional != null) {
+			while (conditional != null)
 				if (conditional.conditional != null) {
 					if (!hasPreviousCallResult()) {
 						thread.resolveExpression(closure, conditional.conditional);
@@ -106,9 +106,10 @@ public class VMCallFrame extends VMStackFrame {
 					thread.requestCall(closure, conditional);
 					break;
 				}
-			}
 		} else if (statement instanceof LoopExitStatement) {
 			LoopExitStatement exit = (LoopExitStatement) statement;
+			if (!isLoop)
+				throw new VMUserCodeException(statement, "Cannot use exitwhen outside a loop");
 			if (!hasPreviousCallResult()) {
 				thread.resolveExpression(closure, exit.conditional);
 				return;
@@ -186,12 +187,11 @@ public class VMCallFrame extends VMStackFrame {
 		store0 = null;
 		store1 = null;
 		store2 = null;
-		if (currentOp >= statements.size()) {
+		if (currentOp >= statements.size())
 			if (isLoop)
 				currentOp = 0;
 			else
 				finished = true;
-		}
 	}
 
 	@Override

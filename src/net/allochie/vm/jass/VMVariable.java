@@ -2,7 +2,6 @@ package net.allochie.vm.jass;
 
 import java.util.HashMap;
 
-import net.allochie.vm.jass.ast.Statement;
 import net.allochie.vm.jass.ast.dec.VarDec;
 
 public class VMVariable {
@@ -53,7 +52,7 @@ public class VMVariable {
 		this.closure = closure;
 		this.dec = dec;
 		if (this.dec.array)
-			this.value = new VMValue(machine, new HashMap<Integer, VMValue>()).unsafeApplyCast(dec.type);
+			value = new VMValue(machine, new HashMap<Integer, VMValue>()).unsafeApplyCast(dec.type);
 	}
 
 	public void init(JASSThread thread, VarDec var, VMClosure top) throws VMException {

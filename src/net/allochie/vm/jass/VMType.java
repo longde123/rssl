@@ -1,7 +1,6 @@
 package net.allochie.vm.jass;
 
 import net.allochie.vm.jass.ast.Type;
-import net.allochie.vm.jass.ast.dec.TypeDec;
 import net.allochie.vm.jass.global.TypeRegistry;
 
 public class VMType extends Type {
@@ -32,7 +31,7 @@ public class VMType extends Type {
 	 * <p>
 	 * Find the VM type of an object.
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * <ul>
 	 * <li>If the object is NULL, or Void or Void[], the type is nulltype</li>
@@ -53,7 +52,7 @@ public class VMType extends Type {
 	 * the type (including HANDLE).</li></li>
 	 * </ul>
 	 * </p>
-	 * 
+	 *
 	 * @param machine
 	 *            The working VM
 	 * @param z
@@ -84,7 +83,7 @@ public class VMType extends Type {
 
 	/**
 	 * Determines if the source type is an instance of the receiving type.
-	 * 
+	 *
 	 * @param src
 	 *            The source type.
 	 * @param recv
@@ -133,7 +132,7 @@ public class VMType extends Type {
 	}
 
 	public void setExtensionOf(Type handleType) {
-		this.parentType = (VMType) handleType;
+		parentType = (VMType) handleType;
 	}
 
 	@Override

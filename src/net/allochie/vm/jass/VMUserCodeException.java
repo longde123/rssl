@@ -1,10 +1,11 @@
 package net.allochie.vm.jass;
 
-import java.lang.reflect.Field;
-
-import net.allochie.vm.jass.ast.CodePlace;
-
 public class VMUserCodeException extends VMException {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 4732001427163504471L;
 
 	public VMUserCodeException(Object what, String reason) {
 		super(what, reason);

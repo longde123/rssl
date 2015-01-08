@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import net.allochie.vm.jass.ast.expression.Expression;
 
 public class ParamInvokeList extends ArrayList<Expression> {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -5349043874124784066L;
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();

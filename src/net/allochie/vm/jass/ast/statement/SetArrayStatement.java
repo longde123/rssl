@@ -1,6 +1,5 @@
 package net.allochie.vm.jass.ast.statement;
 
-import net.allochie.vm.jass.ast.CodePlace;
 import net.allochie.vm.jass.ast.Identifier;
 import net.allochie.vm.jass.ast.Statement;
 import net.allochie.vm.jass.ast.expression.Expression;

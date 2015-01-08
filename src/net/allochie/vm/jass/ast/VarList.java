@@ -6,6 +6,11 @@ import net.allochie.vm.jass.ast.dec.VarDec;
 
 public class VarList extends ArrayList<VarDec> {
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -2743713924429685303L;
+
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();

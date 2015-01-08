@@ -22,7 +22,7 @@ public abstract class VMStackFrame {
 	}
 
 	public void setInvokeResult(VMValue result) {
-		this.callResult = result;
+		callResult = result;
 	}
 
 	public boolean hasPreviousCallResult() {

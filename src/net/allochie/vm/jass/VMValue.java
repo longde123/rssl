@@ -29,25 +29,25 @@ public class VMValue {
 			for (int i = 0; i < d0.length; i++)
 				store.put(i, new VMValue(machine, d0[i]));
 			this.value = store;
-			this.array = true;
-			this.type = VMType.findType(machine, d0[0]);
+			array = true;
+			type = VMType.findType(machine, d0[0]);
 		} else if (value instanceof HashMap) {
 			machine.debugger.trace("vmValue.createType.hashType", value);
 			HashMap<Integer, VMValue> map = (HashMap<Integer, VMValue>) value;
 			this.value = map;
-			this.array = true;
-			this.type = VMType.findType(machine, map.get(0));
+			array = true;
+			type = VMType.findType(machine, map.get(0));
 		} else {
 			machine.debugger.trace("vmValue.createType.rawType", value);
 			this.value = value;
-			this.array = false;
-			this.type = VMType.findType(machine, value);
+			array = false;
+			type = VMType.findType(machine, value);
 		}
 	}
 
 	private VMValue(Object value, Type that, boolean array) {
 		this.value = value;
-		this.type = that;
+		type = that;
 		this.array = array;
 	}
 
@@ -63,17 +63,16 @@ public class VMValue {
 			return new VMValue(machine, value);
 		machine.debugger.trace("vmValue.applyCast.apply", this, productType);
 		if ((type == Type.integerType || type == Type.realType)
-				&& (productType == Type.integerType || productType == Type.realType)) {
+				&& (productType == Type.integerType || productType == Type.realType))
 			if (productType == Type.integerType)
 				return new VMValue(machine, (int) Math.floor(asNumericType()));
 			else
 				return new VMValue(machine, asNumericType());
-		}
 		throw new VMException(this, "Cast from " + type + " to " + productType + " not supported");
 	}
 
 	public VMValue unsafeApplyCast(Type productType) {
-		return new VMValue(this.value, productType, this.array);
+		return new VMValue(value, productType, array);
 	}
 
 	@Override
@@ -87,7 +86,7 @@ public class VMValue {
 		if (array)
 			throw new VMException(this, "Cannot take numeric value of array");
 		if (value instanceof Integer)
-			return (double) ((Integer) value).doubleValue();
+			return ((Integer) value).doubleValue();
 		return (double) value;
 	}
 

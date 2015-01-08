@@ -9,14 +9,14 @@ public class CodePlace {
 	public int column;
 
 	public CodePlace(Token what) {
-		this.image = what.image;
-		this.line = what.beginLine;
-		this.column = what.beginColumn;
+		image = what.image;
+		line = what.beginLine;
+		column = what.beginColumn;
 	}
 
 	@Override
 	public String toString() {
-		return ((image != null) ? "in section " + image : " in unknown ") + " at ine " + line + ", col " + column;
+		return ((image != null) ? "section `" + image + "`" : "unknown section") + ", line " + line + ":" + column;
 	}
 
 }

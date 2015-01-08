@@ -10,11 +10,11 @@ public class GlobalsDec extends Dec {
 	public CodePlace where;
 
 	public GlobalsDec() {
-		this.decs = new ArrayList<VarDec>();
+		decs = new ArrayList<VarDec>();
 	}
 
 	public void put(VarDec d) {
-		this.decs.add(d);
+		decs.add(d);
 	}
 
 	@Override

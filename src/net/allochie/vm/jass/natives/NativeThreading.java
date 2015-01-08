@@ -15,16 +15,16 @@ public class NativeThreading {
 			throw new VMUserCodeException(call.closure, "Cannot point to null function");
 		JASSThread thread = call.machine.allocateThread("User thread", pointer);
 		if (thread == null)
-			throw new VMUserCodeException(call.closure,"Cannot create new thread");
+			throw new VMUserCodeException(call.closure, "Cannot create new thread");
 		return thread;
 	}
 
 	@NativeMethod(name = "StartThread")
 	public static void startThread(Callout call, JASSThread thread) throws VMException {
 		if (thread == null)
-			throw new VMUserCodeException(call.closure,"Cannot provide null thread");
+			throw new VMUserCodeException(call.closure, "Cannot provide null thread");
 		if (thread.running())
-			throw new VMUserCodeException(call.closure,"Thread already started");
+			throw new VMUserCodeException(call.closure, "Thread already started");
 		thread.runThread();
 		call.machine.putThread(thread);
 	}
@@ -32,7 +32,7 @@ public class NativeThreading {
 	@NativeMethod(name = "GetThreadStatus")
 	public static boolean isRunning(Callout call, JASSThread thread) throws VMException {
 		if (thread == null)
-			throw new VMUserCodeException(call.closure,"Cannot provide null thread");
+			throw new VMUserCodeException(call.closure, "Cannot provide null thread");
 		return thread.running();
 	}
 }

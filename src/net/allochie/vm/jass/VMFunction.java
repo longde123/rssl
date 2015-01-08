@@ -8,10 +8,10 @@ public class VMFunction extends Function {
 	}
 
 	public VMFunction(Function func) {
-		this.constant = func.constant;
-		this.lvars = func.lvars;
-		this.sig = func.sig;
-		this.statements = func.statements;
+		constant = func.constant;
+		lvars = func.lvars;
+		sig = func.sig;
+		statements = func.statements;
 	}
 
 }

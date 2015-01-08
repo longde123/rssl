@@ -40,7 +40,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				result = new VMValue(machine, ((StringConst) expression).identity);
 			else
 				throw new VMUserCodeException(expression, "Unknown constant type " + expression.getClass().getName());
-		} else if (expression instanceof Expression) {
+		} else if (expression instanceof Expression)
 			if (expression instanceof ArrayReferenceExpression) {
 				ArrayReferenceExpression expr = (ArrayReferenceExpression) expression;
 				VMVariable var = closure.getVariable(machine, expr.name);
@@ -268,7 +268,6 @@ public class VMExpressionCallFrame extends VMCallFrame {
 				result = new VMValue(machine, pointer);
 			} else
 				throw new VMException(expression, "Unknown expression type " + expression.getClass().getName());
-		}
 
 		if (result != null)
 			finished = true;

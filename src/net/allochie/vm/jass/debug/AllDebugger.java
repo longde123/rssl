@@ -8,8 +8,8 @@ public class AllDebugger implements IDebugger {
 	public void trace(Object... args) {
 		StringBuilder s = new StringBuilder();
 		s.append("trace: ");
-		for (int i = 0; i < args.length; i++)
-			s.append(args[i]).append(", ");
+		for (Object arg : args)
+			s.append(arg).append(", ");
 		System.out.println(s.toString());
 	}
 
@@ -17,8 +17,8 @@ public class AllDebugger implements IDebugger {
 	public void fatal(Object... args) {
 		StringBuilder s = new StringBuilder();
 		s.append("fatal: ");
-		for (int i = 0; i < args.length; i++)
-			s.append(args[i]).append(", ");
+		for (Object arg : args)
+			s.append(arg).append(", ");
 		System.out.println(s.toString());
 	}
 
