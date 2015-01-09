@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.allochie.vm.jass.api.IDebugger;
+import net.allochie.vm.jass.api.ThreadSchedule;
+import net.allochie.vm.jass.api.ThreadSchedule.Schedule;
 import net.allochie.vm.jass.ast.Identifier;
 import net.allochie.vm.jass.debug.VoidDebugger;
 
@@ -19,6 +21,8 @@ public class JASSMachine extends Thread {
 	public HashMap<String, VMFunction> funcs = new HashMap<String, VMFunction>();
 	/** The global closure */
 	public VMClosure global = new VMClosure(this);
+	/** The thread schedule */
+	public ThreadSchedule schedule;
 	/** The thread list */
 	public ArrayList<JASSThread> threads = new ArrayList<JASSThread>();
 	/** The list of dead threads */
@@ -29,8 +33,9 @@ public class JASSMachine extends Thread {
 	/** The system debugger */
 	public IDebugger debugger = new VoidDebugger();
 
-	public JASSMachine(String title) {
+	public JASSMachine(String title, ThreadSchedule schedule) {
 		super(title);
+		this.schedule = schedule;
 	}
 
 	public void setDebugger(IDebugger what) {
@@ -58,9 +63,13 @@ public class JASSMachine extends Thread {
 				live.clear();
 			}
 		}
+
+		int speed = (schedule.getSchedule() == Schedule.FIXED_PER_THREAD) ? schedule.getCycles() : (int) Math.min(1,
+				Math.floor(schedule.getCycles() / threads.size()));
 		for (JASSThread thread : threads)
 			if (!thread.dead()) {
 				try {
+					thread.setFrequency(speed);
 					thread.advance();
 				} catch (VMException e) {
 					debugger.fatal("thread.advance", thread, e);
