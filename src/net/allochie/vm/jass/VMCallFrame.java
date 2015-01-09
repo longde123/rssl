@@ -12,6 +12,7 @@ import net.allochie.vm.jass.ast.statement.LoopStatement;
 import net.allochie.vm.jass.ast.statement.ReturnStatement;
 import net.allochie.vm.jass.ast.statement.SetArrayStatement;
 import net.allochie.vm.jass.ast.statement.SetStatement;
+import net.allochie.vm.jass.ast.statement.TryCatchStatement;
 
 public class VMCallFrame extends VMStackFrame {
 
@@ -23,6 +24,8 @@ public class VMCallFrame extends VMStackFrame {
 	public final boolean isFunc;
 	/** Is this a loop? */
 	public final boolean isLoop;
+	/** Is this frame an exception handler? */
+	public final boolean isExceptionHandler;
 	/** The current operation index */
 	public int currentOp;
 	/** If the frame has finished working */
@@ -33,12 +36,14 @@ public class VMCallFrame extends VMStackFrame {
 	protected VMValue store0, store1;
 	protected VMValue store2[];
 	protected int i, j, k;
+	protected VMUserCodeException caught;
 
-	public VMCallFrame(VMClosure closure, StatementList statements, boolean loop) {
+	public VMCallFrame(VMClosure closure, StatementList statements, boolean loop, boolean catcher) {
 		this.closure = closure;
 		this.statements = statements;
 		isFunc = false;
 		isLoop = loop;
+		isExceptionHandler = catcher;
 	}
 
 	public VMCallFrame(VMClosure closure, StatementList statements, VMValue[] args) {
@@ -47,6 +52,7 @@ public class VMCallFrame extends VMStackFrame {
 		this.args = args;
 		isFunc = true;
 		isLoop = false;
+		isExceptionHandler = false;
 	}
 
 	@Override
@@ -122,6 +128,19 @@ public class VMCallFrame extends VMStackFrame {
 		} else if (statement instanceof LoopStatement) {
 			LoopStatement loop = (LoopStatement) statement;
 			thread.requestCall(closure, loop);
+		} else if (statement instanceof TryCatchStatement) {
+			TryCatchStatement tryBlock = (TryCatchStatement) statement;
+			if (j == 0) {
+				thread.requestCall(closure, tryBlock.statements, false, true);
+				j++;
+				return;
+			} else {
+				if (caught != null && k == 0) {
+					thread.requestCall(closure, tryBlock.catchStatements, false, false);
+					k++;
+					return;
+				}
+			}
 		} else if (statement instanceof ReturnStatement) {
 			ReturnStatement retn = (ReturnStatement) statement;
 			if (retn.expression != null) {
@@ -184,6 +203,7 @@ public class VMCallFrame extends VMStackFrame {
 		i = 0;
 		j = 0;
 		k = 0;
+		caught = null;
 		store0 = null;
 		store1 = null;
 		store2 = null;
@@ -207,5 +227,9 @@ public class VMCallFrame extends VMStackFrame {
 		place.append("k: ").append(k).append(", ");
 		place.append("currentOp: ").append(currentOp).append(", ");
 		place.append("statements: ").append(statements.size()).append("}");
+	}
+
+	public void setException(VMUserCodeException code) {
+		this.caught = code;
 	}
 }

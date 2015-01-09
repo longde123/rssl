@@ -5,6 +5,7 @@ import java.util.Stack;
 import net.allochie.vm.jass.ast.Function;
 import net.allochie.vm.jass.ast.JASSFile;
 import net.allochie.vm.jass.ast.Param;
+import net.allochie.vm.jass.ast.StatementList;
 import net.allochie.vm.jass.ast.Type;
 import net.allochie.vm.jass.ast.dec.Dec;
 import net.allochie.vm.jass.ast.dec.GlobalsDec;
@@ -170,13 +171,19 @@ public class JASSThread {
 
 	public void requestCall(VMClosure closure, ConditionalStatement conditional) {
 		machine.debugger.trace("thread.requestCall", this, closure, conditional);
-		VMStackFrame callframe = new VMCallFrame(closure, conditional.statements, false);
+		VMStackFrame callframe = new VMCallFrame(closure, conditional.statements, false, false);
 		callStack.push(callframe);
 	}
 
 	public void requestCall(VMClosure closure, LoopStatement loop) {
 		machine.debugger.trace("thread.requestCall", this, closure, loop);
-		VMStackFrame callframe = new VMCallFrame(closure, loop.statements, true);
+		VMStackFrame callframe = new VMCallFrame(closure, loop.statements, true, false);
+		callStack.push(callframe);
+	}
+
+	public void requestCall(VMClosure closure, StatementList statements, boolean loop, boolean debug) {
+		machine.debugger.trace("thread.requestCall", this, closure, statements, loop, debug);
+		VMStackFrame callframe = new VMCallFrame(closure, statements, true, false);
 		callStack.push(callframe);
 	}
 
@@ -252,7 +259,26 @@ public class JASSThread {
 	private void advanceFrame() throws VMException {
 		machine.debugger.trace("thread.advanceFrame", this);
 		if (callStack.size() != 0)
-			callStack.peek().step(machine, this);
+			try {
+				callStack.peek().step(machine, this);
+			} catch (VMUserCodeException code) {
+				if (callStack.size() != 0) {
+					for (int i = callStack.size() - 1; i <= 0; i++) {
+						VMStackFrame frame = callStack.get(i);
+						if (frame instanceof VMCallFrame) {
+							VMCallFrame call = (VMCallFrame) frame;
+							if (call.isExceptionHandler) {
+								int w = callStack.size() - i;
+								while (w > 0) {
+									callStack.pop();
+									w--;
+								}
+								call.setException(code);
+							}
+						}
+					}
+				}
+			}
 		while (callStack.size() != 0 && callStack.peek().finished()) {
 			VMStackFrame last = callStack.pop();
 			if (callStack.size() != 0)

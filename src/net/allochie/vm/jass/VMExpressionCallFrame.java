@@ -22,7 +22,7 @@ public class VMExpressionCallFrame extends VMCallFrame {
 	private Expression expression;
 
 	public VMExpressionCallFrame(VMClosure closure, Expression expression) {
-		super(closure, null, false);
+		super(closure, null, false, false);
 		this.expression = expression;
 	}
 
