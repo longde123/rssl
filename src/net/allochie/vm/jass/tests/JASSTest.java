@@ -8,6 +8,7 @@ import net.allochie.vm.jass.JASSThread;
 import net.allochie.vm.jass.VMException;
 import net.allochie.vm.jass.VMFunctionPointer;
 import net.allochie.vm.jass.ast.JASSFile;
+import net.allochie.vm.jass.debug.AllDebugger;
 import net.allochie.vm.jass.global.NativeMethodRegistry;
 import net.allochie.vm.jass.global.TypeRegistry;
 import net.allochie.vm.jass.natives.NativeThreading;

@@ -25,7 +25,7 @@ public class VMCallFrame extends VMStackFrame {
 	/** Is this a loop? */
 	public final boolean isLoop;
 	/** Is this frame an exception handler? */
-	public final boolean isExceptionHandler;
+	public boolean isExceptionHandler;
 	/** The current operation index */
 	public int currentOp;
 	/** If the frame has finished working */
@@ -130,11 +130,13 @@ public class VMCallFrame extends VMStackFrame {
 			thread.requestCall(closure, loop);
 		} else if (statement instanceof TryCatchStatement) {
 			TryCatchStatement tryBlock = (TryCatchStatement) statement;
+			isExceptionHandler = true;
 			if (j == 0) {
-				thread.requestCall(closure, tryBlock.statements, false, true);
+				thread.requestCall(closure, tryBlock.statements, false, false);
 				j++;
 				return;
 			} else {
+				isExceptionHandler = false;
 				if (caught != null && k == 0) {
 					thread.requestCall(closure, tryBlock.catchStatements, false, false);
 					k++;
