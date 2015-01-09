@@ -80,7 +80,10 @@ TOKEN : {
 	<EXITWHEN: "exitwhen"> | 
 	<RETURN: "return"> | 
 	<DEBUG: "debug"> |
-	<HANDLE: "handle">
+	<HANDLE: "handle"> |
+	<TRY: "try"> |
+	<CATCH: "catch"> |
+	<ENDTRY: "endtry">
 
 }
 
@@ -268,6 +271,7 @@ Statement statement(): {
 	stmt = set() { return stmt; } | 
 	stmt = call() { return stmt; } | 
 	stmt = ifthenelse() { return stmt; } | 
+	stmt = trycatch() { return stmt; } |
 	stmt = loop() { return stmt; } | 
 	stmt = exitwhen() { return stmt; } | 
 	stmt = retn() { return stmt; } | 
@@ -371,6 +375,20 @@ Statement loop(): {
 	cp0 = <LOOP> { stmt = new LoopStatement(); stmt.where = new CodePlace(cp0); }
 	tmp0 = statement_list() { stmt.statements = tmp0; }
 	<ENDLOOP> { return stmt; }
+}
+
+/* A TRY statement */
+Statement trycatch(): { 
+	TryCatchStatement stmt;
+	StatementList tmp0, tmp1;
+	Token cp0, cp1;
+}
+{
+	cp0 = <TRY> { stmt = new TryCatchStatement(); stmt.where = new CodePlace(cp0); }
+	tmp0 = statement_list() { stmt.statements = tmp0; }
+	cp1 = <CATCH> { stmt.whereCatch = new CodePlace(cp1); }
+	tmp1 = statement_list() { stmt.catchStatements = tmp1; }
+	<ENDTRY> { return stmt; }
 }
 
 /* An EXITWHEN statement */
