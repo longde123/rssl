@@ -16,6 +16,7 @@ import net.allochie.vm.jass.global.NativeMethodRegistry;
 import net.allochie.vm.jass.global.TypeRegistry;
 import net.allochie.vm.jass.natives.NativeThreading;
 import net.allochie.vm.jass.natives.NativeTypeCasts;
+import net.allochie.vm.jass.natives.NativeUtils;
 import net.allochie.vm.jass.parser.JASSParser;
 import net.allochie.vm.jass.parser.ParseException;
 import net.allochie.vm.jass.types.BooleanFuncWrapper;
@@ -35,6 +36,7 @@ public class JASSTest {
 			TypeRegistry.registerTypeWithClass("thread", JASSThread.class);
 			NativeMethodRegistry.registerNativeMethodProvider(NativeThreading.class);
 			NativeMethodRegistry.registerNativeMethodProvider(NativeTypeCasts.class);
+			NativeMethodRegistry.registerNativeMethodProvider(NativeUtils.class);
 
 			ThreadSchedule schedule = new ThreadSchedule(Schedule.FIXED_PER_MACHINE, 10);
 			IDebugger debug = new AllDebugger();

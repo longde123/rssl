@@ -234,4 +234,8 @@ public class VMCallFrame extends VMStackFrame {
 	public void setException(VMUserCodeException code) {
 		this.caught = code;
 	}
+
+	public VMUserCodeException getException() {
+		return caught;
+	}
 }

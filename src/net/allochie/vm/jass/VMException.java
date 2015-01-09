@@ -25,28 +25,11 @@ public class VMException extends Exception {
 	@Override
 	public String toString() {
 		StringBuilder what = new StringBuilder();
-		what.append(getClass().getSimpleName()).append(": ").append(getMessage()).append("\n");
 		if (this.what != null) {
 			what.append("\t").append("(failed operation: ").append(this.what.getClass().getSimpleName()).append(")\n");
-			try {
-				Class<?> thing = this.what.getClass();
-				for (Field f : thing.getFields())
-					if (f.getType().equals(CodePlace.class)) {
-						f.setAccessible(true);
-						CodePlace place = (CodePlace) f.get(this.what);
-						if (place != null) {
-							what.append("\t").append(f.getName()).append(": ");
-							what.append(place).append("\n");
-						} else {
-							what.append("\t").append(f.getName()).append(": ");
-							what.append("<no trace value>").append("\n");
-						}
-					}
-			} catch (Throwable t) {
-				what.append("No debug info available.");
-			}
-		} else
-			what.append("\tno trace info found");
+			what.append(findCodePoint());
+		}
+		what.append(getClass().getSimpleName()).append(": ").append(getMessage()).append("\n");
 		return what.toString();
 	}
 
@@ -56,5 +39,27 @@ public class VMException extends Exception {
 		result.append("\t").append("in thread: ").append(thread.name).append("\n");
 		result.append("\t").append("in machine: ").append(jassMachine.getName()).append("\n");
 		return result.toString();
+	}
+
+	public String findCodePoint() {
+		if (this.what != null) {
+			try {
+				Class<?> thing = this.what.getClass();
+				String place = "unknown, ??:??";
+				for (Field f : thing.getFields()) {
+					if (f.getType().equals(CodePlace.class)) {
+						f.setAccessible(true);
+						CodePlace what = (CodePlace) f.get(this.what);
+						place = f.getName() + ", " + what;
+						if (f.getName().equals("where"))
+							return place;
+					}
+				}
+				return place;
+			} catch (Throwable t) {
+				return "unknown, ??:??";
+			}
+		} else
+			return "unknown, ??:??";
 	}
 }
