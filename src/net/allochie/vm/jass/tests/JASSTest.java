@@ -7,6 +7,9 @@ import net.allochie.vm.jass.JASSMachine;
 import net.allochie.vm.jass.JASSThread;
 import net.allochie.vm.jass.VMException;
 import net.allochie.vm.jass.VMFunctionPointer;
+import net.allochie.vm.jass.api.IDebugger;
+import net.allochie.vm.jass.api.ThreadSchedule;
+import net.allochie.vm.jass.api.ThreadSchedule.Schedule;
 import net.allochie.vm.jass.ast.JASSFile;
 import net.allochie.vm.jass.debug.AllDebugger;
 import net.allochie.vm.jass.global.NativeMethodRegistry;
@@ -33,8 +36,9 @@ public class JASSTest {
 			NativeMethodRegistry.registerNativeMethodProvider(NativeThreading.class);
 			NativeMethodRegistry.registerNativeMethodProvider(NativeTypeCasts.class);
 
-			JASSMachine machine = new JASSMachine("Demo machine");
-			// machine.setDebugger(new AllDebugger());
+			ThreadSchedule schedule = new ThreadSchedule(Schedule.FIXED_PER_MACHINE, 10);
+			IDebugger debug = new AllDebugger();
+			JASSMachine machine = new JASSMachine("Demo machine", debug, schedule);
 			try {
 				JASSThread main = machine.allocateThread("main", new VMFunctionPointer("main"));
 				main.doFile(file);

@@ -7,7 +7,7 @@ public class ThreadSchedule {
 		 * A fixed number of cycles will be allocated evenly between all threads
 		 * per update.
 		 */
-		FIXED,
+		FIXED_PER_MACHINE,
 		/**
 		 * A fixed number of cycles will be stepped for each thread per update.
 		 */
@@ -19,7 +19,7 @@ public class ThreadSchedule {
 	/** The current cycle count */
 	private int cycles;
 
-	public void ThreadSchedule(Schedule mode, int cycles) {
+	public ThreadSchedule(Schedule mode, int cycles) {
 		this.mode = mode;
 		this.cycles = cycles;
 	}
@@ -38,5 +38,10 @@ public class ThreadSchedule {
 
 	public int getCycles() {
 		return cycles;
+	}
+
+	@Override
+	public String toString() {
+		return "ThreadSchedule: " + mode + ", " + cycles + " cycles";
 	}
 }

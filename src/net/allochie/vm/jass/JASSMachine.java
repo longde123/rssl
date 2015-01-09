@@ -33,9 +33,11 @@ public class JASSMachine extends Thread {
 	/** The system debugger */
 	public IDebugger debugger = new VoidDebugger();
 
-	public JASSMachine(String title, ThreadSchedule schedule) {
+	public JASSMachine(String title, IDebugger debugger, ThreadSchedule schedule) {
 		super(title);
+		this.debugger = debugger;
 		this.schedule = schedule;
+		debugger.trace("machine.init.schedule", schedule);
 	}
 
 	public void setDebugger(IDebugger what) {
@@ -43,6 +45,7 @@ public class JASSMachine extends Thread {
 	}
 
 	public void putThread(JASSThread thread) {
+		debugger.trace("machine.putThread", thread);
 		synchronized (live) {
 			live.add(thread);
 		}
@@ -64,7 +67,7 @@ public class JASSMachine extends Thread {
 			}
 		}
 
-		int speed = (schedule.getSchedule() == Schedule.FIXED_PER_THREAD) ? schedule.getCycles() : (int) Math.min(1,
+		int speed = (schedule.getSchedule() == Schedule.FIXED_PER_THREAD) ? schedule.getCycles() : (int) Math.max(1,
 				Math.floor(schedule.getCycles() / threads.size()));
 		for (JASSThread thread : threads)
 			if (!thread.dead()) {
