@@ -83,7 +83,8 @@ TOKEN : {
 	<HANDLE: "handle"> |
 	<TRY: "try"> |
 	<CATCH: "catch"> |
-	<ENDTRY: "endtry">
+	<ENDTRY: "endtry"> |
+	<RAISE: "raise">
 
 }
 
@@ -272,6 +273,7 @@ Statement statement(): {
 	stmt = call() { return stmt; } | 
 	stmt = ifthenelse() { return stmt; } | 
 	stmt = trycatch() { return stmt; } |
+	stmt = raise() { return stmt; } |
 	stmt = loop() { return stmt; } | 
 	stmt = exitwhen() { return stmt; } | 
 	stmt = retn() { return stmt; } | 
@@ -314,6 +316,16 @@ Statement call(): {
 		tmp1 = args() { stmt.params = tmp1; }
 	)? 
 	")" { return stmt; }
+}
+
+/* A RAISE statement */
+Statement raise(): {
+	RaiseStatement stmt;
+	Expression tmp0;
+	Token cp0;
+}{
+	cp0 = <RAISE> { stmt = new RaiseStatement(); stmt.where = new CodePlace(cp0); }
+	tmp0 = expression() { stmt.expression = tmp0; return stmt; }
 }
 
 /* A list of passed arguments for a CALL */
