@@ -23,22 +23,22 @@ options {
 }
 
 
-PARSER_BEGIN(JASSParser)
+PARSER_BEGIN(RSSLParser)
 
-package net.allochie.vm.jass.parser;
+package net.allochie.vm.rssl.parser;
 import java.util.ArrayList;
-import net.allochie.vm.jass.ast.*;
-import net.allochie.vm.jass.ast.constant.*;
-import net.allochie.vm.jass.ast.dec.*;
-import net.allochie.vm.jass.ast.expression.*;
-import net.allochie.vm.jass.ast.statement.*;
+import net.allochie.vm.rssl.ast.*;
+import net.allochie.vm.rssl.ast.constant.*;
+import net.allochie.vm.rssl.ast.dec.*;
+import net.allochie.vm.rssl.ast.expression.*;
+import net.allochie.vm.rssl.ast.statement.*;
 
 
-public class JASSParser
+public class RSSLParser
 {
 
 }
-PARSER_END(JASSParser)
+PARSER_END(RSSLParser)
 
 
 /* Skip spaces, tabs, newlines, returns and comments */
@@ -325,7 +325,7 @@ Statement raise(): {
 	Token cp0;
 }{
 	cp0 = <RAISE> { stmt = new RaiseStatement(); stmt.where = new CodePlace(cp0); }
-	tmp0 = expression() { stmt.expression = tmp0; return stmt; }
+	tmp0 = expr() { stmt.expression = tmp0; return stmt; }
 }
 
 /* A list of passed arguments for a CALL */
