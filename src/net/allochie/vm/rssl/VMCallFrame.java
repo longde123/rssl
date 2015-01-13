@@ -9,6 +9,7 @@ import net.allochie.vm.rssl.ast.statement.CallStatement;
 import net.allochie.vm.rssl.ast.statement.ConditionalStatement;
 import net.allochie.vm.rssl.ast.statement.LoopExitStatement;
 import net.allochie.vm.rssl.ast.statement.LoopStatement;
+import net.allochie.vm.rssl.ast.statement.RaiseStatement;
 import net.allochie.vm.rssl.ast.statement.ReturnStatement;
 import net.allochie.vm.rssl.ast.statement.SetArrayStatement;
 import net.allochie.vm.rssl.ast.statement.SetStatement;
@@ -153,6 +154,18 @@ public class VMCallFrame extends VMStackFrame {
 				result = getPreviousCallResult();
 			}
 			finished = true;
+		} else if (statement instanceof RaiseStatement) {
+			RaiseStatement uerr = (RaiseStatement) statement;
+			if (uerr.expression == null)
+				throw new VMUserCodeException(statement, "Can't raise error without expression");
+			if (!hasPreviousCallResult()) {
+				thread.resolveExpression(closure, uerr.expression);
+				return;
+			}
+			VMValue what = getPreviousCallResult();
+			if (what.type != Type.stringType)
+				throw new VMUserCodeException(statement, "Can't raise error with non-string reason");
+			throw new VMUserCodeException(statement, what.asStringType());
 		} else if (statement instanceof SetArrayStatement) {
 			SetArrayStatement arrayset = (SetArrayStatement) statement;
 			VMVariable var = closure.getVariable(machine, arrayset.id);
