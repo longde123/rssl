@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
 
 import net.allochie.vm.rssl.VMException;
 import net.allochie.vm.rssl.VMUserCodeException;
@@ -62,6 +61,14 @@ public class NativeDisk {
 		} catch (IOException ioex) {
 			throw new VMUserCodeException(what.thread, ioex.getMessage());
 		}
+	}
+	
+	public String readLine(Callout what, FileWrapper wrapper) throws VMException {
+		
+	}
+	
+	public void writeLine(Callout what, FileWrapper wrapper, String line) throws VMException {
+		
 	}
 
 }
