@@ -62,13 +62,14 @@ public class NativeDisk {
 			throw new VMUserCodeException(what.thread, ioex.getMessage());
 		}
 	}
-	
+
 	public String readLine(Callout what, FileWrapper wrapper) throws VMException {
-		
+		// TODO: Auto-generated method stub
+		return "";
 	}
-	
+
 	public void writeLine(Callout what, FileWrapper wrapper, String line) throws VMException {
-		
+		// TODO: Auto-generated method stub
 	}
 
 }
