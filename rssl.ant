@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="default">
+	<property name="src" location="src" />
+	<description>
+		compile the parser source
+    </description>
+
+	<target name="default" description="compile the source">
+		<javacc target="src/rssl.jj" outputdirectory="${src}\net\allochie\vm\rssl\parser" javacchome="C:/Program Files/Java/javacc" />
+	</target>
+
+</project>

@@ -13,7 +13,7 @@ public class RSSLParser implements RSSLParserConstants {
 
 /* Main production; creates one file with typedef, globals, 
 	native_func or func entries. */
-  final public JASSFile file() throws ParseException {JASSFile file = new JASSFile();
+  final public RSSLFile file() throws ParseException {RSSLFile file = new RSSLFile();
         Dec tmp0; Function tmp1;
     label_1:
     while (true) {

@@ -3,7 +3,7 @@ package net.allochie.vm.rssl;
 import java.util.Stack;
 
 import net.allochie.vm.rssl.ast.Function;
-import net.allochie.vm.rssl.ast.JASSFile;
+import net.allochie.vm.rssl.ast.RSSLFile;
 import net.allochie.vm.rssl.ast.Param;
 import net.allochie.vm.rssl.ast.StatementList;
 import net.allochie.vm.rssl.ast.Type;
@@ -67,7 +67,7 @@ public class RSSLThread {
 		requestCall(top, function, new VMValue[0]);
 	}
 
-	public void doFile(JASSFile file) throws VMException {
+	public void doFile(RSSLFile file) throws VMException {
 		machine.debugger.trace("thread.doFile", this, file);
 		for (Dec what : file.decs)
 			if (what instanceof TypeDec) {

@@ -10,7 +10,7 @@ import net.allochie.vm.rssl.VMFunctionPointer;
 import net.allochie.vm.rssl.api.IDebugger;
 import net.allochie.vm.rssl.api.ThreadSchedule;
 import net.allochie.vm.rssl.api.ThreadSchedule.Schedule;
-import net.allochie.vm.rssl.ast.JASSFile;
+import net.allochie.vm.rssl.ast.RSSLFile;
 import net.allochie.vm.rssl.debug.AllDebugger;
 import net.allochie.vm.rssl.global.NativeMethodRegistry;
 import net.allochie.vm.rssl.global.TypeRegistry;
@@ -26,7 +26,7 @@ public class RSSLTest {
 	public static void main(String[] args) {
 		try {
 			RSSLParser parse = new RSSLParser(new FileInputStream("rt.jass"));
-			JASSFile file = parse.file();
+			RSSLFile file = parse.file();
 
 			NativeMethodRegistry.registerNativeMethodProvider(NativeMethodDemo.class);
 

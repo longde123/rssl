@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 import net.allochie.vm.rssl.ast.dec.Dec;
 
-public class JASSFile {
+public class RSSLFile {
 
 	/** File declaration heap */
 	public ArrayList<Dec> decs;
 	/** File function heap */
 	public ArrayList<Function> funcs;
 
-	public JASSFile() {
+	public RSSLFile() {
 		decs = new ArrayList<Dec>();
 		funcs = new ArrayList<Function>();
 	}

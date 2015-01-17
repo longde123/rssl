@@ -90,8 +90,8 @@ TOKEN : {
 
 /* Main production; creates one file with typedef, globals, 
 	native_func or func entries. */
-JASSFile file(): { 
-	JASSFile file = new JASSFile();
+RSSLFile file(): { 
+	RSSLFile file = new RSSLFile();
 	Dec tmp0; Function tmp1;
 } 
 { 
