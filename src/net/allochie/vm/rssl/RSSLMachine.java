@@ -29,6 +29,10 @@ public class RSSLMachine extends Thread {
 	public ArrayList<RSSLThread> dead = new ArrayList<RSSLThread>();
 	/** The list of new live threads */
 	public ArrayList<RSSLThread> live = new ArrayList<RSSLThread>();
+	/** If the system has been halted */
+	public boolean halt = false;
+	/** The wait object */
+	private final Object wait = new Object();
 
 	/** The system debugger */
 	public IDebugger debugger = new VoidDebugger();
@@ -49,12 +53,26 @@ public class RSSLMachine extends Thread {
 		synchronized (live) {
 			live.add(thread);
 		}
+		synchronized (wait) {
+			wait.notifyAll();
+		}
 	}
 
 	@Override
 	public void run() {
-		while (threads.size() != 0 || live.size() != 0)
+		while (!halt) {
+			while (threads.size() == 0 && live.size() == 0 && dead.size() == 0) {
+				synchronized (wait) {
+					try {
+						wait.wait();
+					} catch (Throwable t) {
+					}
+				}
+				if (halt)
+					return;
+			}
 			advance();
+		}
 	}
 
 	public void advance() {
@@ -121,6 +139,11 @@ public class RSSLMachine extends Thread {
 	public RSSLThread allocateThread(String name, VMFunctionPointer pointer) {
 		debugger.trace("machine.allocateThread", name, pointer);
 		return new RSSLThread(this, name, global, pointer);
+	}
+
+	public void halt() {
+		halt = true;
+		wait.notifyAll();
 	}
 
 }
