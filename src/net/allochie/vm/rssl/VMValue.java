@@ -87,7 +87,7 @@ public class VMValue {
 			throw new VMException(this, "Cannot take numeric value of array");
 		if (value instanceof Integer)
 			return ((Integer) value).doubleValue();
-		return (double) value;
+		return (Double) value;
 	}
 
 	public String asStringType() throws VMException {
@@ -103,7 +103,7 @@ public class VMValue {
 			throw new VMException(this, "Not a boolean");
 		if (array)
 			throw new VMException(this, "Cannot take boolean value of array");
-		return (boolean) value;
+		return (Boolean) value;
 	}
 
 	public HashMap<Integer, VMValue> asArrayType() throws VMException {
