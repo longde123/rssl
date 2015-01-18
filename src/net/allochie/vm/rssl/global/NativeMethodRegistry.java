@@ -40,8 +40,17 @@ public class NativeMethodRegistry {
 					}
 				}
 		}
-		if (method == null)
-			throw new VMException(image, "Unresolved native method " + image);
+		if (method == null) {
+			StringBuilder typename = new StringBuilder();
+			typename.append(image).append(" (");
+			for (int i = 0; i < args.length; i++) {
+				typename.append(args[i].getName());
+				if (i < args.length - 1)
+					typename.append(", ");
+			}
+			typename.append(")");
+			throw new VMException(image, "Unresolved native method " + typename.toString());
+		}
 		try {
 			return method.invoke(owner, params);
 		} catch (Throwable t) {
