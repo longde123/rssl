@@ -1,6 +1,7 @@
 package net.allochie.vm.rssl;
 
 import net.allochie.vm.rssl.natives.NativeMethodException;
+import net.allochie.vm.rssl.natives.NativeRaisedError;
 
 public class VMNativeCallFrame extends VMStackFrame {
 
@@ -21,6 +22,9 @@ public class VMNativeCallFrame extends VMStackFrame {
 		} catch (NativeMethodException nmex) {
 			nmex.what = nfunc;
 			throw nmex;
+		} catch (NativeRaisedError nre) {
+			nre.what = nfunc;
+			throw nre;
 		}
 		machine.debugger.trace("vmNativeCallFrame.exitFrame", this, thread, result);
 		done = true;
