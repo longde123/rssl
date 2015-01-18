@@ -1,5 +1,7 @@
 package net.allochie.vm.rssl;
 
+import net.allochie.vm.rssl.natives.NativeMethodException;
+
 public class VMNativeCallFrame extends VMStackFrame {
 
 	private final VMNativeFunction nfunc;
@@ -14,7 +16,12 @@ public class VMNativeCallFrame extends VMStackFrame {
 	@Override
 	public void step(RSSLMachine machine, RSSLThread thread) throws VMException {
 		machine.debugger.trace("vmNativeCallFrame.step", this, thread);
-		result = nfunc.executeNative(machine, thread, closure);
+		try {
+			result = nfunc.executeNative(machine, thread, closure);
+		} catch (NativeMethodException nmex) {
+			nmex.what = nfunc;
+			throw nmex;
+		}
 		machine.debugger.trace("vmNativeCallFrame.exitFrame", this, thread, result);
 		done = true;
 	}
