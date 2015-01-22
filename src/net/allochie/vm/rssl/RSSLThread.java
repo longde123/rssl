@@ -202,6 +202,14 @@ public class RSSLThread {
 		callStack.push(frame);
 	}
 
+	public void removeFrame(VMStackFrame frame) throws VMException {
+		machine.debugger.trace("thread.removeFrame", this, frame);
+		VMStackFrame what = callStack.peek();
+		if (!what.equals(frame))
+			throw new VMException(this, "Attempt to remove unmatched frame.");
+		callStack.pop();
+	}
+
 	private void advanceUntilFrame(VMStackFrame frame) throws VMException {
 		machine.debugger.trace("thread.advanceUntilFrame", this, frame);
 		while (true) {
