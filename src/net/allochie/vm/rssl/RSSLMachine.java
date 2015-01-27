@@ -94,7 +94,7 @@ public class RSSLMachine extends Thread {
 					thread.advance();
 				} catch (VMException e) {
 					debugger.fatal("thread.advance", thread, e);
-					System.err.println(e.generateMessage(this, thread));
+					System.err.println("Thread died: " + e.generateMessage(this, thread));
 					dead.add(thread);
 				}
 				if (thread.dead())

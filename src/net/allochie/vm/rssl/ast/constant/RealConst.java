@@ -14,6 +14,7 @@ public class RealConst extends Constant {
 
 	private RealConst(Double identity) {
 		this.identity = identity;
+		this.where = new CodePlace("<system>", 0, 0);
 	}
 
 	public static RealConst fromToken(Token realtoken, CodePlace place) throws ParseException {

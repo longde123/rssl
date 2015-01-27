@@ -1,5 +1,7 @@
 package net.allochie.vm.rssl.ast.constant;
 
+import net.allochie.vm.rssl.ast.CodePlace;
+
 public class BoolConst extends Constant {
 
 	public static BoolConst constFalse = new BoolConst(false);
@@ -9,6 +11,7 @@ public class BoolConst extends Constant {
 
 	private BoolConst(boolean identity) {
 		this.identity = identity;
+		this.where = new CodePlace("<system>", 0, 0);
 	}
 
 	@Override

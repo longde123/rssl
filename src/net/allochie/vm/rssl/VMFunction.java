@@ -12,6 +12,7 @@ public class VMFunction extends Function {
 		lvars = func.lvars;
 		sig = func.sig;
 		statements = func.statements;
+		where = func.where;
 	}
 
 }

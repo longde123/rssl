@@ -13,6 +13,7 @@ public class StringConst extends Constant {
 
 	private StringConst(String identity) {
 		this.identity = identity;
+		this.where = new CodePlace("<system>", 0, 0);
 	}
 
 	public static StringConst fromToken(Token stringtoken, CodePlace place) {

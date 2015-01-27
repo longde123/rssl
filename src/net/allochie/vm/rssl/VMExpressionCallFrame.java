@@ -21,13 +21,15 @@ public class VMExpressionCallFrame extends VMCallFrame {
 
 	private Expression expression;
 
-	public VMExpressionCallFrame(VMClosure closure, Expression expression) {
-		super(closure, null, false, false);
+	public VMExpressionCallFrame(VMClosure closure, Expression expression) throws VMException {
+		super(closure, expression.where, null, VMCallFrameType.EXPRESSION);
 		this.expression = expression;
 	}
 
 	@Override
 	public void step(RSSLMachine machine, RSSLThread thread) throws VMException {
+		if (getException() != null)
+			throw getException();
 		machine.debugger.trace("vmExpressionCallFrame.step", this, thread);
 		if (expression instanceof Constant) {
 			if (expression instanceof BoolConst)

@@ -2,6 +2,7 @@ package net.allochie.vm.rssl;
 
 import java.util.HashMap;
 
+import net.allochie.vm.rssl.ast.CodePlace;
 import net.allochie.vm.rssl.ast.Statement;
 import net.allochie.vm.rssl.ast.StatementList;
 import net.allochie.vm.rssl.ast.Type;
@@ -21,14 +22,14 @@ public class VMCallFrame extends VMStackFrame {
 	public final StatementList statements;
 	/** The working closure */
 	public final VMClosure closure;
-	/** Is this a function? */
-	public final boolean isFunc;
-	/** Is this a loop? */
-	public final boolean isLoop;
+	/** The frame type */
+	public final VMCallFrameType type;
 	/** Is this frame an exception handler? */
-	public boolean isExceptionHandler;
+	private boolean isExceptionHandler;
 	/** The current operation index */
 	public int currentOp;
+	/** The current work location */
+	public final CodePlace where;
 	/** If the frame has finished working */
 	public boolean finished;
 	/** The call parameters */
@@ -37,28 +38,33 @@ public class VMCallFrame extends VMStackFrame {
 	protected VMValue store0, store1;
 	protected VMValue store2[];
 	protected int i, j, k;
-	protected VMUserCodeException caught;
+	protected VMUserCodeException caughtException, handledException;
 
-	public VMCallFrame(VMClosure closure, StatementList statements, boolean loop, boolean catcher) {
+	public VMCallFrame(VMClosure closure, CodePlace where, StatementList statements, VMCallFrameType type)
+			throws VMException {
+		if (where == null)
+			throw new VMException(null, "Cannot create call frame without source.");
 		this.closure = closure;
+		this.where = where;
 		this.statements = statements;
-		isFunc = false;
-		isLoop = loop;
-		isExceptionHandler = catcher;
+		this.type = type;
 	}
 
-	public VMCallFrame(VMClosure closure, StatementList statements, VMValue[] args) {
+	public VMCallFrame(VMClosure closure, CodePlace where, StatementList statements, VMValue[] args) throws VMException {
+		if (where == null)
+			throw new VMException(null, "Cannot create call frame without source.");
 		this.closure = closure;
 		this.statements = statements;
+		this.where = where;
 		this.args = args;
-		isFunc = true;
-		isLoop = false;
-		isExceptionHandler = false;
+		this.type = VMCallFrameType.DEFAULT;
 	}
 
 	@Override
 	public void step(RSSLMachine machine, RSSLThread thread) throws VMException {
 		machine.debugger.trace("vmCallFrame.step", this, thread);
+		if (getException() != null && !isExceptionHandler)
+			throw getException();
 		if (finished)
 			throw new VMException(this, "Cannot advance finished call frame");
 		Statement statement = null;
@@ -115,7 +121,8 @@ public class VMCallFrame extends VMStackFrame {
 				}
 		} else if (statement instanceof LoopExitStatement) {
 			LoopExitStatement exit = (LoopExitStatement) statement;
-			if (!isLoop)
+			VMCallFrame loopFrame = thread.findLatestFrame(VMCallFrameType.LOOP);
+			if (loopFrame == null)
 				throw new VMUserCodeException(statement, "Cannot use exitwhen outside a loop");
 			if (!hasPreviousCallResult()) {
 				thread.resolveExpression(closure, exit.conditional);
@@ -124,8 +131,11 @@ public class VMCallFrame extends VMStackFrame {
 			VMValue state = getPreviousCallResult();
 			if (state.type != Type.booleanType)
 				throw new VMUserCodeException(statement, "Cannot leave loop on non-boolean");
-			if (state.asBooleanType())
+			if (state.asBooleanType()) {
+				thread.unwindFrames(loopFrame);
+				loopFrame.finished = true;
 				finished = true;
+			}
 		} else if (statement instanceof LoopStatement) {
 			LoopStatement loop = (LoopStatement) statement;
 			thread.requestCall(closure, loop);
@@ -133,19 +143,25 @@ public class VMCallFrame extends VMStackFrame {
 			TryCatchStatement tryBlock = (TryCatchStatement) statement;
 			isExceptionHandler = true;
 			if (j == 0) {
-				thread.requestCall(closure, tryBlock.statements, false, false);
+				thread.requestCall(closure, tryBlock.where, tryBlock.statements, false);
 				j++;
 				return;
 			} else {
 				isExceptionHandler = false;
-				if (caught != null && k == 0) {
-					thread.requestCall(closure, tryBlock.catchStatements, false, false);
+				if (caughtException != null && k == 0) {
+					handledException = caughtException;
+					caughtException = null;
+					thread.requestCall(closure, tryBlock.whereCatch, tryBlock.catchStatements, false);
 					k++;
 					return;
-				}
+				} else
+					handledException = null;
 			}
 		} else if (statement instanceof ReturnStatement) {
 			ReturnStatement retn = (ReturnStatement) statement;
+			VMCallFrame returnFunc = thread.findLatestFrame(VMCallFrameType.FUNCTION);
+			if (returnFunc == null)
+				throw new VMUserCodeException(retn, "Cannot use return outside of function scope!");
 			if (retn.expression != null) {
 				if (!hasPreviousCallResult()) {
 					thread.resolveExpression(closure, retn.expression);
@@ -153,6 +169,9 @@ public class VMCallFrame extends VMStackFrame {
 				}
 				result = getPreviousCallResult();
 			}
+			thread.unwindFrames(returnFunc);
+			returnFunc.finished = true;
+			returnFunc.result = result;
 			finished = true;
 		} else if (statement instanceof RaiseStatement) {
 			RaiseStatement uerr = (RaiseStatement) statement;
@@ -218,12 +237,12 @@ public class VMCallFrame extends VMStackFrame {
 		i = 0;
 		j = 0;
 		k = 0;
-		caught = null;
+		caughtException = null;
 		store0 = null;
 		store1 = null;
 		store2 = null;
 		if (currentOp >= statements.size())
-			if (isLoop)
+			if (type == VMCallFrameType.LOOP)
 				currentOp = 0;
 			else
 				finished = true;
@@ -231,7 +250,7 @@ public class VMCallFrame extends VMStackFrame {
 
 	@Override
 	public boolean finished() {
-		return finished;
+		return finished && caughtException == null;
 	}
 
 	@Override
@@ -245,10 +264,14 @@ public class VMCallFrame extends VMStackFrame {
 	}
 
 	public void setException(VMUserCodeException code) {
-		this.caught = code;
+		this.caughtException = code;
 	}
 
 	public VMUserCodeException getException() {
-		return caught;
+		return caughtException;
+	}
+
+	public VMUserCodeException getCaughtException() {
+		return handledException;
 	}
 }

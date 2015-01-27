@@ -2,6 +2,7 @@ package net.allochie.vm.rssl;
 
 import java.util.Stack;
 
+import net.allochie.vm.rssl.ast.CodePlace;
 import net.allochie.vm.rssl.ast.Function;
 import net.allochie.vm.rssl.ast.RSSLFile;
 import net.allochie.vm.rssl.ast.Param;
@@ -157,7 +158,7 @@ public class RSSLThread {
 					advanceUntilFrame(topFrame);
 				}
 
-			VMStackFrame callframe = new VMCallFrame(child, function.statements, args);
+			VMStackFrame callframe = new VMCallFrame(child, function.where, function.statements, args);
 			callStack.push(callframe);
 		}
 	}
@@ -169,21 +170,23 @@ public class RSSLThread {
 		advanceUntilFrame(topFrame);
 	}
 
-	public void requestCall(VMClosure closure, ConditionalStatement conditional) {
+	public void requestCall(VMClosure closure, ConditionalStatement conditional) throws VMException {
 		machine.debugger.trace("thread.requestCall<conditional>", this, closure, conditional);
-		VMStackFrame callframe = new VMCallFrame(closure, conditional.statements, false, false);
+		VMStackFrame callframe = new VMCallFrame(closure, conditional.where, conditional.statements,
+				VMCallFrameType.CONDITIONAL);
 		callStack.push(callframe);
 	}
 
-	public void requestCall(VMClosure closure, LoopStatement loop) {
+	public void requestCall(VMClosure closure, LoopStatement loop) throws VMException {
 		machine.debugger.trace("thread.requestCall<loop>", this, closure, loop);
-		VMStackFrame callframe = new VMCallFrame(closure, loop.statements, true, false);
+		VMStackFrame callframe = new VMCallFrame(closure, loop.where, loop.statements, VMCallFrameType.LOOP);
 		callStack.push(callframe);
 	}
 
-	public void requestCall(VMClosure closure, StatementList statements, boolean loop, boolean debug) {
-		machine.debugger.trace("thread.requestCall<slist>", this, closure, statements, loop, debug);
-		VMStackFrame callframe = new VMCallFrame(closure, statements, loop, debug);
+	public void requestCall(VMClosure closure, CodePlace where, StatementList statements, boolean loop)
+			throws VMException {
+		machine.debugger.trace("thread.requestCall<slist>", this, closure, statements, loop);
+		VMStackFrame callframe = new VMCallFrame(closure, where, statements, VMCallFrameType.DEFAULT);
 		callStack.push(callframe);
 	}
 
@@ -200,6 +203,36 @@ public class RSSLThread {
 	public void requestFrame(VMStackFrame frame) {
 		machine.debugger.trace("thread.requestFrame", this, frame);
 		callStack.push(frame);
+	}
+
+	public VMCallFrame findLatestFrame(VMCallFrameType typeof) {
+		if (callStack.size() != 0) {
+			for (int i = callStack.size() - 1; i >= 0; i--) {
+				VMStackFrame frame = callStack.get(i);
+				if (frame instanceof VMCallFrame) {
+					VMCallFrame call = (VMCallFrame) frame;
+					if (call.type == typeof)
+						return call;
+					if (call.type == VMCallFrameType.FUNCTION)
+						return null;
+				}
+				if (frame instanceof VMNativeBoundaryFrame)
+					return null;
+			}
+		}
+		return null;
+	}
+
+	public void unwindFrames(VMStackFrame stop) throws VMException {
+		machine.debugger.trace("thread.unwindFrames", this, stop);
+		while (true) {
+			VMStackFrame what = callStack.peek();
+			if (what == null)
+				throw new VMException(this, "Nothing on the stack.");
+			if (what.equals(stop))
+				return;
+			callStack.pop();
+		}
 	}
 
 	public void removeFrame(VMStackFrame frame) throws VMException {
@@ -271,32 +304,37 @@ public class RSSLThread {
 				callStack.peek().step(machine, this);
 			} catch (VMUserCodeException code) {
 				boolean flag = false;
+				callStack.pop();
 				if (callStack.size() != 0) {
 					for (int i = callStack.size() - 1; i >= 0; i--) {
 						VMStackFrame frame = callStack.get(i);
 						if (frame instanceof VMCallFrame) {
 							VMCallFrame call = (VMCallFrame) frame;
-							if (call.isExceptionHandler) {
-								int w = callStack.size() - (1 + i);
-								while (w > 0) {
-									callStack.pop();
-									w--;
-								}
-								if (callStack.peek() != call)
-									throw new VMException(this, "Failed to rewind stack!");
-								machine.debugger.trace("thread.advanceFrame.handleException", this, call, code);
-								call.setException(code);
-								flag = true;
-								break;
+							int w = callStack.size() - (1 + i);
+							while (w > 0) {
+								VMStackFrame f0 = callStack.pop();
+								code.pushFrame(f0);
+								w--;
 							}
+							code.pushFrame(call);
+							if (callStack.peek() != call)
+								throw new VMException(this, "Failed to rewind stack!");
+							machine.debugger.trace("thread.advanceFrame.handleException", this, call, code);
+							call.setException(code);
+							flag = true;
+							break;
 						}
 					}
 				}
-				if (!flag)
+				if (!flag) {
+					for (int i = callStack.size() - 1; i >= 0; i--)
+						code.pushFrame(callStack.get(i));
 					throw code;
+				}
 			}
 		while (callStack.size() != 0 && callStack.peek().finished()) {
 			VMStackFrame last = callStack.pop();
+			machine.debugger.trace("thread.stack.finished", this, last);
 			if (callStack.size() != 0)
 				callStack.peek().setInvokeResult(last.getReturnResult());
 		}

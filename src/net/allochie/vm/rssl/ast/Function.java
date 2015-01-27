@@ -12,6 +12,7 @@ public class Function {
 	public VarList lvars;
 	/** Function statement heap */
 	public StatementList statements;
+	/** Function declaration location */
 	public CodePlace where;
 
 	@Override
@@ -20,7 +21,8 @@ public class Function {
 		result.append(sig).append(", ");
 		result.append("locals: (").append(lvars).append("), ");
 		result.append((statements != null) ? statements.size() : "<null>").append(" statements, ");
-		result.append((constant) ? "constant declaration" : "variable declaration");
+		result.append((constant) ? "constant declaration" : "variable declaration").append(", ");
+		result.append(where.toString());
 		return result.toString();
 	}
 

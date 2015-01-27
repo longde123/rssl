@@ -12,6 +12,7 @@ import net.allochie.vm.rssl.api.ThreadSchedule;
 import net.allochie.vm.rssl.api.ThreadSchedule.Schedule;
 import net.allochie.vm.rssl.ast.RSSLFile;
 import net.allochie.vm.rssl.debug.AllDebugger;
+import net.allochie.vm.rssl.debug.VoidDebugger;
 import net.allochie.vm.rssl.global.NativeMethodRegistry;
 import net.allochie.vm.rssl.global.TypeRegistry;
 import net.allochie.vm.rssl.natives.NativeThreading;
@@ -39,7 +40,7 @@ public class RSSLTest {
 			NativeMethodRegistry.registerNativeMethodProvider(NativeUtils.class);
 
 			ThreadSchedule schedule = new ThreadSchedule(Schedule.FIXED_PER_MACHINE, 10);
-			IDebugger debug = new AllDebugger();
+			IDebugger debug = new VoidDebugger();
 			RSSLMachine machine = new RSSLMachine("Demo machine", debug, schedule);
 			try {
 				RSSLThread main = machine.allocateThread("main", new VMFunctionPointer("main"));

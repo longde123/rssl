@@ -17,7 +17,7 @@ public class NativeUtils {
 			VMStackFrame frame = what.callStack.get(i);
 			if (frame != null && frame instanceof VMCallFrame) {
 				VMCallFrame box = (VMCallFrame) frame;
-				VMUserCodeException ex = box.getException();
+				VMUserCodeException ex = box.getCaughtException();
 				if (ex != null)
 					return ex.findCodePoint() + ": " + ex.getMessage();
 
