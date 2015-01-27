@@ -1,8 +1,5 @@
 package net.allochie.vm.rssl;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -56,11 +53,11 @@ public class VMException extends Exception {
 	}
 
 	public String findLabel(Object what) {
-		if (what != null) {
+		if (what != null)
 			try {
 				Class<?> thing = what.getClass();
 				String place = thing.getName() + ", ??:?? (java)";
-				for (Field f : thing.getFields()) {
+				for (Field f : thing.getFields())
 					if (f.getType().equals(CodePlace.class)) {
 						f.setAccessible(true);
 						CodePlace where = (CodePlace) f.get(what);
@@ -69,12 +66,11 @@ public class VMException extends Exception {
 						if (f.getName().equals("where"))
 							return place;
 					}
-				}
 				return place;
 			} catch (Throwable t) {
 				return "unknown, ??:?? (" + t.toString() + ")";
 			}
-		} else
+		else
 			return "<noval>, ??:??";
 	}
 }

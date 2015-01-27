@@ -14,7 +14,7 @@ public class IntConst extends Constant {
 
 	private IntConst(Integer identity) {
 		this.identity = identity;
-		this.where = new CodePlace("<system>", 0, 0);
+		where = new CodePlace("<system>", 0, 0);
 	}
 
 	public static IntConst fromToken(Token inttoken, CodePlace place, IntConstType decimal) throws ParseException {

@@ -11,7 +11,7 @@ public class BoolConst extends Constant {
 
 	private BoolConst(boolean identity) {
 		this.identity = identity;
-		this.where = new CodePlace("<system>", 0, 0);
+		where = new CodePlace("<system>", 0, 0);
 	}
 
 	@Override

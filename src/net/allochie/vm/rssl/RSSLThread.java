@@ -4,8 +4,8 @@ import java.util.Stack;
 
 import net.allochie.vm.rssl.ast.CodePlace;
 import net.allochie.vm.rssl.ast.Function;
-import net.allochie.vm.rssl.ast.RSSLFile;
 import net.allochie.vm.rssl.ast.Param;
+import net.allochie.vm.rssl.ast.RSSLFile;
 import net.allochie.vm.rssl.ast.StatementList;
 import net.allochie.vm.rssl.ast.Type;
 import net.allochie.vm.rssl.ast.dec.Dec;
@@ -206,7 +206,7 @@ public class RSSLThread {
 	}
 
 	public VMCallFrame findLatestFrame(VMCallFrameType typeof) {
-		if (callStack.size() != 0) {
+		if (callStack.size() != 0)
 			for (int i = callStack.size() - 1; i >= 0; i--) {
 				VMStackFrame frame = callStack.get(i);
 				if (frame instanceof VMCallFrame) {
@@ -219,7 +219,6 @@ public class RSSLThread {
 				if (frame instanceof VMNativeBoundaryFrame)
 					return null;
 			}
-		}
 		return null;
 	}
 
@@ -305,7 +304,7 @@ public class RSSLThread {
 			} catch (VMUserCodeException code) {
 				boolean flag = false;
 				callStack.pop();
-				if (callStack.size() != 0) {
+				if (callStack.size() != 0)
 					for (int i = callStack.size() - 1; i >= 0; i--) {
 						VMStackFrame frame = callStack.get(i);
 						if (frame instanceof VMCallFrame) {
@@ -325,7 +324,6 @@ public class RSSLThread {
 							break;
 						}
 					}
-				}
 				if (!flag) {
 					for (int i = callStack.size() - 1; i >= 0; i--)
 						code.pushFrame(callStack.get(i));

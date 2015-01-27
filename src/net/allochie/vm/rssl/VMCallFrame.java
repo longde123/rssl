@@ -57,7 +57,7 @@ public class VMCallFrame extends VMStackFrame {
 		this.statements = statements;
 		this.where = where;
 		this.args = args;
-		this.type = VMCallFrameType.DEFAULT;
+		type = VMCallFrameType.DEFAULT;
 	}
 
 	@Override
@@ -264,7 +264,7 @@ public class VMCallFrame extends VMStackFrame {
 	}
 
 	public void setException(VMUserCodeException code) {
-		this.caughtException = code;
+		caughtException = code;
 	}
 
 	public VMUserCodeException getException() {
