@@ -1,6 +1,6 @@
 package net.allochie.vm.rssl.ast;
 
-import net.allochie.vm.rssl.global.TypeRegistry;
+import net.allochie.vm.rssl.runtime.api.TypeRegistry;
 
 public class Type {
 
