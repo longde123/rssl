@@ -1,4 +1,4 @@
-package net.allochie.vm.rssl.runtime.tests;
+package rssl.tests;
 
 import net.allochie.vm.rssl.runtime.api.Callout;
 import net.allochie.vm.rssl.runtime.api.NativeMethod;

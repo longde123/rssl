@@ -1,4 +1,4 @@
-package net.allochie.vm.rssl.runtime.tests;
+package rssl.tests;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
