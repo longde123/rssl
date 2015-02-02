@@ -226,7 +226,9 @@ public class RSSLMachine extends Thread {
 	 */
 	public void halt() {
 		halt = true;
-		wait.notifyAll();
+		synchronized (wait) {
+			wait.notifyAll();
+		}
 	}
 
 }
