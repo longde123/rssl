@@ -4,8 +4,8 @@ import net.allochie.vm.rssl.runtime.RSSLMachine;
 import net.allochie.vm.rssl.runtime.RSSLThread;
 import net.allochie.vm.rssl.runtime.VMClosure;
 import net.allochie.vm.rssl.runtime.VMException;
-import net.allochie.vm.rssl.runtime.natives.NativeMethodException;
-import net.allochie.vm.rssl.runtime.natives.NativeRaisedError;
+import net.allochie.vm.rssl.runtime.api.natives.NativeMethodException;
+import net.allochie.vm.rssl.runtime.api.natives.NativeRaisedError;
 import net.allochie.vm.rssl.runtime.value.VMNativeFunction;
 
 public class VMNativeCallFrame extends VMStackFrame {

@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 import net.allochie.vm.rssl.runtime.VMException;
 import net.allochie.vm.rssl.runtime.VMUserCodeException;
-import net.allochie.vm.rssl.runtime.api.Callout;
-import net.allochie.vm.rssl.runtime.api.NativeMethod;
 import net.allochie.vm.rssl.runtime.api.TypeRegistry;
+import net.allochie.vm.rssl.runtime.api.natives.Callout;
+import net.allochie.vm.rssl.runtime.api.natives.NativeMethod;
 
 public class NativeDisk {
 

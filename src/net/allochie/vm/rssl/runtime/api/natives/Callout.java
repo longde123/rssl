@@ -1,4 +1,4 @@
-package net.allochie.vm.rssl.runtime.api;
+package net.allochie.vm.rssl.runtime.api.natives;
 
 import net.allochie.vm.rssl.runtime.RSSLMachine;
 import net.allochie.vm.rssl.runtime.RSSLThread;

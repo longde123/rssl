@@ -7,8 +7,8 @@ import net.allochie.vm.rssl.runtime.RSSLThread;
 import net.allochie.vm.rssl.runtime.VMClosure;
 import net.allochie.vm.rssl.runtime.VMException;
 import net.allochie.vm.rssl.runtime.VMUserCodeException;
-import net.allochie.vm.rssl.runtime.api.Callout;
-import net.allochie.vm.rssl.runtime.api.NativeMethodRegistry;
+import net.allochie.vm.rssl.runtime.api.natives.Callout;
+import net.allochie.vm.rssl.runtime.api.natives.NativeMethodRegistry;
 
 public class VMNativeFunction extends VMFunction {
 

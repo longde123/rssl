@@ -1,7 +1,7 @@
 package net.allochie.vm.rssl.runtime.natives;
 
-import net.allochie.vm.rssl.runtime.api.Callout;
-import net.allochie.vm.rssl.runtime.api.NativeMethod;
+import net.allochie.vm.rssl.runtime.api.natives.Callout;
+import net.allochie.vm.rssl.runtime.api.natives.NativeMethod;
 import net.allochie.vm.rssl.runtime.frame.VMNativeBoundaryFrame;
 import net.allochie.vm.rssl.runtime.value.VMFunction;
 import net.allochie.vm.rssl.runtime.value.VMFunctionPointer;

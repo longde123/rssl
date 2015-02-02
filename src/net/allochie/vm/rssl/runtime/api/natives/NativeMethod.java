@@ -1,4 +1,4 @@
-package net.allochie.vm.rssl.runtime.api;
+package net.allochie.vm.rssl.runtime.api.natives;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
