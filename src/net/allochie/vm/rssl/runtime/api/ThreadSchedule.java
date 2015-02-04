@@ -1,6 +1,8 @@
 package net.allochie.vm.rssl.runtime.api;
 
-public class ThreadSchedule {
+import net.allochie.vm.rssl.runtime.RSSLThread;
+
+public abstract class ThreadSchedule {
 
 	public static enum Schedule {
 		/**
@@ -39,6 +41,9 @@ public class ThreadSchedule {
 	public int getCycles() {
 		return cycles;
 	}
+	
+	public abstract boolean suspend(RSSLThread thread, Object... params);
+	public abstract boolean resume(RSSLThread thread);
 
 	@Override
 	public String toString() {
