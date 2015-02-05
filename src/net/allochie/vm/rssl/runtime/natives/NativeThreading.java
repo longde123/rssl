@@ -35,4 +35,17 @@ public class NativeThreading {
 			throw new VMUserCodeException(call.closure, "Cannot provide null thread");
 		return thread.running();
 	}
+
+	@NativeMethod(name = "GetCurrentThread")
+	public static RSSLThread getCurrentThread(Callout call) throws VMException {
+		return null;
+	}
+
+	@NativeMethod(name = "SuspendCurrentThread")
+	public static void suspendCurrentThread(Callout call, Object until) throws VMException {
+	}
+
+	@NativeMethod(name = "SuspendThread")
+	public static void suspendThread(Callout call, RSSLThread thread, Object until) throws VMException {
+	}
 }
