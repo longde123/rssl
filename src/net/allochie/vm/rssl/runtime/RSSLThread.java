@@ -45,6 +45,8 @@ public class RSSLThread {
 
 	/** Init flag */
 	private boolean isInit = false;
+	/** Suspended flag */
+	private boolean suspended = false;
 	/** Dead flag */
 	private boolean isDead = false;
 

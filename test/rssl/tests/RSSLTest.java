@@ -38,7 +38,21 @@ public class RSSLTest {
 			NativeMethodRegistry.registerNativeMethodProvider(NativeTypeCasts.class);
 			NativeMethodRegistry.registerNativeMethodProvider(NativeUtils.class);
 
-			ThreadSchedule schedule = new ThreadSchedule(Schedule.FIXED_PER_MACHINE, 10);
+			ThreadSchedule schedule = new ThreadSchedule(Schedule.FIXED_PER_MACHINE, 10) {
+
+				@Override
+				public boolean suspend(RSSLThread thread, Object... params) {
+					// TODO Auto-generated method stub
+					return false;
+				}
+
+				@Override
+				public boolean resume(RSSLThread thread) {
+					// TODO Auto-generated method stub
+					return false;
+				}
+				
+			};
 			IDebugger debug = new VoidDebugger();
 			RSSLMachine machine = new RSSLMachine("Demo machine", debug, schedule);
 			try {
