@@ -474,10 +474,18 @@ public class RSSLThread {
 			init();
 		if (!isInit)
 			throw new VMException(this, "Failed to init thread");
+
+		if (suspended) {
+			// TODO: reference to the scheduler
+			return;
+		}
+
 		try {
 			int count = frequency;
 			while (count > 0) {
 				if (interrupted())
+					break;
+				if (suspended)
 					break;
 				if (callStack.size() == 0)
 					break;
