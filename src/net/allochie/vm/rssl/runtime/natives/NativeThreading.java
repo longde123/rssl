@@ -43,11 +43,15 @@ public class NativeThreading {
 
 	@NativeMethod(name = "SuspendCurrentThread")
 	public static void suspendCurrentThread(Callout call, Object until) throws VMException {
-		call.machine.schedule.suspend(call.thread, until);
+		boolean canSuspend = call.machine.schedule.suspend(call.thread, until);
+		if (canSuspend)
+			call.thread.suspend();
 	}
 
 	@NativeMethod(name = "SuspendThread")
 	public static void suspendThread(Callout call, RSSLThread thread, Object until) throws VMException {
-		call.machine.schedule.suspend(thread, until);
+		boolean canSuspend = call.machine.schedule.suspend(thread, until);
+		if (canSuspend)
+			thread.suspend();
 	}
 }

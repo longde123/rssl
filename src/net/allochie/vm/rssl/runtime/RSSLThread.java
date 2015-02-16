@@ -476,8 +476,10 @@ public class RSSLThread {
 			throw new VMException(this, "Failed to init thread");
 
 		if (suspended) {
-			// TODO: reference to the scheduler
-			return;
+			if (machine.schedule.resume(this))
+				suspended = false;
+			else
+				return;
 		}
 
 		try {
@@ -542,6 +544,13 @@ public class RSSLThread {
 			if (callStack.size() != 0)
 				callStack.peek().setInvokeResult(last.getReturnResult());
 		}
+	}
+
+	/**
+	 * Suspend the thread.
+	 */
+	public void suspend() {
+		this.suspended = true;
 	}
 
 	/**
