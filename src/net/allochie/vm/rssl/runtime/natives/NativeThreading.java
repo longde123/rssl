@@ -38,14 +38,16 @@ public class NativeThreading {
 
 	@NativeMethod(name = "GetCurrentThread")
 	public static RSSLThread getCurrentThread(Callout call) throws VMException {
-		return null;
+		return call.thread;
 	}
 
 	@NativeMethod(name = "SuspendCurrentThread")
 	public static void suspendCurrentThread(Callout call, Object until) throws VMException {
+		call.machine.schedule.suspend(call.thread, until);
 	}
 
 	@NativeMethod(name = "SuspendThread")
 	public static void suspendThread(Callout call, RSSLThread thread, Object until) throws VMException {
+		call.machine.schedule.suspend(thread, until);
 	}
 }
