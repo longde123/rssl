@@ -85,7 +85,7 @@ public class VMCallFrame extends VMStackFrame {
 		Statement statement = null;
 		if (statements.size() != 0)
 			statement = statements.get(currentOp);
-		workPlace = statement.where;
+		workPlace = (statement != null) ? statement.where : null;
 		if (statement instanceof CallStatement) {
 			CallStatement call = (CallStatement) statement;
 			VMFunction function = machine.findFunction(call.id);
