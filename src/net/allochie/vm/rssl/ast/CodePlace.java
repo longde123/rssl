@@ -22,7 +22,7 @@ public class CodePlace {
 
 	@Override
 	public String toString() {
-		return ((image != null) ? "section `" + image + "`" : "unknown section") + ", line " + line + ":" + column;
+		return ((image != null) ? "`" + image + "`" : "unknown chunk") + ", line " + line + ":" + column;
 	}
 
 }
