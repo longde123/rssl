@@ -1,5 +1,6 @@
 /**
- * AST definition file 
+ * The Really Simple Scripting Language AST specification
+ * Copyright AfterLifeLochie 2015
  */
 
 options {
@@ -34,8 +35,7 @@ import net.allochie.vm.rssl.ast.expression.*;
 import net.allochie.vm.rssl.ast.statement.*;
 
 
-public class RSSLParser
-{
+public class RSSLParser {
 
 }
 PARSER_END(RSSLParser)
@@ -43,48 +43,54 @@ PARSER_END(RSSLParser)
 
 /* Skip spaces, tabs, newlines, returns and comments */
 SKIP : { 
-	" " | "\t" | 
-	"\r\n" | "\n" | "\r" |
-	"//" : WithinComment0
+	" " | "\t" | 				/* voidable: no data */
+	"\r\n" | "\n" | "\r" |		/* voidable: no data */
+	"//" : WithinComment0		/* voidable: comment closure */
 }
 
 /* In comments, skip to the EOL */
-<WithinComment0> SKIP : { "\r\n" : DEFAULT | "\n" : DEFAULT | "\r" : DEFAULT }
-<WithinComment0> MORE : { <~[]> }
+<WithinComment0> SKIP : { 
+	"\r\n" : DEFAULT | 			/* jmp DEFAULT -> complex return */
+	"\n" : DEFAULT | 			/* jmp DEFAULT -> nix return */
+	"\r" : DEFAULT 				/* jmp DEFAULT -> v return */
+}
+<WithinComment0> MORE : { 
+	<~[]> 						/* !(WithinComment0):Skip */
+}
 
 /* Token list */
 TOKEN : {
-	<TYPE: "type"> | 
-	<EXTENDS: "extends"> | 
-	<GLOBALS: "globals"> | 
-	<ENDGLOBALS: "endglobals"> | 
-	<CONSTANT: "constant"> | 
-	<NATIVE: "native"> | 
-	<TAKES: "takes"> | 
-	<RETURNS: "returns"> | 
-	<NOTHING: "nothing"> | 
-	<FUNCTION: "function"> | 
-	<ENDFUNCTION: "endfunction"> | 
-	<LOCAL: "local"> | 
-	<ARRAY: "array"> | 
-	<SET: "set"> | 
-	<CALL: "call"> | 
+	<TYPE: "type"> | 					/* ut_type */
+	<EXTENDS: "extends"> | 				/* ut_extends */
+	<GLOBALS: "globals"> | 				/* gb_globals */
+	<ENDGLOBALS: "endglobals"> | 		/* gb_exit_globals */
+	<CONSTANT: "constant"> | 			/* fm_constant */
+	<NATIVE: "native"> | 				/* ut_native */
+	<TAKES: "takes"> | 					/* fn_arglist0 */
+	<RETURNS: "returns"> | 				/* fn_retlist0 */
+	<NOTHING: "nothing"> | 				/* gb_void */
+	<FUNCTION: "function"> | 			/* ut_function */
+	<ENDFUNCTION: "endfunction"> | 		/* ut_exit_function */
+	<LOCAL: "local"> | 					/* ut_local */
+	<ARRAY: "array"> | 					/* ut_array */
+	<SET: "set"> | 						/* ut_set */
+	<CALL: "call"> | 					/* ut_call */
 	
-	<IF: "if"> | 
-	<THEN: "then"> | 
-	<ELSE: "else"> | 
-	<ELSEIF: "elseif"> | 
-	<ENDIF: "endif"> | 
-	<LOOP: "loop"> | 
-	<ENDLOOP: "endloop"> | 
-	<EXITWHEN: "exitwhen"> | 
-	<RETURN: "return"> | 
-	<DEBUG: "debug"> |
-	<HANDLE: "handle"> |
-	<TRY: "try"> |
-	<CATCH: "catch"> |
-	<ENDTRY: "endtry"> |
-	<RAISE: "raise">
+	<IF: "if"> | 						/* expop_binif */
+	<THEN: "then"> | 					/* expop_then */
+	<ELSE: "else"> | 					/* expop_else */
+	<ELSEIF: "elseif"> | 				/* expop_binelif */
+	<ENDIF: "endif"> | 					/* expop_exit_binif */
+	<LOOP: "loop"> | 					/* expop_loop */
+	<ENDLOOP: "endloop"> | 				/* expop_exit_loop */
+	<EXITWHEN: "exitwhen"> | 			/* expop_brk */
+	<RETURN: "return"> | 				/* expop_ret */
+	<DEBUG: "debug"> |					/* expop_dbg */
+	<HANDLE: "handle"> |				/* expop_han */
+	<TRY: "try"> |						/* expop_try */
+	<CATCH: "catch"> |					/* expop_cat */
+	<ENDTRY: "endtry"> |				/* expop_exit_try */
+	<RAISE: "raise">					/* expop_athrow */
 
 }
 
@@ -95,12 +101,12 @@ RSSLFile file(): {
 	Dec tmp0; Function tmp1;
 } 
 { 
-	(
-		tmp0 = typedef() { file.put(tmp0); } |
-		tmp0 = globals() { file.put(tmp0); } |
-		tmp0 = native_func() { file.put(tmp0); } |
-		tmp1 = func() { file.put(tmp1); }
-	) *
+	(													/* any one of: */
+		tmp0 = typedef() { file.put(tmp0); } |			/*   a type definition */
+		tmp0 = globals() { file.put(tmp0); } |			/*   a globals closure */
+		tmp0 = native_func() { file.put(tmp0); } |		/*   a native function definition */
+		tmp1 = func() { file.put(tmp1); }				/*   or a function definition */
+	) *													/* 0 or more times */
 	{ return file; }
 }
 
@@ -112,13 +118,13 @@ TypeDec typedef(): {
 	Token cp0;
 }
 {
-	cp0 = <TYPE> { dec.where = new CodePlace(cp0); }
-	tmp0 = id() { dec.id = tmp0; }
-	<EXTENDS> 
-	(
-		tmp1 = id() { dec.typename = tmp1; }
-		| 
-		<HANDLE> { dec.type = DecType.HANDLE; } 
+	cp0 = <TYPE> { dec.where = new CodePlace(cp0); }	/* TYPE */
+	tmp0 = id() { dec.id = tmp0; }						/* <id> */
+	<EXTENDS> 											/* EXTENDS */
+	(													/* either: */
+		tmp1 = id() { dec.typename = tmp1; }			/*   a type name */
+		| 												/*   - or - */
+		<HANDLE> { dec.type = DecType.HANDLE; } 		/*   the HANDLE type */
 		
 	) { return dec; }
 }
@@ -129,9 +135,9 @@ GlobalsDec globals(): {
 	Token cp0;
 }
 {
-	cp0 = <GLOBALS> { dec.where = new CodePlace(cp0); }
-	global_var_list(dec)
-	<ENDGLOBALS> { return dec; }
+	cp0 = <GLOBALS> { dec.where = new CodePlace(cp0); }	/* GLOBALS */
+	global_var_list(dec)								/* a list of global vars */
+	<ENDGLOBALS> { return dec; }						/* ENDGLOBALS */
 }
 
 /* A list of vars in the block */
