@@ -23,16 +23,20 @@ public class RSSLParser implements RSSLParserConstants {
         break label_1;
       }
       if (jj_2_2(4)) {
-        tmp0 = typedef();
+        /* any one of: */
+                        tmp0 = typedef();
 file.put(tmp0);
       } else if (jj_2_3(4)) {
-        tmp0 = globals();
+        /*   a type definition */
+                        tmp0 = globals();
 file.put(tmp0);
       } else if (jj_2_4(4)) {
-        tmp0 = native_func();
+        /*   a globals closure */
+                        tmp0 = native_func();
 file.put(tmp0);
       } else if (jj_2_5(4)) {
-        tmp1 = func();
+        /*   a native function definition */
+                        tmp1 = func();
 file.put(tmp1);
       } else {
         jj_consume_token(-1);
@@ -50,11 +54,13 @@ file.put(tmp1);
         Token cp0;
     cp0 = jj_consume_token(TYPE);
 dec.where = new CodePlace(cp0);
-    tmp0 = id();
+    /* TYPE */
+            tmp0 = id();
 dec.id = tmp0;
     jj_consume_token(EXTENDS);
     if (jj_2_6(4)) {
-      tmp1 = id();
+      /* either: */
+                      tmp1 = id();
 dec.typename = tmp1;
     } else if (jj_2_7(4)) {
       jj_consume_token(HANDLE);
@@ -1514,26 +1520,6 @@ expr.child = tmp0;
     finally { jj_save(85, xla); }
   }
 
-  private boolean jj_3R_34()
- {
-    if (jj_scan_token(FUNCTION)) return true;
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_45()
- {
-    if (jj_3R_11()) return true;
-    if (jj_scan_token(TAKES)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_12()) {
-    jj_scanpos = xsp;
-    if (jj_3_13()) return true;
-    }
-    return false;
-  }
-
   private boolean jj_3_36()
  {
     if (jj_3R_27()) return true;
@@ -2560,6 +2546,26 @@ expr.child = tmp0;
  {
     if (jj_scan_token(ELSE)) return true;
     if (jj_3R_28()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_34()
+ {
+    if (jj_scan_token(FUNCTION)) return true;
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_45()
+ {
+    if (jj_3R_11()) return true;
+    if (jj_scan_token(TAKES)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_12()) {
+    jj_scanpos = xsp;
+    if (jj_3_13()) return true;
+    }
     return false;
   }
 

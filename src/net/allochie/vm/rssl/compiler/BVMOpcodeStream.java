@@ -20,12 +20,19 @@ public class BVMOpcodeStream {
 		this.uos = os;
 	}
 
-	public byte nextOp() throws IOException {
-		return (byte) this.uis.read();
+	public Opcode nextOp() throws IOException {
+		byte dword = (byte) this.uis.read();
+		Opcode op = new Opcode();
+		op.op = Opcodes.from(dword);
+		
+		
+		
+		return op;
 	}
 
-	public void writeOp(byte op) throws IOException {
-		this.uos.write(op);
+	public void writeOp(Opcode op) throws IOException {
+		this.uos.write(op.op.opword);
+		
 	}
 
 }
