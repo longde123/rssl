@@ -32,4 +32,12 @@ public class Type {
 		return typename;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Type))
+			return false;
+		Type that = (Type) o;
+		return that.typename.equals(this.typename);
+	}
+
 }

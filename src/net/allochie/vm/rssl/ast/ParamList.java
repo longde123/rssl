@@ -20,4 +20,11 @@ public class ParamList extends ArrayList<Param> {
 		return result.toString();
 	}
 
+	public Type[] types() {
+		Type[] list = new Type[size()];
+		for (int i = 0; i < size(); i++)
+			list[i] = get(i).type;
+		return list;
+	}
+
 }
