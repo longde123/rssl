@@ -11,7 +11,7 @@ public class Param {
 
 	@Override
 	public String toString() {
-		return type.toString() + " " + name.toString();
+		return type.toString() + ((array) ? "[] " : " ") + name.toString();
 	}
 
 }

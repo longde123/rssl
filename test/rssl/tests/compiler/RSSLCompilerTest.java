@@ -11,10 +11,14 @@ public class RSSLCompilerTest {
 		try {
 			RSSLParser parse = new RSSLParser(new FileInputStream("rt.master.jass"));
 			RSSLFile file = parse.file();
+			
+			System.out.println(file.decs.size() + " declarations");
+			System.out.println(file.funcs.size() + " functions");
 
 			RSSLCompiler compiler = new RSSLCompiler();
 			compiler.compile(file);
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			System.err.println("------------------------------------------------------");
 			e.printStackTrace();
 		}
 	}

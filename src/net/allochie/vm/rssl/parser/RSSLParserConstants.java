@@ -71,19 +71,19 @@ public interface RSSLParserConstants {
   /** RegularExpression Id. */
   int RAISE = 40;
   /** RegularExpression Id. */
-  int DECIMALINT = 61;
+  int DECIMALINT = 62;
   /** RegularExpression Id. */
-  int OCTALINT = 62;
+  int OCTALINT = 63;
   /** RegularExpression Id. */
-  int HEXINT = 63;
+  int HEXINT = 64;
   /** RegularExpression Id. */
-  int FOURCCINT = 64;
+  int FOURCCINT = 65;
   /** RegularExpression Id. */
-  int REALCONST = 65;
+  int REALCONST = 66;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 68;
+  int STRING_LITERAL = 69;
   /** RegularExpression Id. */
-  int IDENTIFIER = 74;
+  int IDENTIFIER = 75;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -134,6 +134,7 @@ public interface RSSLParserConstants {
     "\"endtry\"",
     "\"raise\"",
     "\"=\"",
+    "\"[]\"",
     "\",\"",
     "\"[\"",
     "\"]\"",

@@ -10,7 +10,7 @@ public class Type {
 	public static Type realType = Type.fromIdentifier("real");
 	public static Type booleanType = Type.fromIdentifier("boolean");
 	public static Type stringType = Type.fromIdentifier("string");
-	public static Type nullType = Type.fromIdentifier("null");
+	public static Type nullType = Type.fromIdentifier("nothing");
 
 	/** Type name image */
 	public final String typename;

@@ -2,6 +2,7 @@ package net.allochie.vm.rssl.ast.dec;
 
 import net.allochie.vm.rssl.ast.Identifier;
 import net.allochie.vm.rssl.ast.ParamList;
+import net.allochie.vm.rssl.ast.ReturnType;
 import net.allochie.vm.rssl.ast.Type;
 
 public class FuncDef {
@@ -11,7 +12,7 @@ public class FuncDef {
 	/** The parameter heap */
 	public ParamList params;
 	/** The return type image */
-	public Type returns;
+	public ReturnType returns;
 
 	@Override
 	public String toString() {
