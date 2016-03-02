@@ -188,9 +188,12 @@ FuncDef func_declr(): {
 	) 
 	<RETURNS> 
 	(
-		<NOTHING> { def.returns = Type.nullType; }
+		<NOTHING> { def.returns = new ReturnType(Type.nullType); }
 		| 
-		tmp2 = type() { def.returns = tmp2; }
+		(
+			tmp2 = type() { def.returns = new ReturnType(tmp2); }
+			( "[]" { def.returns.array = true; } )?
+		)
 	)
 	{ return def; }
 }
