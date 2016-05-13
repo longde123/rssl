@@ -6,7 +6,7 @@ public class RSSLCompilerException extends Exception {
 		super(reason);
 	}
 
-	public RSSLCompilerException(String reason, RSSLCompilerException cause) {
+	public RSSLCompilerException(String reason, Exception cause) {
 		super(reason, cause);
 	}
 

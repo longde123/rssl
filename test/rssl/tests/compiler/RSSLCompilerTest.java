@@ -17,6 +17,7 @@ public class RSSLCompilerTest {
 
 			RSSLCompiler compiler = new RSSLCompiler();
 			compiler.compile(file);
+			compiler.dump();
 		} catch (Throwable e) {
 			System.err.println("------------------------------------------------------");
 			e.printStackTrace();

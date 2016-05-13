@@ -16,7 +16,13 @@ public class TypeDec extends Dec {
 
 	@Override
 	public String toString() {
-		return "TypeDec " + id + ", " + type + ", " + typename;
+		if (typename == null && type == null)
+			return "TypeDec " + id + "(" + where.toString() + "), root type";
+		if (typename == null && type != null)
+			return "TypeDec " + id + "(" + where.toString() + "), R[" + type + "]";
+		if (typename != null && type == null)
+			return "TypeDec " + id + "(" + where.toString() + "), S[" + typename + "]";
+		return "TypeDec " + id + " (" + where.toString() + "), R[" + type + "], S[" + typename + "]";
 	}
 
 }

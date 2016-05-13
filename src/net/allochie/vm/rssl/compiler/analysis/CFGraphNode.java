@@ -68,7 +68,7 @@ public class CFGraphNode {
 	
 	@Override
 	public String toString() {
-		return "CFGraphNode [" + flags + "]";
+		return "CFGraphNode [" + hashCode() + ", `" + image + "`, " + flags + "]";
 	}
 
 	/**

@@ -20,47 +20,49 @@ public enum Opcodes {
 	LARRI(0x07, 3),
 	/** Save A0 into index A1 from array pointer A2 **/
 	SARRI(0x08, 3),
+	/** Load function reference with label A1 into A0 */
+	LDPTR(0x09, 2),
 	/** Swap A0 with A1, A1 with A0 (preserves A0 & A1) **/
-	SWAP(0x09, 2),
+	SWAP(0x0A, 2),
 	/** Add A1 to A2, store in A0 **/
-	ADD(0x0A, 3),
+	ADD(0x0B, 3),
 	/** Sub A1 from A2, store in A0 **/
-	SUB(0x0B, 3),
+	SUB(0x0C, 3),
 	/** Multiply A1 by A2, store in A0 **/
-	MUL(0x0C, 3),
+	MUL(0x0D, 3),
 	/** Divide A1 by A2, store in A0 **/
-	DIV(0x0D, 3),
+	DIV(0x0E, 3),
 	/** Modulus A1 by A2, store in A0 **/
-	MOD(0x0E, 3),
+	MOD(0x0F, 3),
 	/** Raise A1 by A2, store in A0 **/
-	POW(0x0F, 3),
+	POW(0x10, 3),
 	/** Negate A1, store in A0 **/
-	UNM(0x10, 2),
+	UNM(0x11, 2),
 	/** Boolean NOT A1, store in A0 **/
-	NOT(0x11, 2),
+	NOT(0x12, 2),
 	/** Jump to relative PC offset A0 (PC += A0) **/
-	JMPRO(0x12, 1),
+	JMPRO(0x13, 1),
 	/**
 	 * Call symbol with label A0 with parameter range A1 to A2 inclusive, store
 	 * return in A3
 	 **/
-	CALL(0x13, 4),
+	CALL(0x14, 4),
 	/**
 	 * Call symbol with label A0 with parameter range A1 to A2 inclusive, ignore
 	 * return result
 	 **/
-	ICALL(0x14, 3),
+	ICALL(0x15, 3),
 	/**
 	 * Tail-call symbol with label A0 with parameter range A1 to A2 inclusive;
 	 * implicitly RETURN result or THROW ex
 	 **/
-	TCALL(0x15, 3),
+	TCALL(0x16, 3),
 	/** Return A0 **/
-	RETN(0x16, 1),
+	RETN(0x17, 1),
 	/** Yields A0 **/
-	YIELD(0x17, 1),
+	YIELD(0x18, 1),
 	/** Throws A0 **/
-	THROW(0x18, 1),
+	THROW(0x19, 1),
 	/** Sets address of next exception handler **/
 	SETEF(0x1A, 1),
 	/** Sets core debug flag to A0 **/
